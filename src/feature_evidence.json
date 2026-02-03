@@ -1,0 +1,199 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-expand-the-frontend-banarasi-saree-catalog-to-approximately-150-products-using-the-existing-static-image-approach-and-ensure-the-expanded-catalog-is-fully-integrated-everywhere-products-are-rendered-collections-page-sections-sliders-product-grids-quick-view-pdp-overlay-wishlist-and-cart-flows",
+      "featureTitle": "Expand the frontend Banarasi saree catalog to approximately 150 products using the existing static image approach, and ensure the expanded catalog is fully integrated everywhere products are rendered (Collections page sections/sliders, product grids, quick view, PDP overlay, wishlist, and cart flows).",
+      "files": [
+        "frontend/src/data/dummyProducts.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-an-automatic-banarasi-product-grouping-mechanism-that-assigns-each-product-to-a-creative-collection-based-on-observable-attributes-e-g-color-family-pattern-name-occasion-tags-or-filename-derived-hints-producing-collection-names-aligned-with-zari-legacy-silk-symphony-royal-motif-blooming-banarasi-midnight-elegance-celestial-threads-eternal-gold-and-render-separate-sections-sliders-for-each-resulting-category",
+      "featureTitle": "Implement an automatic Banarasi product grouping mechanism that assigns each product to a creative collection based on observable attributes (e.g., color family, pattern name, occasion tags, or filename-derived hints), producing collection names aligned with: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; and render separate sections/sliders for each resulting category.",
+      "files": [
+        "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+        "frontend/src/data/banarasiGrouping.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-collections-products-browsing-experience-so-that-category-sections-reveal-on-scroll-with-a-gold-wave-transition-between-sections-and-each-category-is-presented-as-a-horizontal-slider-carousel-supporting-arrows-and-dot-navigation-and-an-optional-auto-swipe-autoplay-mode-with-reduced-motion-respecting-system-preferences",
+      "featureTitle": "Update the Collections/Products browsing experience so that category sections reveal on scroll with a gold wave transition between sections, and each category is presented as a horizontal slider/carousel supporting arrows and dot navigation and an optional auto-swipe/autoplay mode (with reduced-motion respecting system preferences).",
+      "files": [
+        "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+        "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enhance-the-banarasi-product-card-visual-treatment-to-consistently-present-each-saree-image-as-a-mannequin-on-model-style-display-using-the-existing-placeholder-assumed-on-model-treatment-including-subtle-hover-spin-zoom-and-a-fabric-ripple-effect-implemented-via-css-or-an-animation-library-already-present-in-the-project-without-introducing-new-unsupported-dependencies",
+      "featureTitle": "Enhance the Banarasi product card visual treatment to consistently present each saree image as a mannequin/on-model-style display (using the existing placeholder/assumed-on-model treatment), including subtle hover spin/zoom and a fabric ripple effect implemented via CSS (or an animation library already present in the project), without introducing new unsupported dependencies.",
+      "files": [
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-product-card-hover-micro-interactions-to-include-lift-pearl-blue-gold-glowing-border-slight-scale-up-and-a-micro-ripple-animation-under-the-saree-image-ensure-the-effects-are-performant-and-do-not-cause-layout-shift",
+      "featureTitle": "Update product card hover micro-interactions to include: lift, pearl-blue + gold glowing border, slight scale-up, and a micro-ripple animation under the saree image; ensure the effects are performant and do not cause layout shift.",
+      "files": [
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-upgrade-the-product-card-action-row-so-the-wishlist-and-add-to-cart-icons-are-visually-glowing-and-pulse-on-hover-gold-pearl-blue-and-on-successful-add-to-cart-trigger-a-saree-flows-to-cart-success-animation-that-is-clearly-visible-and-ties-into-the-existing-cart-icon-badge-area",
+      "featureTitle": "Upgrade the product card action row so the wishlist and add-to-cart icons are visually glowing and pulse on hover (gold/pearl-blue), and on successful add-to-cart trigger a “saree flows to cart” success animation that is clearly visible and ties into the existing cart icon/badge area.",
+      "files": [
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/hooks/useAddToCartAnimation.ts",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-15"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-expand-the-banarasi-quick-details-overlay-on-hover-click-to-include-color-swatches-pattern-name-fabric-english-label-banarasi-silk-price-a-functional-size-chart-dropdown-accordion-blouse-pairing-suggestions-gold-star-rating-display-reviews-count-share-icon-action-cod-badge-and-an-express-delivery-tag-myntra-flipkart-style-presentation-while-keeping-user-facing-text-in-english",
+      "featureTitle": "Expand the Banarasi quick-details overlay on hover/click to include: color swatches, pattern name, fabric (English label: “Banarasi Silk”), price, a functional size chart dropdown/accordion, blouse pairing suggestions, gold star rating display, reviews count, share icon action, COD badge, and an express delivery tag (Myntra/Flipkart-style presentation) while keeping user-facing text in English.",
+      "files": [
+        "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
+        "frontend/src/data/dummyProducts.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-16"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-product-image-click-supports-a-zoom-lens-style-interaction-and-provides-a-clear-navigation-path-to-the-full-product-detail-view-pdp-overlay-from-each-product-card-preserving-existing-quick-view-behavior-where-applicable",
+      "featureTitle": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path to the full product detail view (PDP overlay) from each product card, preserving existing quick view behavior where applicable.",
+      "files": [
+        "frontend/src/components/ProductCard.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-polish-the-overall-banarasi-showcase-presentation-to-feel-ultra-impressive-with-a-consistently-dark-black-background-treatment-pearl-shimmer-particle-ambience-gold-wave-transitions-and-cinematic-scroll-reveals-while-maintaining-responsiveness-and-performance-best-practices",
+      "featureTitle": "Polish the overall Banarasi showcase presentation to feel “ultra-impressive” with a consistently dark black background treatment, pearl shimmer particle ambience, gold wave transitions, and cinematic scroll reveals, while maintaining responsiveness and performance best practices.",
+      "files": [
+        "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+        "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-performance-and-seo-behavior-for-the-expanded-catalog-by-ensuring-images-are-lazy-loaded-and-responsive-and-product-cards-provide-seo-friendly-metadata-updates-for-overlay-navigation-title-description-updates-consistent-with-the-existing-spa-metadata-approach",
+      "featureTitle": "Improve performance and SEO behavior for the expanded catalog by ensuring images are lazy-loaded and responsive, and product cards provide SEO-friendly metadata updates for overlay navigation (title/description updates) consistent with the existing SPA metadata approach.",
+      "files": [
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+        "frontend/src/hooks/useDynamicMetadata.ts",
+        "frontend/src/pages/ProductDetailView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-19"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

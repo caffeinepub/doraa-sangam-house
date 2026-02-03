@@ -1,0 +1,63 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-03T20:48:07.960Z",
+  "summary": "Diff implements major parts of the Banarasi expansion: heuristic client-side grouping into 7 collections, scroll-revealed collection sections with a gold wave divider, carousel sections with autoplay disabled under reduced-motion, pearl shimmer ambience, upgraded ProductCard interactions (lazy-loaded images, mannequin-style framing, micro-ripples, wishlist/add-to-cart actions) plus fly-to-cart animation, and SPA metadata updates via a new hook. Some specified naming and carousel navigation requirements are not clearly met in the provided diff summary.",
+  "missing_requirements": [
+    {
+      "id": "REQ-11",
+      "requirement": "Collection names aligned with: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold.",
+      "reason": "The grouping utility and showcase text indicate a different ‘Royal’ collection naming/id (‘royal-heritage’ / ‘Royal Heritage Weaves’) rather than the requested ‘Royal Motif’.",
+      "evidence": [
+        "frontend/src/data/banarasiGrouping.ts",
+        "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "requirement": "Each category carousel supports next/prev arrows and dot indicators on both desktop and mobile.",
+      "reason": "The diff shows carousel arrows (CarouselNext/CarouselPrevious imports) but does not provide evidence of dot navigation/indicators being rendered.",
+      "evidence": [
+        "frontend/src/components/banarasi/BanarasiCollectionSection.tsx"
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "requirement": "Product image click supports a zoom-lens style interaction (from product card) and provides navigation path to full PDP overlay while preserving quick view behavior.",
+      "reason": "ProductCard image click is wired to open the detail view (PDP overlay), but the diff summary does not show a zoom-lens style interaction on the product-card image itself (only lazy-loaded <img> and click handler).",
+      "evidence": [
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/pages/ProductDetailView.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Generic infinite-scroll hook added (IntersectionObserver-based)",
+      "reason": "Not requested by any REQ-10 through REQ-19 acceptance criteria; Collections experience is specified as scroll reveal + carousels rather than infinite scroll.",
+      "evidence": [
+        "frontend/src/hooks/useInfiniteScroll.ts"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/ProductCard.tsx",
+    "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+    "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
+    "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
+    "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+    "frontend/src/components/banarasi/BanarasiShowcaseSkeletons.tsx",
+    "frontend/src/data/banarasiGrouping.ts",
+    "frontend/src/data/dummyProducts.ts",
+    "frontend/src/hooks/useAddToCartAnimation.ts",
+    "frontend/src/hooks/useDynamicMetadata.ts",
+    "frontend/src/hooks/useInfiniteScroll.ts",
+    "frontend/src/hooks/useWishlist.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/ProductDetailView.tsx",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

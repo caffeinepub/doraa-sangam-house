@@ -1,0 +1,288 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Banarasi catalog expansion + animated collections + enhanced product card interactions",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "summary": "Expand the static Banarasi catalog to ~150 products and ensure all product-rendering surfaces (collections sliders/sections, grids, quick view, PDP overlay, wishlist, cart) work for the expanded set.",
+      "acceptanceCriteria": [
+        "The app renders ~150 Banarasi products without layout breakage across desktop and mobile.",
+        "All existing product interactions (wishlist, add-to-cart, quick view, PDP overlay, zoom gallery) work for the newly added products."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/data/dummyProducts.ts",
+          "operation": "modify",
+          "description": "Expand the Banarasi product entries to approximately 150 items using the existing static image URL approach; ensure each new product includes the required metadata used across the UI (images array, price, rating, reviewCount, swatches, sizes, COD/express flags, pattern/fabric fields) so wishlist/cart/quick view/PDP overlay continue to function."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0028.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0029.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0030.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0031.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0032.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0033.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0034.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0035.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0036.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        },
+        {
+          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0037.jpg",
+          "operation": "create",
+          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Implement deterministic client-side heuristic grouping so every Banarasi product maps to exactly one creative collection aligned with the specified collection names, and render separate category sections/sliders based on the resulting grouping.",
+      "acceptanceCriteria": [
+        "Every product is assigned to exactly one collection category (with a deterministic fallback category if insufficient metadata is present).",
+        "Each category section shows an accurate product count and renders a horizontal slider/carousel of products.",
+        "Category grouping does not require any backend calls and works fully client-side."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/data/banarasiGrouping.ts",
+          "operation": "create",
+          "description": "Create a client-side heuristic grouping utility that assigns each Banarasi product to exactly one of: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; use observable attributes (colorFamily, patternDescription, tags inferred from name/description, and filename hints) and include a deterministic fallback to ensure total coverage."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "operation": "modify",
+          "description": "Switch Banarasi collection rendering to use the new heuristic grouping results (instead of relying on preassigned per-product category IDs) and render separate category sections with accurate product counts. Use the shadcn-ui Carousel component to support horizontal sliders for each category; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Update the Collections/Products browsing experience so Banarasi category sections reveal on scroll with gold wave transitions between sections, and each category slider includes arrows, dot navigation, and optional autoplay that respects prefers-reduced-motion.",
+      "acceptanceCriteria": [
+        "Scrolling down the Collections experience reveals categories with a visually distinct wave/wipe transition.",
+        "Each category carousel supports next/prev arrows and dot indicators on both desktop and mobile.",
+        "Autoplay/auto-swipe is disabled or simplified when prefers-reduced-motion is enabled."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
+          "operation": "create",
+          "description": "Create a Banarasi collection section component that combines scroll reveal, a gold wave divider/wipe between sections, and an in-section horizontal carousel with arrows + dot navigation + optional autoplay (disabled/simplified for reduced motion). Use the shadcn-ui Carousel component for the slider mechanics; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "operation": "modify",
+          "description": "Replace the current grid-of-categories + overlay-only experience with an inline scroll-driven list of Banarasi collection sections that reveal as the user scrolls, inserting gold wave transitions between them and wiring dot/arrows/autoplay controls."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add CSS utilities/animations for a gold wave transition between Banarasi collection sections and dot navigation styling, ensuring reduced-motion variants are respected and animations do not cause layout shift."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "Enhance Banarasi product cards to present a consistent mannequin/on-model style treatment and add subtle hover spin/zoom plus a fabric ripple effect without new unsupported dependencies, respecting reduced motion.",
+      "acceptanceCriteria": [
+        "Product cards display a consistent mannequin/on-model style presentation for all catalog images (even when source angles vary).",
+        "On hover/focus, the image exhibits subtle spin/zoom plus a fabric-ripple-like effect.",
+        "Animations degrade gracefully for reduced-motion users."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Adjust the Banarasi product image presentation inside the card to apply a consistent mannequin/on-model style treatment (e.g., silhouette/lighting overlay, framing rules, consistent object-position) and add a fabric-ripple visual layer that can animate on hover/focus while preserving existing quick view and click-to-detail behavior."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add CSS classes/keyframes for a performant fabric-ripple effect and mannequin/on-model visual treatment using transforms/opacity and pseudo-elements; ensure reduced-motion users get a static/less-animated equivalent."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Update product card hover micro-interactions (lift, pearl-blue + gold glowing border, slight scale-up, micro-ripple under image) with performance safeguards and no layout shift.",
+      "acceptanceCriteria": [
+        "Hover/focus states show lift + glow + scale without reflow/layout shift.",
+        "The glow styling matches the dark luxury theme (pearl-blue and gold accents).",
+        "Effects remain smooth on mobile (tap/press feedback) and desktop (hover)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Refine card hover/focus interaction states to add lift + glow border (pearl-blue/gold) + slight scale and a micro-ripple under the image using transform/opacity only (no size changes) to avoid layout shift, including touch/keyboard-friendly focus-visible behavior."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Extend/override the existing premium-card-hover utility with Banarasi-specific glow and micro-ripple styling (including focus-visible and hover:none fallbacks) while maintaining reduced-motion overrides."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Add/adjust Tailwind keyframes/animations/shadows needed for micro-ripple and glow variants (pearl-blue + gold accents) to keep the interactions consistent with the dark luxury theme."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Upgrade product card action row with glowing/pulsing wishlist and add-to-cart icons and a clear 'saree flows to cart' success animation tied to the existing cart icon/badge area, respecting reduced motion.",
+      "acceptanceCriteria": [
+        "Wishlist and add-to-cart buttons visibly pulse/glow on hover/focus and provide tap feedback on mobile.",
+        "Adding to cart triggers a clear “fly/flow to cart” success animation and updates the cart badge/count.",
+        "Animation is disabled or simplified under prefers-reduced-motion."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Update wishlist and add-to-cart action styling to use glowing/pulsing hover/focus states (gold/pearl-blue) and trigger the enhanced add-to-cart flow animation on success while keeping cart badge updates intact."
+        },
+        {
+          "path": "frontend/src/hooks/useAddToCartAnimation.ts",
+          "operation": "modify",
+          "description": "Enhance the existing add-to-cart animation from a generic flying dot to a more saree-like 'flow' animation (e.g., flying image clone/gradient cloth streak) that targets the header cart area; keep a reduced-motion fallback that skips or simplifies animation."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add CSS for pulsing/glowing action icons and the visual styling of the fly-to-cart element so it reads as a 'saree flow' rather than a simple dot, ensuring animation remains performant."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Expand the Banarasi quick-details overlay to include all requested fields (English labels), including functional size chart dropdown/accordion and share action behavior.",
+      "acceptanceCriteria": [
+        "Quick-details overlay displays all requested fields using English labels.",
+        "Size chart dropdown/accordion expands/collapses and shows size information for the current product.",
+        "Share icon triggers a reasonable client-side share behavior (Web Share API when available; otherwise copy link/text feedback)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
+          "operation": "modify",
+          "description": "Add the requested quick-details fields and layout polish: color swatches, pattern name, fabric label displayed as “Banarasi Silk”, price, star rating + reviews count, share icon action, COD badge, express delivery tag, blouse pairing suggestions, and a functional size chart dropdown/accordion that renders size data for the active product. Use shadcn-ui Accordion (or equivalent existing shadcn primitives) for expand/collapse; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/data/dummyProducts.ts",
+          "operation": "modify",
+          "description": "Ensure Banarasi products include consistent metadata needed by the expanded quick-details overlay (swatches, patternDescription/pattern name value, sizes for the size chart, blouseSuggestions, codAvailable, expressDelivery) and keep user-facing text in English."
+        }
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "summary": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path from the product card to the full product detail view (PDP overlay), preserving quick view.",
+      "acceptanceCriteria": [
+        "Clicking/tapping the product image provides a zoom-lens interaction and/or opens the existing zoom-capable gallery experience.",
+        "From the product card, users can reliably open the full product detail view for that product."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Wire the product image region to provide a zoom-lens style interaction (lightweight lens overlay on desktop and/or direct entry into the existing zoom-capable PDP overlay) while keeping the existing Quick View entry point reliable and preventing event conflicts."
+        },
+        {
+          "path": "frontend/src/components/product/ImageZoomGallery.tsx",
+          "operation": "modify",
+          "description": "Refine the existing zoom behavior to feel more like a 'zoom-lens' interaction (clear affordance, cursor/overlay cues, touch-friendly fallback) while respecting prefers-reduced-motion and maintaining current thumbnail/next-prev navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "summary": "Polish the Banarasi showcase for an ultra-impressive dark luxury feel with pearl shimmer ambience, gold wave transitions, and cinematic scroll reveals while maintaining responsiveness and performance.",
+      "acceptanceCriteria": [
+        "The Banarasi collections browsing experience visually matches the requested dark luxury direction with pearl shimmer + gold transitions.",
+        "All animations respect prefers-reduced-motion and remain usable with keyboard navigation."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "operation": "modify",
+          "description": "Integrate a cinematic Banarasi browsing presentation: add pearl shimmer ambience behind the collections and ensure each section uses cinematic scroll reveals and gold wave transitions while staying keyboard accessible."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+          "operation": "create",
+          "description": "Create a lightweight ambience wrapper for the Banarasi collections area that reuses the existing pearl shimmer particle effect styling/behavior patterns and safely disables/simplifies animation under prefers-reduced-motion."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add/adjust CSS to strengthen the dark black background treatment and cinematic reveal polish for the Banarasi collections region, ensuring performance best practices (transform/opacity animations, minimal paint)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "summary": "Improve performance and SPA metadata behavior for the expanded catalog with lazy-loaded responsive images and dynamic title/meta updates for overlay navigation.",
+      "acceptanceCriteria": [
+        "Product images load lazily and do not block initial render of collection sections.",
+        "Overlay navigation updates document title/meta description appropriately for product detail views and restores on close."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Ensure product card images are lazy-loaded and configured for responsive behavior (appropriate attributes like decoding/size hints where applicable) without breaking existing visual effects; confirm no blocking of initial render for large catalogs."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "operation": "modify",
+          "description": "Ensure Banarasi collection sections/sliders render progressively (lazy images, scroll-reveal) so the expanded catalog does not block initial paint; keep any autoplay/scroll effects reduced-motion aware."
+        },
+        {
+          "path": "frontend/src/pages/ProductDetailView.tsx",
+          "operation": "modify",
+          "description": "Use the existing SPA metadata approach to update document title and meta description when opening a product detail overlay (and restore on close), aligning the metadata content with the active product."
+        },
+        {
+          "path": "frontend/src/hooks/useDynamicMetadata.ts",
+          "operation": "modify",
+          "description": "Harden metadata handling to robustly restore the original title/description when overlays close and to safely handle missing meta tags (without changing the overall SPA metadata approach)."
+        }
+      ]
+    }
+  ]
+}

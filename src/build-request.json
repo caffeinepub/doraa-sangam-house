@@ -1,0 +1,197 @@
+{
+  "kind": "build_request",
+  "title": "Expand Banarasi catalog to ~150 products and enhance animated collections + product card interactions",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "text": "Expand the frontend Banarasi saree catalog to approximately 150 products using the existing static image approach, and ensure the expanded catalog is fully integrated everywhere products are rendered (Collections page sections/sliders, product grids, quick view, PDP overlay, wishlist, and cart flows).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Modify my existing DoRaa Sangam House saree e-commerce website to showcase ~150 Banarasi saree products in a highly animated, impressive way."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app renders ~150 Banarasi products without layout breakage across desktop and mobile.",
+        "All existing product interactions (wishlist, add-to-cart, quick view, PDP overlay, zoom gallery) work for the newly added products."
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Implement an automatic Banarasi product grouping mechanism that assigns each product to a creative collection based on observable attributes (e.g., color family, pattern name, occasion tags, or filename-derived hints), producing collection names aligned with: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; and render separate sections/sliders for each resulting category.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Auto-group images into unique categories by observing patterns/colors (e.g., Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold). Create separate sections/sliders for each."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Every product is assigned to exactly one collection category (with a deterministic fallback category if insufficient metadata is present).",
+        "Each category section shows an accurate product count and renders a horizontal slider/carousel of products.",
+        "Category grouping does not require any backend calls and works fully client-side."
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Update the Collections/Products browsing experience so that category sections reveal on scroll with a gold wave transition between sections, and each category is presented as a horizontal slider/carousel supporting arrows and dot navigation and an optional auto-swipe/autoplay mode (with reduced-motion respecting system preferences).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Collections page: scroll-down pe categories reveal with wave transition; each category horizontal slider/carousel (auto-swipe optional, arrows/dots)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Scrolling down the Collections experience reveals categories with a visually distinct wave/wipe transition.",
+        "Each category carousel supports next/prev arrows and dot indicators on both desktop and mobile.",
+        "Autoplay/auto-swipe is disabled or simplified when prefers-reduced-motion is enabled."
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Enhance the Banarasi product card visual treatment to consistently present each saree image as a mannequin/on-model-style display (using the existing placeholder/assumed-on-model treatment), including subtle hover spin/zoom and a fabric ripple effect implemented via CSS (or an animation library already present in the project), without introducing new unsupported dependencies.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Product cards: each saree image ko animated mannequin/model pe show karo (use placeholder or assume on-model images; subtle hover spin/zoom + fabric ripple effect via GSAP or CSS)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Product cards display a consistent mannequin/on-model style presentation for all catalog images (even when source angles vary).",
+        "On hover/focus, the image exhibits subtle spin/zoom plus a fabric-ripple-like effect.",
+        "Animations degrade gracefully for reduced-motion users."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Update product card hover micro-interactions to include: lift, pearl-blue + gold glowing border, slight scale-up, and a micro-ripple animation under the saree image; ensure the effects are performant and do not cause layout shift.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "On card hover: lift + pearl blue/gold glow border + scale + micro-ripple animation under saree."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hover/focus states show lift + glow + scale without reflow/layout shift.",
+        "The glow styling matches the dark luxury theme (pearl-blue and gold accents).",
+        "Effects remain smooth on mobile (tap/press feedback) and desktop (hover)."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Upgrade the product card action row so the wishlist and add-to-cart icons are visually glowing and pulse on hover (gold/pearl-blue), and on successful add-to-cart trigger a “saree flows to cart” success animation that is clearly visible and ties into the existing cart icon/badge area.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Bottom of card: glowing icons (heart wishlist, cart add) — gold/pearl blue pulse hover, click pe success flow animation (saree \"flows\" to cart)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Wishlist and add-to-cart buttons visibly pulse/glow on hover/focus and provide tap feedback on mobile.",
+        "Adding to cart triggers a clear “fly/flow to cart” success animation and updates the cart badge/count.",
+        "Animation is disabled or simplified under prefers-reduced-motion."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Expand the Banarasi quick-details overlay on hover/click to include: color swatches, pattern name, fabric (English label: “Banarasi Silk”), price, a functional size chart dropdown/accordion, blouse pairing suggestions, gold star rating display, reviews count, share icon action, COD badge, and an express delivery tag (Myntra/Flipkart-style presentation) while keeping user-facing text in English.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Below icons: quick details hover/click overlay — color swatches, pattern name, fabric (Banarasi Silk), price, size chart dropdown, blouse pairing suggestions, gold ratings stars, reviews count, share icon, COD badge, express delivery tag (Myntra/Flipkart style)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Quick-details overlay displays all requested fields using English labels.",
+        "Size chart dropdown/accordion expands/collapses and shows size information for the current product.",
+        "Share icon triggers a reasonable client-side share behavior (Web Share API when available; otherwise copy link/text feedback)."
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path to the full product detail view (PDP overlay) from each product card, preserving existing quick view behavior where applicable.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Add zoom lens on image click, full details page link."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Clicking/tapping the product image provides a zoom-lens interaction and/or opens the existing zoom-capable gallery experience.",
+        "From the product card, users can reliably open the full product detail view for that product."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Polish the overall Banarasi showcase presentation to feel “ultra-impressive” with a consistently dark black background treatment, pearl shimmer particle ambience, gold wave transitions, and cinematic scroll reveals, while maintaining responsiveness and performance best practices.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Make everything ultra-impressive: dark black bg with pearl shimmer particles, gold wave transitions, cinematic scroll reveals."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Banarasi collections browsing experience visually matches the requested dark luxury direction with pearl shimmer + gold transitions.",
+        "All animations respect prefers-reduced-motion and remain usable with keyboard navigation."
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "text": "Improve performance and SEO behavior for the expanded catalog by ensuring images are lazy-loaded and responsive, and product cards provide SEO-friendly metadata updates for overlay navigation (title/description updates) consistent with the existing SPA metadata approach.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Responsive, lazy load images, SEO friendly product cards."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Product images load lazily and do not block initial render of collection sections.",
+        "Overlay navigation updates document title/meta description appropriately for product detail views and restores on close."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify any files under frontend/immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui). Compose existing UI components instead of editing them.",
+    "Respect the single-actor backend architecture; do not introduce additional backend services.",
+    "Keep user-facing text in English."
+  ],
+  "nonGoals": [
+    "Do not add a real database, external APIs, or server-side product/catalog persistence.",
+    "Do not implement true computer-vision/ML-based image understanding; auto-grouping must be heuristic/metadata-driven on the client.",
+    "Do not introduce unsupported frameworks (e.g., Next.js) or prohibited backend languages."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
