@@ -8,22 +8,90 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const Variant = IDL.Record({ 'color' : IDL.Text, 'size' : IDL.Text });
+export const Product = IDL.Record({
+  'id' : IDL.Text,
+  'name' : IDL.Text,
+  'description' : IDL.Text,
+  'variants' : IDL.Vec(Variant),
+  'category' : IDL.Text,
+  'blousePair' : IDL.Text,
+  'price' : IDL.Nat,
+  'fabric' : IDL.Text,
+  'images' : IDL.Vec(IDL.Text),
+});
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const ShippingAddress = IDL.Record({
+  'street' : IDL.Text,
+  'country' : IDL.Text,
+  'city' : IDL.Text,
+  'postalCode' : IDL.Text,
+  'name' : IDL.Text,
+  'state' : IDL.Text,
+  'phone' : IDL.Text,
+});
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'email' : IDL.Text,
+  'phone' : IDL.Text,
+});
+export const OrderRecord = IDL.Record({
+  'status' : IDL.Text,
+  'orderId' : IDL.Text,
+  'paymentId' : IDL.Text,
+  'timestamp' : IDL.Nat,
+  'shippingAddress' : ShippingAddress,
 });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'adminAddProduct' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Nat,
+        IDL.Text,
+        IDL.Vec(IDL.Text),
+        IDL.Text,
+        IDL.Vec(Variant),
+        IDL.Text,
+        IDL.Text,
+      ],
+      [IDL.Text],
+      [],
+    ),
+  'adminBulkImportProducts' : IDL.Func([IDL.Vec(Product)], [IDL.Nat], []),
+  'adminDeleteProduct' : IDL.Func([IDL.Text], [], []),
+  'adminListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'adminUpdateProduct' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Text,
+        IDL.Vec(IDL.Text),
+        IDL.Text,
+        IDL.Vec(Variant),
+        IDL.Text,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'confirmDeploymentChecks' : IDL.Func([], [IDL.Text], []),
+  'createOrder' : IDL.Func([IDL.Text, IDL.Text, ShippingAddress], [], []),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getUserOrders' : IDL.Func([], [IDL.Vec(OrderRecord)], ['query']),
+  'getUserOrdersByYearMonth' : IDL.Func(
+      [IDL.Nat, IDL.Nat],
+      [IDL.Vec(OrderRecord)],
+      ['query'],
+    ),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -31,25 +99,97 @@ export const idlService = IDL.Service({
     ),
   'healthCheck' : IDL.Func([], [IDL.Text], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'publicListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const Variant = IDL.Record({ 'color' : IDL.Text, 'size' : IDL.Text });
+  const Product = IDL.Record({
+    'id' : IDL.Text,
+    'name' : IDL.Text,
+    'description' : IDL.Text,
+    'variants' : IDL.Vec(Variant),
+    'category' : IDL.Text,
+    'blousePair' : IDL.Text,
+    'price' : IDL.Nat,
+    'fabric' : IDL.Text,
+    'images' : IDL.Vec(IDL.Text),
+  });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text, 'email' : IDL.Text });
+  const ShippingAddress = IDL.Record({
+    'street' : IDL.Text,
+    'country' : IDL.Text,
+    'city' : IDL.Text,
+    'postalCode' : IDL.Text,
+    'name' : IDL.Text,
+    'state' : IDL.Text,
+    'phone' : IDL.Text,
+  });
+  const UserProfile = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Text,
+    'phone' : IDL.Text,
+  });
+  const OrderRecord = IDL.Record({
+    'status' : IDL.Text,
+    'orderId' : IDL.Text,
+    'paymentId' : IDL.Text,
+    'timestamp' : IDL.Nat,
+    'shippingAddress' : ShippingAddress,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'adminAddProduct' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Nat,
+          IDL.Text,
+          IDL.Vec(IDL.Text),
+          IDL.Text,
+          IDL.Vec(Variant),
+          IDL.Text,
+          IDL.Text,
+        ],
+        [IDL.Text],
+        [],
+      ),
+    'adminBulkImportProducts' : IDL.Func([IDL.Vec(Product)], [IDL.Nat], []),
+    'adminDeleteProduct' : IDL.Func([IDL.Text], [], []),
+    'adminListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'adminUpdateProduct' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Text,
+          IDL.Vec(IDL.Text),
+          IDL.Text,
+          IDL.Vec(Variant),
+          IDL.Text,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'confirmDeploymentChecks' : IDL.Func([], [IDL.Text], []),
+    'createOrder' : IDL.Func([IDL.Text, IDL.Text, ShippingAddress], [], []),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getUserOrders' : IDL.Func([], [IDL.Vec(OrderRecord)], ['query']),
+    'getUserOrdersByYearMonth' : IDL.Func(
+        [IDL.Nat, IDL.Nat],
+        [IDL.Vec(OrderRecord)],
+        ['query'],
+      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -57,6 +197,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'healthCheck' : IDL.Func([], [IDL.Text], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'publicListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   });
 };

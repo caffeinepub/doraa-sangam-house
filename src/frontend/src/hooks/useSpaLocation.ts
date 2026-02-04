@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 export interface SpaLocation {
   pathname: string;
+  search: string;
 }
 
 // Create a custom event for navigation updates
@@ -10,10 +11,14 @@ const NAVIGATION_EVENT = 'spa-navigation';
 export function useSpaLocation(): [SpaLocation, (path: string) => void] {
   const [location, setLocation] = useState<SpaLocation>({
     pathname: window.location.pathname,
+    search: window.location.search,
   });
 
   const updateLocation = useCallback(() => {
-    setLocation({ pathname: window.location.pathname });
+    setLocation({ 
+      pathname: window.location.pathname,
+      search: window.location.search,
+    });
   }, []);
 
   useEffect(() => {
@@ -35,10 +40,14 @@ export function useSpaLocation(): [SpaLocation, (path: string) => void] {
   }, [updateLocation]);
 
   const navigate = useCallback((path: string) => {
-    if (window.location.pathname === path) return;
+    const currentFullPath = window.location.pathname + window.location.search;
+    if (currentFullPath === path) return;
     
     window.history.pushState({}, '', path);
-    setLocation({ pathname: path });
+    setLocation({ 
+      pathname: path.split('?')[0],
+      search: path.includes('?') ? '?' + path.split('?')[1] : '',
+    });
     
     // Dispatch custom event to notify all useSpaLocation instances
     window.dispatchEvent(new Event(NAVIGATION_EVENT));

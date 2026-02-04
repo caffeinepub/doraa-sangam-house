@@ -14,7 +14,7 @@ export default function CheckoutSuccess({ orderId, onClose }: CheckoutSuccessPro
     <div className={`flex flex-col items-center justify-center h-full px-6 py-12 text-center ${prefersReducedMotion ? '' : 'wave-reveal'}`}>
       <div className="mb-8">
         <CheckCircle className="h-24 w-24 text-accent mx-auto mb-4" />
-        <h2 className="text-3xl font-serif font-bold mb-2">Order Confirmed!</h2>
+        <h2 className="text-3xl font-serif font-bold mb-2">Order placed!</h2>
         <p className="text-lg text-muted-foreground mb-4">
           Your order is crafted with care and will reach you soon.
         </p>
@@ -25,7 +25,7 @@ export default function CheckoutSuccess({ orderId, onClose }: CheckoutSuccessPro
       <div className="space-y-3 w-full max-w-sm">
         <Button
           onClick={onClose}
-          className="w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-gold hover:shadow-glow-pearl transition-all duration-300"
+          className="w-full bg-accent text-accent-foreground hover:bg-accent/90 checkout-button-glow"
         >
           Continue Shopping
         </Button>

@@ -57,15 +57,33 @@ export function useStorefrontAuth() {
     localStorage.removeItem(OTP_SESSION_KEY);
   }, []);
 
+  // Clear return path
+  const clearReturnPath = useCallback(() => {
+    localStorage.removeItem(RETURN_PATH_KEY);
+  }, []);
+
   // Logout (clear both OTP and Internet Identity)
   const logout = useCallback(async (clearInternetIdentity: () => void) => {
     clearOTPSession();
+    clearReturnPath();
+    localStorage.removeItem(FLASH_MESSAGE_KEY);
     await clearInternetIdentity();
-    setFlashMessage('Logged out successfully', 'success');
-  }, [clearOTPSession]);
+  }, [clearOTPSession, clearReturnPath]);
 
-  // Flash message helpers
+  // Flash message helpers with deduplication
   const setFlashMessage = useCallback((message: string, type: FlashMessage['type'] = 'info') => {
+    const existing = localStorage.getItem(FLASH_MESSAGE_KEY);
+    if (existing) {
+      try {
+        const existingFlash: FlashMessage = JSON.parse(existing);
+        // Don't set if same message already exists
+        if (existingFlash.message === message && existingFlash.type === type) {
+          return;
+        }
+      } catch {
+        // Continue to set new message
+      }
+    }
     const flash: FlashMessage = { message, type };
     localStorage.setItem(FLASH_MESSAGE_KEY, JSON.stringify(flash));
   }, []);
@@ -93,10 +111,6 @@ export function useStorefrontAuth() {
 
   const getReturnPath = useCallback((): string | null => {
     return localStorage.getItem(RETURN_PATH_KEY);
-  }, []);
-
-  const clearReturnPath = useCallback(() => {
-    localStorage.removeItem(RETURN_PATH_KEY);
   }, []);
 
   // OTP lockout helpers

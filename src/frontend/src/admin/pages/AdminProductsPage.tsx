@@ -1,13 +1,7 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Plus, Edit, Package, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,59 +12,105 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Package } from 'lucide-react';
 import { useAdminProducts } from '../state/AdminProductsProvider';
-import { AdminProduct, AdminProductFormData } from '../types';
-import ProductForm from '../components/ProductForm';
 import { useAdminSaveFeedback } from '../hooks/useAdminSaveFeedback';
-import { BANARASI_CATEGORIES } from '../../data/banarasiCategories';
+import { getAdminCategoryLabel } from '../data/adminProductCategories';
+import { getSaveHighlight, clearSaveHighlight } from '../utils/adminSaveReturnHighlight';
+import { ADMIN_ROUTES } from '../adminConfig';
+import { useState } from 'react';
 
-export default function AdminProductsPage() {
-  const { products, createProduct, updateProduct, deleteProduct } = useAdminProducts();
+interface AdminProductsPageProps {
+  navigate: (path: string) => void;
+}
+
+export default function AdminProductsPage({ navigate }: AdminProductsPageProps) {
+  const { products, isLoading, error, deleteProduct } = useAdminProducts();
   const { triggerSaveFeedback, getSaveAnimationClass } = useAdminSaveFeedback();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<AdminProduct | undefined>();
-  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    const highlight = getSaveHighlight();
+    if (highlight) {
+      triggerSaveFeedback(
+        highlight.productId,
+        `Product saved to ${highlight.categoryLabel}`
+      );
+      clearSaveHighlight();
+    }
+  }, [triggerSaveFeedback]);
 
   const handleCreate = () => {
-    setEditingProduct(undefined);
-    setIsFormOpen(true);
+    navigate(ADMIN_ROUTES.PRODUCTS_CREATE);
   };
 
-  const handleEdit = (product: AdminProduct) => {
-    setEditingProduct(product);
-    setIsFormOpen(true);
+  const handleEdit = (productId: string) => {
+    navigate(`${ADMIN_ROUTES.PRODUCTS_EDIT}/${productId}`);
   };
 
-  const handleSubmit = (data: AdminProductFormData) => {
-    setIsSubmitting(true);
-
-    // Simulate async operation
-    setTimeout(() => {
-      if (editingProduct) {
-        updateProduct(editingProduct.id, data);
-        triggerSaveFeedback(editingProduct.id, 'Product updated successfully');
-      } else {
-        const newProduct = createProduct(data);
-        triggerSaveFeedback(newProduct.id, 'Product created successfully');
-      }
-
-      setIsFormOpen(false);
-      setEditingProduct(undefined);
-      setIsSubmitting(false);
-    }, 500);
+  const handleDeleteClick = (productId: string) => {
+    setProductToDelete(productId);
+    setDeleteDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
-    setDeletingProductId(null);
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await deleteProduct(productToDelete);
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      // Error already handled in provider
+    }
   };
 
-  const getCategoryName = (categoryId: string) => {
-    return BANARASI_CATEGORIES.find((c) => c.id === categoryId)?.name || 'Unknown';
-  };
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-serif font-bold text-foreground mb-2">Products</h2>
+            <p className="text-muted-foreground">Loading products from canister...</p>
+          </div>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="bg-card/50 backdrop-blur-sm border-border/40">
+              <CardHeader>
+                <div className="aspect-square rounded-lg shimmer-skeleton mb-4" />
+                <div className="h-6 shimmer-skeleton rounded mb-2" />
+                <div className="h-4 shimmer-skeleton rounded w-2/3" />
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-serif font-bold text-foreground mb-2">Products</h2>
+            <p className="text-destructive">Error loading products</p>
+          </div>
+          <Button onClick={handleCreate} className="admin-primary-button">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/40">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <p className="text-destructive mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -78,13 +118,10 @@ export default function AdminProductsPage() {
         <div>
           <h2 className="text-3xl font-serif font-bold text-foreground mb-2">Products</h2>
           <p className="text-muted-foreground">
-            Manage your product catalog (in-memory state only)
+            Manage your product catalog ({products.length} products in canister)
           </p>
         </div>
-        <Button
-          onClick={handleCreate}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
-        >
+        <Button onClick={handleCreate} className="admin-primary-button">
           <Plus className="w-4 h-4 mr-2" />
           Add Product
         </Button>
@@ -100,10 +137,7 @@ export default function AdminProductsPage() {
             <p className="text-sm text-muted-foreground mb-6 text-center max-w-md">
               Start building your catalog by adding your first product
             </p>
-            <Button
-              onClick={handleCreate}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
+            <Button onClick={handleCreate} className="admin-primary-button">
               <Plus className="w-4 h-4 mr-2" />
               Add Your First Product
             </Button>
@@ -132,7 +166,7 @@ export default function AdminProductsPage() {
                 <CardDescription>
                   <span className="text-accent font-semibold">₹{product.price.toLocaleString()}</span>
                   {' • '}
-                  <span className="text-xs">{getCategoryName(product.categoryId)}</span>
+                  <span className="text-xs">{getAdminCategoryLabel(product.categoryId)}</span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -141,19 +175,19 @@ export default function AdminProductsPage() {
                     {product.description}
                   </p>
                 )}
-                {product.variants.length > 0 && (
+                {product.colors.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {product.variants.slice(0, 3).map((variant) => (
+                    {product.colors.slice(0, 3).map((color) => (
                       <span
-                        key={variant}
+                        key={color}
                         className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
                       >
-                        {variant}
+                        {color}
                       </span>
                     ))}
-                    {product.variants.length > 3 && (
+                    {product.colors.length > 3 && (
                       <span className="text-xs text-muted-foreground px-2 py-1">
-                        +{product.variants.length - 3} more
+                        +{product.colors.length - 3} more
                       </span>
                     )}
                   </div>
@@ -162,8 +196,8 @@ export default function AdminProductsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleEdit(product)}
-                    className="flex-1"
+                    onClick={() => handleEdit(product.id)}
+                    className="flex-1 admin-interactive-glow"
                   >
                     <Edit className="w-3 h-3 mr-1" />
                     Edit
@@ -171,8 +205,8 @@ export default function AdminProductsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setDeletingProductId(product.id)}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => handleDeleteClick(product.id)}
+                    className="admin-interactive-glow text-destructive hover:text-destructive"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -183,45 +217,18 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Create/Edit Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card/95 backdrop-blur-xl border-border/40">
-          <DialogHeader>
-            <DialogTitle>{editingProduct ? 'Edit Product' : 'Create New Product'}</DialogTitle>
-            <DialogDescription>
-              {editingProduct
-                ? 'Update product details and save changes'
-                : 'Add a new product to your catalog'}
-            </DialogDescription>
-          </DialogHeader>
-          <ProductForm
-            product={editingProduct}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setIsFormOpen(false);
-              setEditingProduct(undefined);
-            }}
-            isSubmitting={isSubmitting}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation */}
-      <AlertDialog
-        open={deletingProductId !== null}
-        onOpenChange={(open) => !open && setDeletingProductId(null)}
-      >
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-card/95 backdrop-blur-xl border-border/40">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Product</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this product? This action cannot be undone.
+              Are you sure you want to delete this product? This action cannot be undone and will remove the product from the canister.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deletingProductId && handleDelete(deletingProductId)}
+              onClick={handleDeleteConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete

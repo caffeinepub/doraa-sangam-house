@@ -1,133 +1,109 @@
 {
   "kind": "build_request",
-  "title": "Upgrade /login mobile number field to premium international phone input with auto-detect + per-country validation",
+  "title": "Add full clean-boot reset and fix blank screen after login with reliable /dashboard redirect",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Replace the existing plain phone number <Input> on the /login page with an advanced international phone input that has: (1) a left-side country selector showing flag + country name + dial code, and (2) a right-side phone number input. The dropdown must include at least 20 popular countries (including India +91, United States +1, United Kingdom +44, UAE +971) and support searching to manually change the country.",
+      "id": "REQ-17",
+      "text": "Implement a “full clean boot” reset flow that wipes all client-side persisted state (auth session, cart, wishlist, and any related local/session storage used by storefront auth) and returns the app to a clean first-run state.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-20"
         ],
         "quotes": [
-          "Replace current mobile number input with an advanced international phone input",
-          "Include at least 20 popular countries.",
-          "Manual selection: User dropdown se country change kar sake (searchable dropdown if possible)."
+          "Wipe everything for a fully clean boot. Reset all data (cart, wishlist, session) — I don't mind losing temporary items."
         ]
       },
       "acceptanceCriteria": [
-        "In both Sign In and Sign Up tabs on /login, the phone step shows a country dropdown (flag + country name + dial code) and a number input side-by-side, responsive to small screens.",
-        "The country dropdown is searchable and allows changing the country manually.",
-        "At least 20 countries are available in the dropdown, including India (+91), United States (+1), United Kingdom (+44), and UAE (+971)."
+        "After invoking the reset flow, the following are cleared from browser storage: OTP session, flash message, return path, OTP lockout state/attempts, cart, and wishlist.",
+        "After invoking the reset flow, the user is logged out of Internet Identity in the app context (if previously logged in).",
+        "After invoking the reset flow, navigating to /dashboard redirects to /login and does not show a blank screen."
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "Auto-detect and pre-select the user's country on /login page load using a browser-based approach (e.g., Intl / locale hints). If detection fails or produces an unsupported/unknown country, default to India (+91). The selected flag + dial code must be shown immediately without user interaction.",
+      "id": "REQ-18",
+      "text": "Add an explicit emergency reset entry point that a user can trigger even when the app is in a broken auth/routing state (e.g., a dedicated route like /reset or a /login query flag) which executes the full clean boot reset and then navigates to the Sign In view.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-20"
         ],
         "quotes": [
-          "Auto-detect user's country code on page load",
-          "default to India +91 if detection fails"
+          "Reset all data (cart, wishlist, session)"
         ]
       },
       "acceptanceCriteria": [
-        "On first load of /login, the country selector is pre-populated automatically without user input.",
-        "If auto-detection cannot determine a supported country, the selector defaults to India (+91).",
-        "The selected flag and dial code are visible immediately on render."
+        "There is a documented, testable way to trigger the reset using only the browser URL (no prior navigation required).",
+        "After triggering the reset entry point, the app ends on /login?tab=signin (or equivalent Sign In state) and renders normally."
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Implement per-country phone validation triggered on blur of the phone field and on 'Send OTP' click. Validation must check that the number matches the selected country's expected length/format (e.g., India must validate as a 10-digit national number) and block OTP sending when invalid. Display an inline error message directly below the phone input group with exact text: \"Please enter a valid [country] mobile number\" (country name based on current selection).",
+      "id": "REQ-19",
+      "text": "Fix the post-login redirect behavior so that successful login (OTP flow and Internet Identity flow) navigates to /dashboard (or to a stored return path if it exists and is safe), and ensure the redirect happens consistently without a blank screen on first load.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-19",
+          "msg-20"
         ],
         "quotes": [
-          "On blur or Send OTP click: check number length/format for selected country (e.g., India = 10 digits).",
-          "Error message below input (pearl blue text, gold border): \"Please enter a valid [country] mobile number\""
+          "Please force reset auth state, fix dashboard route, and make login load /dashboard properly without crash.",
+          "Wipe everything for a fully clean boot. Reset all data (cart, wishlist, session) — I don't mind losing temporary items."
         ]
       },
       "acceptanceCriteria": [
-        "Invalid numbers show an inline error directly below the phone input group (not only as a top-of-card alert).",
-        "Inline error uses pearl-blue text styling and a gold border treatment as specified, and uses the exact required sentence with the country name substituted.",
-        "Clicking 'Send OTP' does not proceed to the OTP step when the phone number is invalid for the selected country.",
-        "India selection validates as a 10-digit national number (with +91 country code applied in the stored/sent value)."
+        "After successful OTP verification, the app navigates to /dashboard when no return path is set.",
+        "After successful Internet Identity login, the app navigates to /dashboard when no return path is set.",
+        "If a return path exists, it is used instead of /dashboard, and the return path is cleared after navigation.",
+        "A hard refresh immediately after login does not produce a blank screen and the user remains on a valid route."
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Update /login page styling for the new phone input so it matches the existing dark luxury theme: black/dark backgrounds, pearl-blue (#7FB3D5) accents, and gold (#D4AF37) hover/glow on the dropdown and Send OTP button. Ensure the Send OTP button retains the existing continuous gold pulse/glow behavior and the phone input group is fully responsive (full-width on mobile, no overflow).",
+      "id": "REQ-20",
+      "text": "Resolve the dashboard route first-load crash by making /dashboard render safely when auth state is restoring and when backend/query dependencies are not yet ready; show a non-blank loading or fallback UI instead of rendering nothing or crashing.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-19"
         ],
         "quotes": [
-          "Dark luxury theme (black bg, pearl blue #7FB3D5 accents, gold #D4AF37 hover/glow on dropdown/button).",
-          "Golden continuous pulse/hover on \"Send OTP\" button.",
-          "Responsive: dropdown scales on mobile, input full-width."
+          "The blank screen is still there after hard refresh and revert. Please force reset auth state, fix dashboard route, and make login load /dashboard properly without crash."
         ]
       },
       "acceptanceCriteria": [
-        "Country dropdown and phone input visually match the app’s dark luxury theme and do not introduce mismatched light styles.",
-        "Dropdown and interactive states show gold hover/glow effects; pearl-blue is used for primary accents.",
-        "Send OTP button continues to use the continuous pulse/glow styling already used on the page.",
-        "Mobile layout stacks or compresses gracefully with no clipping/overlap; the overall control remains full-width."
+        "Navigating to /dashboard never results in a permanently blank screen; if data is loading, a visible loading state is rendered.",
+        "If an error occurs while loading dashboard data, a visible error state is rendered with a recovery action (e.g., go to login, retry, or run reset).",
+        "ProtectedRoute does not leave the UI in a silent null-render state without any visible feedback during auth restoration."
       ]
     },
     {
-      "id": "REQ-5",
-      "text": "Keep the existing OTP login flow behavior intact: Send OTP → simulated OTP alert/console → OTP input → verify → success navigates to /dashboard; lockout/attempt handling must continue to work. The stored phone number used by the OTP session must include the selected international dial code (E.164-style with leading '+').",
+      "id": "REQ-21",
+      "text": "Ensure the reset flow also clears any in-memory caches that can preserve broken state across navigation (including React Query cache) and then forces a clean navigation to the login screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-20"
         ],
         "quotes": [
-          "Keep existing OTP flow (Send OTP → simulated OTP alert → input → verify).",
-          "Login flow still works."
+          "Reset all data (cart, wishlist, session)"
         ]
       },
       "acceptanceCriteria": [
-        "The OTP step UI and verification logic continue to function as before (including attempt counting and 10-minute lockout).",
-        "The OTP session stores the full international phone number including '+' and the selected country dial code.",
-        "Changing country + number and resending OTP still transitions correctly to the OTP step when valid."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Add a brief internal QA checklist for this change (can be appended to frontend/RELEASE_NOTES.md for the next version) that confirms: auto-detection fallback to India works, dropdown shows flags/names/codes and manual selection works, validation is per-country, no UI/hover/animation regressions, and the OTP flow still works end-to-end.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Confirm: Country code auto-detected (default +91 India). Dropdown shows flags/names/codes, manual select works. Input validates based on selected country. No bugs in UI/hovers/animations. Login flow still works."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Release notes include a short checklist covering the specified confirmations for manual verification."
+        "After reset, React Query cache is cleared and subsequent page loads re-fetch data normally.",
+        "After reset, the login page works without requiring an additional manual refresh."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/components/ui (read-only shadcn components); compose new UI using existing components and custom wrappers instead.",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts (immutable paths).",
-    "Maintain the single-page app routing behavior; changes must be confined to the /login experience and related supporting components/utilities."
+    "Do not edit files in frontend immutablePaths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*.",
+    "Respect the custom SPA routing approach (no React Router introduction).",
+    "Backend remains single-actor; do not introduce additional backend services or external databases."
   ],
   "nonGoals": [
-    "Do not implement real SMS delivery or server-side OTP verification.",
-    "Do not change the backend canister (Motoko) for this request.",
-    "Do not redesign other pages or alter cart/wishlist/checkout behavior."
+    "Do not delete or modify canister-stored data such as existing orders, product catalog, or user profiles; the reset is client-side only.",
+    "Do not change Razorpay payment behavior beyond what is required to prevent crashes related to routing/auth boot state.",
+    "Do not implement third-party authentication providers; Internet Identity remains the only supported identity provider."
   ],
   "imageRequirements": {
     "required": [],

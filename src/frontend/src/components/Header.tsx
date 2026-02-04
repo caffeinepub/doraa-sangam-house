@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import {
@@ -6,9 +6,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { BRAND_ASSETS, BRAND_NAME } from '../assets/branding';
 import { useState } from 'react';
 import { useGoldRipple } from '../hooks/useGoldRipple';
@@ -17,6 +19,8 @@ import CartSheet from './cart/CartSheet';
 import CheckoutSheet from './checkout/CheckoutSheet';
 import { useSpaLocation } from '../hooks/useSpaLocation';
 import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
+import { useQueryClient } from '@tanstack/react-query';
+import { useNotifications } from '../notifications/useNotifications';
 
 export default function Header() {
   const { identity, clear: clearII } = useInternetIdentity();
@@ -26,7 +30,9 @@ export default function Header() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const { createRipple } = useGoldRipple();
   const [location, navigate] = useSpaLocation();
-  const { isAuthenticated, logout } = useStorefrontAuth();
+  const { isAuthenticated, logout, setFlashMessage, setReturnPath, clearOTPSession, clearReturnPath } = useStorefrontAuth();
+  const queryClient = useQueryClient();
+  const { notifications, unreadCount, markAllRead } = useNotifications();
 
   // Don't render public header on admin routes
   if (location.pathname.startsWith('/admin')) {
@@ -52,13 +58,42 @@ export default function Header() {
     setCheckoutOpen(true);
   };
 
-  const handleLoginClick = () => {
-    navigate('/login');
+  const handleSignInClick = () => {
+    navigate('/login?tab=signin');
+  };
+
+  const handleSignUpClick = () => {
+    navigate('/login?tab=signup');
   };
 
   const handleLogout = async () => {
-    await logout(clearII);
-    navigate('/login');
+    // Clear all session data
+    clearOTPSession();
+    clearReturnPath();
+    localStorage.removeItem('doraa-flash-message');
+    
+    // Clear React Query cache
+    queryClient.clear();
+    
+    // Clear Internet Identity
+    await clearII();
+    
+    // Navigate to login
+    navigate('/login?tab=signin');
+  };
+
+  const handleProfileIconClick = () => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      setFlashMessage('Login to view profile', 'info');
+      setReturnPath('/dashboard');
+      navigate('/login?tab=signin');
+    }
+  };
+
+  const handleNotificationClick = () => {
+    markAllRead();
   };
 
   return (
@@ -94,7 +129,7 @@ export default function Header() {
               data-cart-button
               variant="ghost"
               size="icon"
-              className="ripple-container relative hover:bg-primary/10 hover:text-primary transition-all duration-300"
+              className="ripple-container relative hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px]"
               onClick={handleCartClick}
             >
               <ShoppingCart className="h-5 w-5" />
@@ -105,51 +140,96 @@ export default function Header() {
               )}
             </Button>
 
+            {/* Notification Bell - Only visible when authenticated */}
+            {isAuthenticated && (
+              <DropdownMenu onOpenChange={(open) => open && handleNotificationClick()}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`relative hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px] ${
+                      unreadCount > 0 ? 'notification-bell-glow' : ''
+                    }`}
+                  >
+                    <Bell className="h-5 w-5" />
+                    {unreadCount > 0 && (
+                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-accent text-accent-foreground border-0">
+                        {unreadCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 bg-card/95 backdrop-blur-xl border-border/40">
+                  <div className="px-4 py-3 border-b border-border/40">
+                    <h3 className="font-semibold text-foreground">Notifications</h3>
+                  </div>
+                  <ScrollArea className="max-h-[400px]">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center text-muted-foreground text-sm">
+                        No notifications yet
+                      </div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <DropdownMenuItem
+                          key={notif.id}
+                          className="px-4 py-3 cursor-default focus:bg-muted/20"
+                        >
+                          <div className="flex flex-col gap-1">
+                            <p className="text-sm text-foreground">{notif.message}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(notif.timestamp).toLocaleTimeString('en-IN', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                          </div>
+                        </DropdownMenuItem>
+                      ))
+                    )}
+                  </ScrollArea>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Profile Icon - Always visible - mobile friendly */}
+            <Button
+              onClick={handleProfileIconClick}
+              variant="ghost"
+              size="icon"
+              className="hover:bg-primary/10 hover:text-primary transition-all duration-300 gold-pulse-glow min-h-[44px] min-w-[44px]"
+              title={isAuthenticated ? 'View Dashboard' : 'Login to view profile'}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+
             {isAuthenticated ? (
+              <Button
+                onClick={handleLogout}
+                size="sm"
+                variant="ghost"
+                className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            ) : (
               <>
                 <Button
-                  onClick={handleLogout}
+                  onClick={handleSignInClick}
                   size="sm"
                   variant="ghost"
-                  className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow"
+                  className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  Sign In
                 </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-primary/10 hover:text-primary transition-all duration-300"
-                    >
-                      <User className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border-border/40">
-                    <DropdownMenuItem
-                      onClick={() => navigate('/dashboard')}
-                      className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                    >
-                      Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                    >
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  onClick={handleSignUpClick}
+                  size="sm"
+                  className="hidden md:inline-flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                >
+                  Sign Up
+                </Button>
               </>
-            ) : (
-              <Button
-                onClick={handleLoginClick}
-                size="sm"
-                className="hidden md:inline-flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
-              >
-                Login
-              </Button>
             )}
 
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -157,7 +237,7 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden hover:bg-primary/10 hover:text-primary transition-all duration-300"
+                  className="lg:hidden hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px]"
                 >
                   {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </Button>
@@ -169,7 +249,7 @@ export default function Header() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-base font-medium text-muted-foreground hover:text-primary transition-colors duration-300 py-2"
+                      className="text-base font-medium text-muted-foreground hover:text-primary transition-colors duration-300 py-2 min-h-[44px] flex items-center"
                     >
                       {link.label}
                     </a>
@@ -181,7 +261,7 @@ export default function Header() {
                           navigate('/dashboard');
                           setMobileMenuOpen(false);
                         }}
-                        className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
+                        className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
                       >
                         Dashboard
                       </Button>
@@ -191,22 +271,34 @@ export default function Header() {
                           setMobileMenuOpen(false);
                         }}
                         variant="outline"
-                        className="text-primary border-primary hover:bg-primary/10 transition-all duration-300"
+                        className="text-primary border-primary hover:bg-primary/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
                       >
                         <LogOut className="h-4 w-4 mr-2" />
                         Logout
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      onClick={() => {
-                        handleLoginClick();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
-                    >
-                      Login
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() => {
+                          handleSignInClick();
+                          setMobileMenuOpen(false);
+                        }}
+                        variant="outline"
+                        className="mt-4 text-primary border-primary hover:bg-primary/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                      >
+                        Sign In
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSignUpClick();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                      >
+                        Sign Up
+                      </Button>
+                    </>
                   )}
                 </nav>
               </SheetContent>

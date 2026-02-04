@@ -1,62 +1,209 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { AdminProduct, AdminProductFormData } from '../types';
+import { useActor } from '../../hooks/useActor';
+import { useQueryClient } from '@tanstack/react-query';
+import { adminFormToBackendProduct, backendProductToAdmin } from '../utils/productMappings';
+import { toast } from 'sonner';
 
 interface AdminProductsContextValue {
   products: AdminProduct[];
-  createProduct: (data: AdminProductFormData) => AdminProduct;
-  updateProduct: (id: string, data: AdminProductFormData) => void;
-  deleteProduct: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  createProduct: (data: AdminProductFormData) => Promise<AdminProduct>;
+  updateProduct: (id: string, data: AdminProductFormData) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  bulkCreateProducts: (dataArray: AdminProductFormData[]) => Promise<number>;
+  refreshProducts: () => Promise<void>;
 }
 
 const AdminProductsContext = createContext<AdminProductsContextValue | undefined>(undefined);
 
 export function AdminProductsProvider({ children }: { children: React.ReactNode }) {
+  const { actor, isFetching: actorFetching } = useActor();
+  const queryClient = useQueryClient();
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const createProduct = useCallback((data: AdminProductFormData): AdminProduct => {
-    const newProduct: AdminProduct = {
-      id: `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: data.name,
-      price: parseFloat(data.price) || 0,
-      description: data.description,
-      fabric: data.fabric,
-      categoryId: data.categoryId,
-      variants: data.variants,
-      blousePairing: data.blousePairing,
-      images: data.images,
-      createdAt: Date.now(),
-    };
+  // Load products from canister on mount
+  const loadProducts = useCallback(async () => {
+    if (!actor || actorFetching) return;
 
-    setProducts((prev) => [newProduct, ...prev]);
-    return newProduct;
-  }, []);
+    try {
+      setIsLoading(true);
+      setError(null);
+      const backendProducts = await actor.adminListProducts();
+      const adminProducts = backendProducts.map(backendProductToAdmin);
+      setProducts(adminProducts);
+    } catch (err: any) {
+      console.error('Failed to load products:', err);
+      setError(err.message || 'Failed to load products from canister');
+      toast.error('Failed to load products', {
+        description: 'Could not fetch products from the backend. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [actor, actorFetching]);
 
-  const updateProduct = useCallback((id: string, data: AdminProductFormData) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              name: data.name,
-              price: parseFloat(data.price) || 0,
-              description: data.description,
-              fabric: data.fabric,
-              categoryId: data.categoryId,
-              variants: data.variants,
-              blousePairing: data.blousePairing,
-              images: data.images,
-            }
-          : p
-      )
-    );
-  }, []);
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
-  const deleteProduct = useCallback((id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-  }, []);
+  const refreshProducts = useCallback(async () => {
+    await loadProducts();
+    // Invalidate storefront products query
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+  }, [loadProducts, queryClient]);
+
+  const createProduct = useCallback(
+    async (data: AdminProductFormData): Promise<AdminProduct> => {
+      if (!actor) throw new Error('Actor not available');
+
+      try {
+        const backendPayload = adminFormToBackendProduct(data);
+        
+        const productId = await actor.adminAddProduct(
+          backendPayload.name,
+          backendPayload.price,
+          backendPayload.description,
+          backendPayload.images,
+          backendPayload.fabric,
+          backendPayload.variants,
+          backendPayload.blousePair,
+          backendPayload.category
+        );
+
+        // Refresh products list
+        await refreshProducts();
+
+        // Find the newly created product
+        const newProduct = products.find((p) => p.id === productId);
+        if (!newProduct) {
+          throw new Error('Product created but not found in list');
+        }
+
+        toast.success('Product created successfully');
+        return newProduct;
+      } catch (err: any) {
+        console.error('Failed to create product:', err);
+        toast.error('Failed to create product', {
+          description: err.message || 'Could not save product to the backend.',
+        });
+        throw err;
+      }
+    },
+    [actor, refreshProducts, products]
+  );
+
+  const updateProduct = useCallback(
+    async (id: string, data: AdminProductFormData) => {
+      if (!actor) throw new Error('Actor not available');
+
+      try {
+        const backendPayload = adminFormToBackendProduct(data, id);
+        
+        await actor.adminUpdateProduct(
+          id,
+          backendPayload.name,
+          backendPayload.price,
+          backendPayload.description,
+          backendPayload.images,
+          backendPayload.fabric,
+          backendPayload.variants,
+          backendPayload.blousePair,
+          backendPayload.category
+        );
+
+        // Refresh products list
+        await refreshProducts();
+
+        toast.success('Product updated successfully');
+      } catch (err: any) {
+        console.error('Failed to update product:', err);
+        toast.error('Failed to update product', {
+          description: err.message || 'Could not save changes to the backend.',
+        });
+        throw err;
+      }
+    },
+    [actor, refreshProducts]
+  );
+
+  const deleteProduct = useCallback(
+    async (id: string) => {
+      if (!actor) throw new Error('Actor not available');
+
+      try {
+        await actor.adminDeleteProduct(id);
+
+        // Refresh products list
+        await refreshProducts();
+
+        toast.success('Product deleted successfully');
+      } catch (err: any) {
+        console.error('Failed to delete product:', err);
+        toast.error('Failed to delete product', {
+          description: err.message || 'Could not delete product from the backend.',
+        });
+        throw err;
+      }
+    },
+    [actor, refreshProducts]
+  );
+
+  const bulkCreateProducts = useCallback(
+    async (dataArray: AdminProductFormData[]): Promise<number> => {
+      if (!actor) throw new Error('Actor not available');
+
+      try {
+        // Convert all form data to backend products
+        const backendProducts = dataArray.map((data) => {
+          const payload = adminFormToBackendProduct(data);
+          return {
+            id: payload.id,
+            name: payload.name,
+            price: payload.price,
+            description: payload.description,
+            images: payload.images,
+            fabric: payload.fabric,
+            variants: payload.variants,
+            blousePair: payload.blousePair,
+            category: payload.category,
+          };
+        });
+
+        // Call bulk import
+        const count = await actor.adminBulkImportProducts(backendProducts);
+
+        // Refresh products list
+        await refreshProducts();
+
+        return Number(count);
+      } catch (err: any) {
+        console.error('Failed to bulk import products:', err);
+        toast.error('Bulk import failed', {
+          description: err.message || 'Could not import products to the backend.',
+        });
+        throw err;
+      }
+    },
+    [actor, refreshProducts]
+  );
 
   return (
-    <AdminProductsContext.Provider value={{ products, createProduct, updateProduct, deleteProduct }}>
+    <AdminProductsContext.Provider
+      value={{
+        products,
+        isLoading,
+        error,
+        createProduct,
+        updateProduct,
+        deleteProduct,
+        bulkCreateProducts,
+        refreshProducts,
+      }}
+    >
       {children}
     </AdminProductsContext.Provider>
   );

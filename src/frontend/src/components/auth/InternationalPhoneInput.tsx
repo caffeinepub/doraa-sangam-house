@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 interface InternationalPhoneInputProps {
   id: string;
   label: string;
-  value: string; // National number only (no country code)
+  value: string;
   onChange: (value: string) => void;
   selectedCountry: CountryData;
   onCountryChange: (country: CountryData) => void;
@@ -76,7 +76,7 @@ export default function InternationalPhoneInput({
     <div className="space-y-2">
       <Label htmlFor={id} className="text-foreground">{label}</Label>
       <div className="flex gap-2">
-        {/* Country Selector */}
+        {/* Country Selector - Compact */}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -85,30 +85,31 @@ export default function InternationalPhoneInput({
               aria-expanded={open}
               disabled={disabled}
               className={cn(
-                "w-[180px] justify-between bg-background/50 border-border/60 hover:border-primary hover:bg-primary/5",
+                "w-[120px] justify-between bg-background/50 border-border/60 hover:border-primary hover:bg-primary/5",
                 "transition-all duration-300",
                 "hover:shadow-[0_0_16px_rgba(212,175,55,0.3)]",
+                "gold-pulse-glow",
                 error && "border-accent"
               )}
             >
-              <span className="flex items-center gap-2 truncate">
-                <span className="text-xl">{selectedCountry.flag}</span>
-                <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
+              <span className="flex items-center gap-1.5 truncate">
+                <span className="text-base">{selectedCountry.flag}</span>
+                <span className="text-xs font-semibold">{selectedCountry.dialCode}</span>
               </span>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className="ml-1 h-3.5 w-3.5 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[320px] p-0 bg-popover/95 backdrop-blur-xl border-border/40">
+          <PopoverContent className="w-[300px] p-0 bg-popover/95 backdrop-blur-xl border-border/40">
             <Command className="bg-transparent">
               <CommandInput 
                 placeholder="Search country..." 
                 value={searchQuery}
                 onValueChange={setSearchQuery}
-                className="border-none focus:ring-0"
+                className="border-none focus:ring-0 h-9 text-sm"
               />
-              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandEmpty className="text-sm py-4">No country found.</CommandEmpty>
               <CommandList>
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-[240px]">
                   <CommandGroup>
                     {filteredCountries.map((country) => (
                       <CommandItem
@@ -116,20 +117,20 @@ export default function InternationalPhoneInput({
                         value={country.code}
                         onSelect={() => handleCountrySelect(country)}
                         className={cn(
-                          "flex items-center gap-3 cursor-pointer",
+                          "flex items-center gap-2 cursor-pointer py-2",
                           "hover:bg-primary/10 hover:text-primary",
                           "transition-all duration-200",
                           selectedCountry.code === country.code && "bg-primary/20 text-primary"
                         )}
                       >
-                        <span className="text-2xl">{country.flag}</span>
-                        <div className="flex-1 flex items-center justify-between">
-                          <span className="font-medium">{country.name}</span>
-                          <span className="text-sm text-muted-foreground">{country.dialCode}</span>
+                        <span className="text-lg">{country.flag}</span>
+                        <div className="flex-1 flex items-center justify-between min-w-0">
+                          <span className="font-medium text-sm truncate">{country.name}</span>
+                          <span className="text-xs text-muted-foreground ml-2 shrink-0">{country.dialCode}</span>
                         </div>
                         <Check
                           className={cn(
-                            "h-4 w-4",
+                            "h-3.5 w-3.5 shrink-0",
                             selectedCountry.code === country.code ? "opacity-100 text-accent" : "opacity-0"
                           )}
                         />

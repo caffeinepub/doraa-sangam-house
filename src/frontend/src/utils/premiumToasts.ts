@@ -3,19 +3,24 @@ import { toast } from 'sonner';
 interface PremiumToastOptions {
   message: string;
   type?: 'success' | 'error' | 'info' | 'duplicate';
+  duration?: number;
 }
 
-export function showPremiumToast({ message, type = 'info' }: PremiumToastOptions) {
+export function showPremiumToast({ message, type = 'info', duration = 4000 }: PremiumToastOptions) {
+  const baseStyle = {
+    background: 'oklch(0.68 0.10 210 / 0.95)',
+    border: '2px solid oklch(0.72 0.12 70)',
+    color: 'oklch(0.68 0.10 210)',
+    backdropFilter: 'blur(12px)',
+    boxShadow: '0 0 20px oklch(0.72 0.12 70 / 0.4)',
+    fontWeight: '600',
+    fontSize: '16px',
+  };
+
   const toastOptions = {
-    duration: 3000,
-    className: 'premium-toast',
-    style: {
-      background: 'oklch(0.68 0.10 210 / 0.95)',
-      border: '1px solid oklch(0.72 0.12 70)',
-      color: 'oklch(0.96 0.005 60)',
-      backdropFilter: 'blur(12px)',
-      boxShadow: '0 0 20px oklch(0.72 0.12 70 / 0.4)',
-    },
+    duration,
+    className: 'premium-toast premium-toast-fade',
+    style: baseStyle,
   };
 
   if (type === 'duplicate') {
@@ -24,13 +29,25 @@ export function showPremiumToast({ message, type = 'info' }: PremiumToastOptions
     toast.error(message, {
       ...toastOptions,
       style: {
-        ...toastOptions.style,
-        background: 'oklch(0.60 0.20 25 / 0.95)',
-        border: '1px solid oklch(0.72 0.12 70)',
+        ...baseStyle,
+        background: 'rgba(0, 0, 0, 0.85)',
+        border: '2px solid oklch(0.72 0.12 70)',
+        color: 'oklch(0.96 0.005 60)',
+        fontWeight: '600',
+        fontSize: '16px',
       },
     });
   } else if (type === 'success') {
-    toast.success(message, toastOptions);
+    toast.success(message, {
+      ...toastOptions,
+      style: {
+        background: 'rgba(0, 0, 0, 0.85)',
+        border: '2px solid oklch(0.72 0.12 70)',
+        color: 'oklch(0.96 0.005 60)',
+        fontWeight: '600',
+        fontSize: '16px',
+      },
+    });
   } else {
     toast.info(message, toastOptions);
   }
@@ -54,5 +71,45 @@ export function showLockoutToast() {
   showPremiumToast({
     message: 'Too many attempts. Retry after 10 minutes',
     type: 'error',
+  });
+}
+
+export function showProfileSaveSuccessToast() {
+  showPremiumToast({
+    message: 'Profile updated successfully!',
+    type: 'success',
+    duration: 3000,
+  });
+}
+
+export function showProfileSaveErrorToast() {
+  showPremiumToast({
+    message: 'Failed to save. Try again.',
+    type: 'error',
+    duration: 4000,
+  });
+}
+
+export function showInvalidOTPToast() {
+  showPremiumToast({
+    message: 'Invalid OTP. Please try again.',
+    type: 'error',
+    duration: 4000,
+  });
+}
+
+export function showNetworkErrorToast() {
+  showPremiumToast({
+    message: 'Network error. Please check your connection.',
+    type: 'error',
+    duration: 4000,
+  });
+}
+
+export function showValidationErrorToast(message: string) {
+  showPremiumToast({
+    message,
+    type: 'error',
+    duration: 4000,
   });
 }

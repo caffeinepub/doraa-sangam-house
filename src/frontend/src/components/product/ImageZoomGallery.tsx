@@ -41,6 +41,7 @@ export default function ImageZoomGallery({ images, alt }: ImageZoomGalleryProps)
         <img
           src={images[activeIndex]}
           alt={`${alt} - Image ${activeIndex + 1}`}
+          loading={activeIndex === 0 ? 'eager' : 'lazy'}
           className="w-full h-full object-cover transition-transform duration-300"
           style={{
             transform: isZoomed && !prefersReducedMotion ? `scale(2) translate(${50 - mousePosition.x}%, ${50 - mousePosition.y}%)` : 'scale(1)',
@@ -52,7 +53,7 @@ export default function ImageZoomGallery({ images, alt }: ImageZoomGalleryProps)
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white min-h-[44px] min-w-[44px]"
               onClick={prevImage}
             >
               <ChevronLeft className="h-6 w-6" />
@@ -60,7 +61,7 @@ export default function ImageZoomGallery({ images, alt }: ImageZoomGalleryProps)
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white min-h-[44px] min-w-[44px]"
               onClick={nextImage}
             >
               <ChevronRight className="h-6 w-6" />
@@ -74,11 +75,11 @@ export default function ImageZoomGallery({ images, alt }: ImageZoomGalleryProps)
             <button
               key={index}
               onClick={() => setActiveIndex(index)}
-              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+              className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all min-h-[44px] min-w-[44px] ${
                 index === activeIndex ? 'border-accent shadow-glow-gold' : 'border-border/40 hover:border-primary'
               }`}
             >
-              <img src={image} alt={`${alt} thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+              <img src={image} alt={`${alt} thumbnail ${index + 1}`} loading="lazy" className="w-full h-full object-cover" />
             </button>
           ))}
         </div>

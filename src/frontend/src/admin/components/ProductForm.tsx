@@ -10,10 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { X, Plus } from 'lucide-react';
-import { AdminProductFormData, AdminProduct } from '../types';
-import { BANARASI_CATEGORIES } from '../../data/banarasiCategories';
+import { Checkbox } from '@/components/ui/checkbox';
+import { AdminProductFormData, AdminProduct, FABRIC_PRESETS, COLOR_SWATCHES, SIZE_OPTIONS } from '../types';
+import { ADMIN_PRODUCT_CATEGORIES } from '../data/adminProductCategories';
 import ImageDropzone from './ImageDropzone';
+import { toast } from 'sonner';
 
 interface ProductFormProps {
   product?: AdminProduct;
@@ -28,13 +29,14 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
     price: product?.price?.toString() || '',
     description: product?.description || '',
     fabric: product?.fabric || '',
+    fabricCustom: product?.fabricCustom || '',
     categoryId: product?.categoryId || '',
-    variants: product?.variants || [],
+    colors: product?.colors || [],
+    sizes: product?.sizes || [],
     blousePairing: product?.blousePairing || '',
     images: product?.images || [],
   });
 
-  const [variantInput, setVariantInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = (): boolean => {
@@ -54,7 +56,24 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
       newErrors.categoryId = 'Please select a category';
     }
 
+    if (!formData.fabric) {
+      newErrors.fabric = 'Please select a fabric type';
+    }
+
+    if (formData.fabric === 'Custom' && !formData.fabricCustom?.trim()) {
+      newErrors.fabricCustom = 'Please enter custom fabric details';
+    }
+
+    if (formData.images.length < 5) {
+      newErrors.images = 'Please upload at least 5 images';
+    }
+
     setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Please fix the errors before saving');
+    }
+    
     return Object.keys(newErrors).length === 0;
   };
 
@@ -65,20 +84,21 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
     }
   };
 
-  const addVariant = () => {
-    if (variantInput.trim() && !formData.variants.includes(variantInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        variants: [...prev.variants, variantInput.trim()],
-      }));
-      setVariantInput('');
-    }
-  };
-
-  const removeVariant = (variant: string) => {
+  const toggleColor = (colorName: string) => {
     setFormData((prev) => ({
       ...prev,
-      variants: prev.variants.filter((v) => v !== variant),
+      colors: prev.colors.includes(colorName)
+        ? prev.colors.filter((c) => c !== colorName)
+        : [...prev.colors, colorName],
+    }));
+  };
+
+  const toggleSize = (size: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
     }));
   };
 
@@ -119,13 +139,13 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
           value={formData.categoryId}
           onValueChange={(value) => setFormData((prev) => ({ ...prev, categoryId: value }))}
         >
-          <SelectTrigger className={errors.categoryId ? 'border-destructive' : ''}>
+          <SelectTrigger className={`admin-interactive-glow ${errors.categoryId ? 'border-destructive' : ''}`}>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
-            {BANARASI_CATEGORIES.map((category) => (
+            {ADMIN_PRODUCT_CATEGORIES.map((category) => (
               <SelectItem key={category.id} value={category.id}>
-                {category.name}
+                {category.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -147,52 +167,95 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
 
       {/* Fabric */}
       <div className="space-y-2">
-        <Label htmlFor="fabric">Fabric</Label>
-        <Input
-          id="fabric"
+        <Label htmlFor="fabric">Fabric *</Label>
+        <Select
           value={formData.fabric}
-          onChange={(e) => setFormData((prev) => ({ ...prev, fabric: e.target.value }))}
-          placeholder="e.g., Pure Silk, Katan Silk"
-        />
+          onValueChange={(value) => setFormData((prev) => ({ ...prev, fabric: value }))}
+        >
+          <SelectTrigger className={`admin-interactive-glow ${errors.fabric ? 'border-destructive' : ''}`}>
+            <SelectValue placeholder="Select fabric type" />
+          </SelectTrigger>
+          <SelectContent>
+            {FABRIC_PRESETS.map((fabric) => (
+              <SelectItem key={fabric} value={fabric}>
+                {fabric}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.fabric && <p className="text-xs text-destructive">{errors.fabric}</p>}
       </div>
 
-      {/* Variants */}
-      <div className="space-y-2">
-        <Label>Variants</Label>
-        <div className="flex gap-2">
+      {/* Custom Fabric Input */}
+      {formData.fabric === 'Custom' && (
+        <div className="space-y-2">
+          <Label htmlFor="fabricCustom">Custom Fabric Details *</Label>
           <Input
-            value={variantInput}
-            onChange={(e) => setVariantInput(e.target.value)}
-            placeholder="e.g., Red, Blue, Gold"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                addVariant();
-              }
-            }}
+            id="fabricCustom"
+            value={formData.fabricCustom || ''}
+            onChange={(e) => setFormData((prev) => ({ ...prev, fabricCustom: e.target.value }))}
+            placeholder="e.g., Handwoven Cotton Blend"
+            className={errors.fabricCustom ? 'border-destructive' : ''}
           />
-          <Button type="button" onClick={addVariant} size="icon" variant="outline">
-            <Plus className="w-4 h-4" />
-          </Button>
+          {errors.fabricCustom && <p className="text-xs text-destructive">{errors.fabricCustom}</p>}
         </div>
-        {formData.variants.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {formData.variants.map((variant) => (
+      )}
+
+      {/* Color Variants */}
+      <div className="space-y-3">
+        <Label>Color Variants</Label>
+        <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+          {COLOR_SWATCHES.map((color) => (
+            <div
+              key={color.name}
+              className="flex flex-col items-center gap-2 cursor-pointer group"
+              onClick={() => toggleColor(color.name)}
+            >
               <div
-                key={variant}
-                className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                className={`w-12 h-12 rounded-full border-2 transition-all duration-300 ${
+                  formData.colors.includes(color.name)
+                    ? 'border-primary shadow-glow-pearl scale-110'
+                    : 'border-border/40 group-hover:border-primary/50 group-hover:scale-105'
+                }`}
+                style={{ backgroundColor: color.value }}
+              />
+              <span className="text-xs text-center text-muted-foreground group-hover:text-foreground transition-colors">
+                {color.name}
+              </span>
+            </div>
+          ))}
+        </div>
+        {formData.colors.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Selected: {formData.colors.join(', ')}
+          </p>
+        )}
+      </div>
+
+      {/* Size Options */}
+      <div className="space-y-3">
+        <Label>Available Sizes</Label>
+        <div className="flex flex-wrap gap-3">
+          {SIZE_OPTIONS.map((size) => (
+            <div key={size} className="flex items-center space-x-2">
+              <Checkbox
+                id={`size-${size}`}
+                checked={formData.sizes.includes(size)}
+                onCheckedChange={() => toggleSize(size)}
+              />
+              <label
+                htmlFor={`size-${size}`}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
-                <span>{variant}</span>
-                <button
-                  type="button"
-                  onClick={() => removeVariant(variant)}
-                  className="hover:text-destructive transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
+                {size}
+              </label>
+            </div>
+          ))}
+        </div>
+        {formData.sizes.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Selected: {formData.sizes.join(', ')}
+          </p>
         )}
       </div>
 
@@ -209,11 +272,15 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
 
       {/* Images */}
       <div className="space-y-2">
-        <Label>Product Images</Label>
+        <Label>Product Images * (5-10 images required)</Label>
         <ImageDropzone
           images={formData.images}
           onChange={(images) => setFormData((prev) => ({ ...prev, images }))}
         />
+        {errors.images && <p className="text-xs text-destructive">{errors.images}</p>}
+        <p className="text-xs text-muted-foreground">
+          {formData.images.length} / 10 images uploaded (minimum 5 required)
+        </p>
       </div>
 
       {/* Actions */}
@@ -221,9 +288,9 @@ export default function ProductForm({ product, onSubmit, onCancel, isSubmitting 
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
+          className="flex-1 admin-primary-button"
         >
-          {isSubmitting ? 'Saving...' : product ? 'Update Product' : 'Create Product'}
+          {isSubmitting ? 'Saving...' : product ? 'Update Product' : 'Save Product'}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Cancel

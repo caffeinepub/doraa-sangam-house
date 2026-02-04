@@ -37,23 +37,59 @@ export default function LetterRevealText({
     }
   }, [isActive, text.length, prefersReducedMotion]);
 
+  // Split text into words and track character positions
+  const words = text.split(' ');
+  let charIndex = 0;
+
   return (
     <h1 className={className}>
-      {text.split('').map((char, index) => (
-        <span
-          key={index}
-          className={`inline-block transition-all duration-300 ${
-            index < revealedCount
-              ? 'opacity-100 translate-y-0'
-              : 'opacity-0 translate-y-2'
-          }`}
-          style={{
-            transitionDelay: prefersReducedMotion ? '0ms' : `${index * 30}ms`,
-          }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      ))}
+      {words.map((word, wordIndex) => {
+        const wordStartIndex = charIndex;
+        const wordChars = word.split('');
+        charIndex += word.length + 1; // +1 for space
+
+        return (
+          <span
+            key={wordIndex}
+            className={word === 'Elegance' ? 'inline-block whitespace-nowrap' : 'inline-block'}
+          >
+            {wordChars.map((char, charIndexInWord) => {
+              const globalCharIndex = wordStartIndex + charIndexInWord;
+              return (
+                <span
+                  key={globalCharIndex}
+                  className={`inline-block transition-all duration-300 ${
+                    globalCharIndex < revealedCount
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-2'
+                  }`}
+                  style={{
+                    transitionDelay: prefersReducedMotion ? '0ms' : `${globalCharIndex * 30}ms`,
+                  }}
+                >
+                  {char}
+                </span>
+              );
+            })}
+            {wordIndex < words.length - 1 && (
+              <span
+                className={`inline-block transition-all duration-300 ${
+                  wordStartIndex + word.length < revealedCount
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-2'
+                }`}
+                style={{
+                  transitionDelay: prefersReducedMotion
+                    ? '0ms'
+                    : `${(wordStartIndex + word.length) * 30}ms`,
+                }}
+              >
+                {'\u00A0'}
+              </span>
+            )}
+          </span>
+        );
+      })}
     </h1>
   );
 }

@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, ShoppingCart, Star, Package, Truck, Award, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import ImageZoomGallery from '../components/product/ImageZoomGallery';
-import { DUMMY_PRODUCTS } from '../data/dummyProducts';
-import { useAddToCart } from '../hooks/useQueries';
+import { useGetProduct } from '../hooks/useQueries';
 import { toast } from 'sonner';
 import { useDynamicMetadata } from '../hooks/useDynamicMetadata';
 import { useAuthRedirect } from '../hooks/useAuthRedirect';
 import { useCommerce } from '../hooks/useCommerce';
+import { useWishlist } from '../hooks/useWishlist';
+import { useAddToCartAnimation } from '../hooks/useAddToCartAnimation';
+import { useGoldRipple } from '../hooks/useGoldRipple';
+import { showDuplicateCartToast, showDuplicateFavoriteToast } from '../utils/premiumToasts';
+import { useRef } from 'react';
 import { useSpaLocation } from '../hooks/useSpaLocation';
-import { showDuplicateCartToast } from '../utils/premiumToasts';
 
 interface ProductDetailViewProps {
   productId: string;
@@ -19,193 +22,244 @@ interface ProductDetailViewProps {
 }
 
 export default function ProductDetailView({ productId, onClose }: ProductDetailViewProps) {
-  const product = DUMMY_PRODUCTS.find((p) => p.id === productId);
-  const addToCart = useAddToCart();
-  const [quantity, setQuantity] = useState(1);
+  const { data: product, isLoading } = useGetProduct(productId);
+  const { addToCart, cart } = useCommerce();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const { requireAuth } = useAuthRedirect();
-  const { isInCart } = useCommerce();
-  const [, navigate] = useSpaLocation();
+  const { animate } = useAddToCartAnimation();
+  const { createRipple } = useGoldRipple();
+  const [location, navigate] = useSpaLocation();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const inCart = product ? cart.some((item) => item.productId === product.id) : false;
+  const inWishlist = isInWishlist(productId);
+
+  const canonicalUrl = typeof window !== 'undefined' ? `${window.location.origin}/product/${productId}` : '';
+  const productImage = product?.images[0]?.url || '';
 
   useDynamicMetadata({
-    title: product ? `${product.name} - DoRaa Sangam House` : 'Product Details',
-    description: product?.description || 'View product details',
+    title: product?.name ? `${product.name} - DoRaa Sangam House` : undefined,
+    description: product?.description,
+    image: productImage,
+    canonicalUrl: canonicalUrl,
   });
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
   }, []);
 
-  if (!product) return null;
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!product) return;
+    
+    if (!requireAuth(navigate, location.pathname)) return;
 
-  const inCart = isInCart(product.id);
-
-  const handleAddToCart = () => {
-    if (!requireAuth(navigate, window.location.pathname)) {
-      onClose();
-      return;
-    }
-
-    // Check for duplicate
     if (inCart) {
       showDuplicateCartToast();
       return;
     }
 
-    addToCart.mutate(
-      { productId: product.id, quantity },
-      {
-        onSuccess: () => {
-          toast.success(`Added ${quantity} item(s) to cart!`);
-        },
-        onError: () => {
-          toast.error('Failed to add to cart');
-        },
-      }
-    );
+    createRipple(e);
+    addToCart(product.id, 1);
+    if (buttonRef.current) {
+      animate({ sourceElement: buttonRef.current });
+    }
+    toast.success('Added to cart', {
+      description: product.name,
+      duration: 2000,
+    });
   };
 
+  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!product) return;
+    
+    if (!requireAuth(navigate, location.pathname)) return;
+
+    if (inWishlist) {
+      showDuplicateFavoriteToast();
+      return;
+    }
+
+    createRipple(e);
+    toggleWishlist(productId);
+    toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist', {
+      duration: 2000,
+    });
+  };
+
+  if (!product && !isLoading) return null;
+
+  const images = product?.images.map((img) => img.url) || [];
+
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm overflow-y-auto">
-      <div className="container py-8 md:py-12">
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl overflow-y-auto">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
+        {/* Close button - mobile friendly */}
         <Button
           variant="ghost"
           size="icon"
-          className="fixed top-4 right-4 z-10 bg-card/80 backdrop-blur hover:bg-card"
+          className="fixed top-4 right-4 z-10 rounded-full bg-background/80 backdrop-blur-sm min-h-[44px] min-w-[44px]"
           onClick={onClose}
         >
-          <X className="h-6 w-6" />
+          <X className="w-5 h-5" />
         </Button>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 max-w-6xl mx-auto">
-          {/* Image Gallery with Zoom */}
-          <div className="space-y-4">
-            <ImageZoomGallery images={product.images} alt={product.name} />
-          </div>
-
-          {/* Product Details */}
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">{product.name}</h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">{product.description}</p>
+        {isLoading ? (
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
+            <div className="aspect-square shimmer-skeleton rounded-xl" />
+            <div className="space-y-4">
+              <div className="h-8 shimmer-skeleton rounded" />
+              <div className="h-4 shimmer-skeleton rounded w-2/3" />
+              <div className="h-20 shimmer-skeleton rounded" />
             </div>
-
-            <Separator />
-
-            <div className="flex items-baseline gap-4">
-              <span className="text-4xl font-serif font-bold text-accent">
-                ₹{product.price.toLocaleString()}
-              </span>
-              {product.stock < 10 && product.stock > 0 && (
-                <Badge variant="secondary" className="bg-accent/20 text-accent border-accent/30">
-                  Only {product.stock} left
-                </Badge>
+          </div>
+        ) : product ? (
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mt-12">
+            {/* Image gallery */}
+            <div>
+              {images.length > 1 ? (
+                <ImageZoomGallery images={images} alt={product.name} />
+              ) : (
+                <div className="aspect-square rounded-xl overflow-hidden bg-muted/20">
+                  <img
+                    src={images[0] || '/assets/generated/pearl-shimmer-bg.dim_1920x1080.png'}
+                    alt={product.name}
+                    loading="eager"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               )}
             </div>
 
-            <Separator />
-
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-medium">Quantity:</label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
-                  className="gold-pulse-glow"
-                >
-                  -
-                </Button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  disabled={quantity >= product.stock}
-                  className="gold-pulse-glow"
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-
-            <Button
-              size="lg"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all gold-pulse-glow"
-              onClick={handleAddToCart}
-              disabled={product.stock === 0 || addToCart.isPending}
-            >
-              {addToCart.isPending ? 'Adding...' : 'Add to Cart'}
-            </Button>
-
-            {/* Size Chart for Sarees */}
-            {product.sizes && product.sizes.length > 0 && (
-              <>
-                <Separator />
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">Size Chart</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left py-2 px-3">Size</th>
-                          <th className="text-left py-2 px-3">Bust</th>
-                          <th className="text-left py-2 px-3">Waist</th>
-                          <th className="text-left py-2 px-3">Length</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {product.sizes.map((size, index) => (
-                          <tr key={index} className="border-b border-border/50">
-                            <td className="py-2 px-3 font-medium">{size.size}</td>
-                            <td className="py-2 px-3">{size.bust}</td>
-                            <td className="py-2 px-3">{size.waist}</td>
-                            <td className="py-2 px-3">{size.length}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+            {/* Product details */}
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-serif text-foreground mb-3">{product.name}</h1>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-5 h-5 fill-accent text-accent" />
+                    <span className="text-base font-semibold">{product.rating.toFixed(1)}</span>
                   </div>
+                  <span className="text-sm text-muted-foreground">
+                    ({product.reviewCount > 1000 ? `${(product.reviewCount / 1000).toFixed(1)}k` : product.reviewCount}{' '}
+                    reviews)
+                  </span>
                 </div>
-              </>
-            )}
 
-            {/* Blouse Suggestions for Sarees */}
-            {product.blouseSuggestions && product.blouseSuggestions.length > 0 && (
-              <>
-                <Separator />
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">Pair with Blouse</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {product.blouseSuggestions.map((blouse, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-2 p-3 rounded-lg border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer"
-                      >
-                        <img
-                          src={blouse.imageUrl}
-                          alt={blouse.name}
-                          className="w-full aspect-square rounded object-cover"
-                          loading="lazy"
-                        />
-                        <div>
-                          <p className="text-sm font-medium">{blouse.name}</p>
-                          <p className="text-sm text-accent font-semibold">
-                            ₹{blouse.price.toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
+                {/* Badges */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {product.rating >= 4.5 && (
+                    <Badge className="bg-accent/90 text-accent-foreground">
+                      <Award className="w-3 h-3 mr-1" />
+                      Top Rated
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="border-primary/30 text-primary">
+                    <Truck className="w-3 h-3 mr-1" />
+                    Express Delivery
+                  </Badge>
+                  <Badge variant="outline" className="border-border/50">
+                    <Package className="w-3 h-3 mr-1" />
+                    {product.fabric}
+                  </Badge>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Pricing */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl font-bold" style={{ color: '#D4AF37' }}>
+                  ₹{product.price.toLocaleString()}
+                </span>
+                <span className="text-xl text-muted-foreground line-through">
+                  ₹{Math.round(product.price * 1.2).toLocaleString()}
+                </span>
+                <span className="text-lg font-semibold text-primary">(20% off)</span>
+              </div>
+
+              <Separator />
+
+              {/* Description */}
+              {product.description && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
+                  <p className="text-base text-muted-foreground leading-relaxed">{product.description}</p>
+                </div>
+              )}
+
+              {/* Fabric details */}
+              {product.fabric && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">Fabric</h2>
+                  <p className="text-base text-muted-foreground">{product.fabric}</p>
+                </div>
+              )}
+
+              {/* Color variants */}
+              {product.colors && product.colors.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">Available Colors</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {product.colors.map((color, idx) => (
+                      <Badge key={idx} variant="outline" className="border-primary/30 text-foreground/90">
+                        {color}
+                      </Badge>
                     ))}
                   </div>
                 </div>
-              </>
-            )}
+              )}
+
+              {/* Available sizes */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">Available Sizes</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size, idx) => (
+                      <Badge key={idx} variant="outline" className="border-primary/30 text-foreground/90">
+                        {size}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Blouse pairing */}
+              {product.blousePairing && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">Blouse Pairing Suggestion</h2>
+                  <p className="text-base text-muted-foreground leading-relaxed">{product.blousePairing}</p>
+                </div>
+              )}
+
+              <Separator />
+
+              {/* Action buttons - mobile friendly */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className={`action-icon-glow min-h-[44px] min-w-[44px] ${inWishlist ? 'bg-primary/10 border-primary/50 text-primary' : ''}`}
+                  onClick={handleWishlistToggle}
+                >
+                  <Heart className={`w-5 h-5 ${inWishlist ? 'fill-current' : ''}`} />
+                </Button>
+                <Button
+                  ref={buttonRef}
+                  size="lg"
+                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground action-icon-glow min-h-[44px]"
+                  onClick={handleAddToCart}
+                  disabled={inCart}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  {inCart ? 'Already in Cart' : 'Add to Cart'}
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </div>
   );

@@ -1,146 +1,154 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Upgrade /login phone field to international phone input with autodetect, per-country validation, and luxury theming",
+  "title": "Clean-boot reset + reliable post-login dashboard redirect with non-blank protected loading states",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Replace /login phone <Input> with an international phone input (flag + country name + dial code selector + number input) with searchable dropdown and at least 20 popular countries.",
+      "id": "REQ-17",
+      "summary": "Implement a full clean-boot reset that clears all storefront auth, cart, wishlist, and related persisted client state and returns the app to a first-run state.",
       "acceptanceCriteria": [
-        "In both Sign In and Sign Up tabs on /login, the phone step shows a country dropdown (flag + country name + dial code) and a number input side-by-side, responsive to small screens.",
-        "The country dropdown is searchable and allows changing the country manually.",
-        "At least 20 countries are available in the dropdown, including India (+91), United States (+1), United Kingdom (+44), and UAE (+971)."
+        "After invoking the reset flow, the following are cleared from browser storage: OTP session, flash message, return path, OTP lockout state/attempts, cart, and wishlist.",
+        "After invoking the reset flow, the user is logged out of Internet Identity in the app context (if previously logged in).",
+        "After invoking the reset flow, navigating to /dashboard redirects to /login and does not show a blank screen."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
+          "path": "frontend/src/utils/fullCleanBootReset.ts",
           "operation": "create",
-          "description": "Create a reusable InternationalPhoneInput wrapper component for /login that renders a left-side searchable country selector (flag + country name + dial code) and a right-side phone number input, designed to be used in both Sign In and Sign Up tabs. Use shadcn-ui primitives already present in the project (e.g., Button/Input/Label/Popover-like patterns) to compose UI without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/utils/phoneCountries.ts",
-          "operation": "create",
-          "description": "Add a curated country list (>= 20 entries) containing ISO country code, country name, dial code, and flag display metadata for the dropdown (must include India +91, United States +1, United Kingdom +44, UAE +971)."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Replace the existing plain phone number Input fields in both Sign In and Sign Up flows with the new InternationalPhoneInput component and wire its value into the existing /login OTP flow state. Use existing shadcn-ui components (Tabs/Card/Button/etc.) as-is; do not modify frontend/src/components/ui. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Auto-detect and pre-select the user’s country on /login load; default to India (+91) when detection fails or is unsupported.",
-      "acceptanceCriteria": [
-        "On first load of /login, the country selector is pre-populated automatically without user input.",
-        "If auto-detection cannot determine a supported country, the selector defaults to India (+91).",
-        "The selected flag and dial code are visible immediately on render."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/detectCountryFromLocale.ts",
-          "operation": "create",
-          "description": "Implement a browser-based country detection helper (e.g., Intl locale / navigator.language region hints) that maps to a supported country from the curated list and falls back to India (IN) when unknown/unsupported."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "On /login initial render, call the locale-based detection utility to set the initial selected country for the InternationalPhoneInput; ensure fallback to India (+91) and that the flag/dial code render immediately without user interaction."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Add per-country phone validation on blur and on Send OTP; block OTP sending when invalid; show inline error below the phone input group with required text and styling.",
-      "acceptanceCriteria": [
-        "Invalid numbers show an inline error directly below the phone input group (not only as a top-of-card alert).",
-        "Inline error uses pearl-blue text styling and a gold border treatment as specified, and uses the exact required sentence with the country name substituted.",
-        "Clicking 'Send OTP' does not proceed to the OTP step when the phone number is invalid for the selected country.",
-        "India selection validates as a 10-digit national number (with +91 country code applied in the stored/sent value)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/package.json",
-          "operation": "modify",
-          "description": "Add a robust phone parsing/validation dependency (e.g., libphonenumber-js) to support per-country validation and E.164 formatting entirely on the frontend."
-        },
-        {
-          "path": "frontend/src/utils/phoneValidation.ts",
-          "operation": "create",
-          "description": "Implement per-country phone validation utilities that (a) validate national number vs selected country rules and (b) produce an E.164 formatted number with leading '+'. Ensure India validates as a 10-digit national number."
-        },
-        {
-          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
-          "operation": "modify",
-          "description": "Wire blur-triggered validation behavior: when the phone number input loses focus, validate against the selected country and surface an inline error state to the parent. Inline error rendering must appear directly below the phone input group and read exactly: \"Please enter a valid [country] mobile number\" with [country] from the current selection. Use shadcn-ui primitives as needed without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Update Send OTP click handling to run the same per-country validation prior to generating OTP; prevent transition to the OTP step and display the inline error when invalid. Keep existing lockout/attempt logic intact."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Match the new phone input group styling to the existing dark luxury theme with pearl-blue accents and gold hover/glow; ensure responsive layout and preserve Send OTP button pulse/glow behavior.",
-      "acceptanceCriteria": [
-        "Country dropdown and phone input visually match the app’s dark luxury theme and do not introduce mismatched light styles.",
-        "Dropdown and interactive states show gold hover/glow effects; pearl-blue is used for primary accents.",
-        "Send OTP button continues to use the continuous pulse/glow styling already used on the page.",
-        "Mobile layout stacks or compresses gracefully with no clipping/overlap; the overall control remains full-width."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Apply layout and className adjustments around the new phone input group so it is fully responsive (full-width on mobile, no overflow) and so the existing Send OTP button retains its current gold-pulse-glow behavior."
-        },
-        {
-          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
-          "operation": "modify",
-          "description": "Implement dark-luxury themed styling for the dropdown + input: dark backgrounds, pearl-blue accent focus states, and gold hover/glow states on the dropdown trigger/list items. Use existing Tailwind tokens (primary/accent) and avoid introducing light default styles. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add small, globally-scoped utility classes (or refinements) needed for the phone input group’s gold hover/glow and inline validation treatment (pearl-blue text + gold border), ensuring consistency with existing luxury theme tokens and reduced-motion behavior."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Preserve existing OTP flow (send → simulated OTP → verify → /dashboard, attempts/lockout) while storing/sending the phone number in E.164 format with the selected dial code.",
-      "acceptanceCriteria": [
-        "The OTP step UI and verification logic continue to function as before (including attempt counting and 10-minute lockout).",
-        "The OTP session stores the full international phone number including '+' and the selected country dial code.",
-        "Changing country + number and resending OTP still transitions correctly to the OTP step when valid."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Refactor /login state so OTP generation/verification still behaves identically, but the stored session phone number is the validated E.164 value (leading '+', includes selected dial code). Ensure resend with changed country/number still works and continues to respect lockout/attempt handling."
+          "description": "Create a centralized full clean-boot reset utility that clears storefront-related localStorage/sessionStorage keys (OTP session, flash message, return path, OTP lockout/attempts, cart, wishlist, and other storefront-auth-related persisted keys such as local profile fallback), and supports clearing in-memory caches via injected callbacks (e.g., React Query clear, Internet Identity clear)."
         },
         {
           "path": "frontend/src/hooks/useStorefrontAuth.ts",
           "operation": "modify",
-          "description": "Confirm OTPSession creation continues to persist the phoneNumber string as provided by /login; update any naming/assumptions in comments/types if needed so it is explicitly treated as an international E.164-style value."
+          "description": "Add a small exported helper (or returned function) that enumerates/clears all storefront-auth storage keys used by this hook (OTP session, flash message, return path, lockout, attempts) so the full clean-boot reset can reliably wipe them without missing any keys."
+        },
+        {
+          "path": "frontend/src/commerce/CommerceProvider.tsx",
+          "operation": "modify",
+          "description": "Ensure the cart persistence key is clearly defined/centralized (and optionally exported) so the full clean-boot reset can reliably wipe the cart state and storage without relying on hardcoded strings."
+        },
+        {
+          "path": "frontend/src/hooks/useWishlist.ts",
+          "operation": "modify",
+          "description": "Ensure the wishlist persistence key is clearly defined/centralized (and optionally exported) so the full clean-boot reset can reliably wipe wishlist state and storage without relying on hardcoded strings."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Update dashboard logout handling to call the shared full clean-boot reset utility (including Internet Identity clear + React Query cache clear) so logout and emergency reset behave consistently."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Append an internal QA checklist for this change to frontend/RELEASE_NOTES.md.",
+      "id": "REQ-18",
+      "summary": "Add an emergency URL-only reset entry point that works even when auth/routing is broken and ends on the Sign In view.",
       "acceptanceCriteria": [
-        "Release notes include a short checklist covering the specified confirmations for manual verification."
+        "There is a documented, testable way to trigger the reset using only the browser URL (no prior navigation required).",
+        "After triggering the reset entry point, the app ends on /login?tab=signin (or equivalent Sign In state) and renders normally."
       ],
       "file_operations": [
         {
-          "path": "frontend/RELEASE_NOTES.md",
+          "path": "frontend/src/pages/ResetPage.tsx",
+          "operation": "create",
+          "description": "Create a minimal emergency reset view that runs the full clean-boot reset on mount and then navigates to /login?tab=signin; render a visible progress/loading UI while executing. Use shadcn-ui components (e.g., Card/Button/Alert) to ensure consistent UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Append a brief internal QA checklist covering: auto-detection with India fallback, dropdown shows flags/names/codes + searchable manual selection, per-country validation, no UI/hover/animation regressions (including Send OTP gold pulse/glow), and OTP flow end-to-end still works."
+          "description": "Wire a dedicated /reset route into the custom SPA routing flow so it can be triggered directly via browser URL; ensure it renders ResetPage without relying on prior navigation state."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Add a URL-triggered fallback reset mechanism (e.g., /login?reset=1) that runs the full clean-boot reset before showing the login UI, then ensures the final URL/state is /login?tab=signin."
+        },
+        {
+          "path": "frontend/STOREFRONT_LOGIN_VERIFICATION.md",
+          "operation": "modify",
+          "description": "Document the emergency reset entry points (e.g., /reset and /login?reset=1) and the expected post-reset landing behavior for manual verification."
+        }
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "summary": "Make OTP and Internet Identity login redirect consistently to /dashboard (or a safe stored return path), clearing the return path after navigation and preventing blank-screen first load issues.",
+      "acceptanceCriteria": [
+        "After successful OTP verification, the app navigates to /dashboard when no return path is set.",
+        "After successful Internet Identity login, the app navigates to /dashboard when no return path is set.",
+        "If a return path exists, it is used instead of /dashboard, and the return path is cleared after navigation.",
+        "A hard refresh immediately after login does not produce a blank screen and the user remains on a valid route."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/safeReturnPath.ts",
+          "operation": "create",
+          "description": "Create a small utility to validate and normalize a stored return path (must be an internal path, disallow /login, /reset, /admin*, and any non-path values) and provide a safe fallback (default /dashboard)."
+        },
+        {
+          "path": "frontend/src/components/auth/ProtectedRoute.tsx",
+          "operation": "modify",
+          "description": "Update return-path capture to store the full in-app path (pathname + search when appropriate) and to avoid storing unsafe routes; ensure redirect behavior is deterministic under first-load conditions."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Change post-success navigation for both OTP verification and Internet Identity login to go to a safe stored return path if present, otherwise /dashboard; ensure return path is cleared after successful navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "summary": "Prevent /dashboard first-load crashes by adding safe protected loading/error UI during auth restoration and while dashboard dependencies are not ready.",
+      "acceptanceCriteria": [
+        "Navigating to /dashboard never results in a permanently blank screen; if data is loading, a visible loading state is rendered.",
+        "If an error occurs while loading dashboard data, a visible error state is rendered with a recovery action (e.g., go to login, retry, or run reset).",
+        "ProtectedRoute does not leave the UI in a silent null-render state without any visible feedback during auth restoration."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/ProtectedRoute.tsx",
+          "operation": "modify",
+          "description": "Replace the current null-render behavior with a visible fallback UI while auth is restoring and during redirect; ensure the component renders a non-blank loading state instead of returning null. Use shadcn-ui components (e.g., Card/Alert/Button) for the fallback UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Harden dashboard rendering to handle loading and error states from profile/orders queries and other dependencies; add an explicit error screen area with recovery actions (retry, go to login, run reset) to ensure no blank screen even if a query fails."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Ensure dashboard-related queries expose stable loading/error behavior without throwing unhandled exceptions that could break initial dashboard render; keep query functions resilient and let UI render an explicit error state when failures occur."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure /dashboard route wiring remains stable on first load and hard refresh by keeping providers consistent and enabling the updated ProtectedRoute fallback UI to be visible during auth restoration."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Clear in-memory caches (including React Query) during reset and force clean navigation to login so the app works without manual refresh.",
+      "acceptanceCriteria": [
+        "After reset, React Query cache is cleared and subsequent page loads re-fetch data normally.",
+        "After reset, the login page works without requiring an additional manual refresh."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/fullCleanBootReset.ts",
+          "operation": "modify",
+          "description": "Extend the full clean-boot reset utility to accept and invoke React Query cache clearing (via QueryClient.clear), clear any relevant in-memory state via provided callbacks (e.g., cart/wishlist clears), and perform a forced clean navigation to /login?tab=signin."
+        },
+        {
+          "path": "frontend/src/pages/ResetPage.tsx",
+          "operation": "modify",
+          "description": "Wire ResetPage to clear React Query cache (useQueryClient), clear Internet Identity (useInternetIdentity().clear), clear commerce/wishlist in-memory state, then navigate to /login?tab=signin after the reset completes; keep a visible loading/progress UI during execution. Use shadcn-ui components for UI consistency. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Update the dashboard's logout/reset recovery actions to call the shared reset utility so React Query is cleared and navigation to /login?tab=signin is clean and immediate (no extra refresh needed)."
         }
       ]
     }

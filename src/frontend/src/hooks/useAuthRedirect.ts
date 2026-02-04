@@ -8,7 +8,7 @@ export function useAuthRedirect() {
     if (!isAuthenticated) {
       setFlashMessage('Please login to continue', 'info');
       setReturnPath(currentPath);
-      navigate('/login');
+      navigate('/login?tab=signin');
       return false;
     }
     return true;

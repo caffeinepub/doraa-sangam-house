@@ -125,26 +125,28 @@
         width: 100%;
     }
 
-    /* Enhanced Banarasi product card with mannequin effect */
-    .banarasi-product-card {
+    /* ========================================
+       PRODUCT CARD PREMIUM INTERACTIONS
+       Myntra/Flipkart style hover effects
+       ======================================== */
+
+    /* Product card hover with lift + scale(1.05) + pearl blue glow */
+    .product-card-hover {
         position: relative;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, border-color, box-shadow;
     }
 
-    .mannequin-frame {
-        position: relative;
+    .product-card-hover:hover {
+        transform: translateY(-8px) scale(1.05);
+        border-color: oklch(var(--primary) / 0.7);
+        box-shadow: 
+            0 0 40px rgba(127, 179, 213, 0.5),
+            0 0 80px rgba(127, 179, 213, 0.25),
+            0 16px 40px rgba(0, 0, 0, 0.4);
     }
 
-    .mannequin-frame::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.1) 100%);
-        pointer-events: none;
-        z-index: 5;
-        opacity: 0.6;
-    }
-
-    /* Fabric ripple hover effect */
+    /* Fabric ripple hover effect - subtle wave overlay on image */
     .fabric-ripple-hover {
         position: relative;
     }
@@ -154,15 +156,29 @@
         position: absolute;
         inset: 0;
         background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                                    oklch(var(--primary) / 0.2) 0%, 
-                                    transparent 50%);
+                                    oklch(var(--primary) / 0.25) 0%, 
+                                    oklch(var(--accent) / 0.1) 30%,
+                                    transparent 60%);
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s ease;
         pointer-events: none;
+        mix-blend-mode: screen;
     }
 
     .group:hover .fabric-ripple-hover::after {
         opacity: 1;
+        animation: fabricRippleWave 2s ease-in-out infinite;
+    }
+
+    @keyframes fabricRippleWave {
+        0%, 100% {
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+        }
+        50% {
+            transform: scale(1.1) translateY(-2px);
+            filter: blur(1px);
+        }
     }
 
     /* Micro-ripple layer under card */
@@ -170,7 +186,8 @@
         position: absolute;
         inset: -2px;
         background: radial-gradient(circle at 50% 100%, 
-                                    oklch(var(--primary) / 0.15) 0%, 
+                                    oklch(var(--primary) / 0.2) 0%, 
+                                    oklch(var(--accent) / 0.1) 40%,
                                     transparent 70%);
         opacity: 0;
         transition: opacity 0.4s ease;
@@ -180,35 +197,45 @@
 
     .group:hover .micro-ripple-layer {
         opacity: 1;
-        animation: microRipplePulse 2s ease-in-out infinite;
+        animation: microRipplePulse 2.5s ease-in-out infinite;
     }
 
     @keyframes microRipplePulse {
         0%, 100% {
             transform: scale(1);
-            opacity: 0.3;
+            opacity: 0.4;
         }
         50% {
-            transform: scale(1.05);
-            opacity: 0.6;
+            transform: scale(1.08);
+            opacity: 0.7;
         }
     }
 
-    /* Action icon glow effect */
+    /* Action icon glow effect - gold/pearl blue pulse on hover */
     .action-icon-glow {
         position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .action-icon-glow:hover {
-        animation: iconGlowPulse 1.5s ease-in-out infinite;
+    .action-icon-glow:hover:not(:disabled) {
+        box-shadow: 
+            0 0 20px oklch(var(--primary) / 0.6), 
+            0 0 40px oklch(var(--accent) / 0.4),
+            0 0 60px oklch(var(--primary) / 0.2);
+        animation: actionIconPulse 1.5s ease-in-out infinite;
     }
 
-    @keyframes iconGlowPulse {
+    @keyframes actionIconPulse {
         0%, 100% {
-            box-shadow: 0 0 10px oklch(var(--primary) / 0.4);
+            box-shadow: 
+                0 0 16px oklch(var(--primary) / 0.5), 
+                0 0 32px oklch(var(--accent) / 0.3);
         }
         50% {
-            box-shadow: 0 0 20px oklch(var(--accent) / 0.6), 0 0 30px oklch(var(--primary) / 0.4);
+            box-shadow: 
+                0 0 24px oklch(var(--primary) / 0.7), 
+                0 0 48px oklch(var(--accent) / 0.5),
+                0 0 72px oklch(var(--primary) / 0.3);
         }
     }
 
@@ -671,15 +698,441 @@
         }
     }
 
-    /* Premium toast styling */
+    /* ========================================
+       ADMIN PREMIUM BUTTON & INTERACTIVE STYLES
+       Pearl blue base + gold glow hover
+       ======================================== */
+
+    .admin-primary-button {
+        background-color: oklch(var(--primary));
+        color: oklch(var(--primary-foreground));
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 12px oklch(var(--primary) / 0.3);
+    }
+
+    .admin-primary-button:hover:not(:disabled) {
+        background-color: oklch(var(--primary) / 0.9);
+        box-shadow: 
+            0 0 24px oklch(var(--accent) / 0.6),
+            0 0 48px oklch(var(--accent) / 0.3),
+            0 0 72px oklch(var(--primary) / 0.2);
+        transform: translateY(-2px);
+    }
+
+    .admin-primary-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .admin-interactive-glow {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .admin-interactive-glow:hover:not(:disabled) {
+        box-shadow: 
+            0 0 16px oklch(var(--accent) / 0.4),
+            0 0 32px oklch(var(--accent) / 0.2);
+    }
+
+    /* ========================================
+       DASHBOARD PREMIUM TABS & INTERACTIONS
+       Curved, animated, unique styling
+       ======================================== */
+
+    /* Dashboard scope wrapper */
+    .dashboard-scope {
+        position: relative;
+    }
+
+    /* Dashboard route transition */
+    .dashboard-route-transition {
+        animation: dashboardRouteSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes dashboardRouteSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Dashboard tabs panel with slide-in animation */
+    .dashboard-tabs-panel {
+        animation: dashboardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes dashboardSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Dashboard tabs list - vertical side panel on desktop */
+    .dashboard-tabs-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+        background-color: oklch(var(--card) / 0.3);
+        backdrop-filter: blur(12px);
+        padding: 1rem;
+        border-radius: 1.5rem;
+        border: 1px solid oklch(var(--border) / 0.3);
+        position: relative;
+    }
+
+    @media (max-width: 1023px) {
+        .dashboard-tabs-list {
+            flex-direction: row;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .dashboard-tabs-list::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    /* Dashboard tab trigger with curved premium styling */
+    .dashboard-tab-trigger {
+        position: relative;
+        padding: 1rem 1.5rem;
+        border-radius: 1.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: oklch(var(--muted) / 0.1);
+        color: oklch(var(--muted-foreground));
+        border: 1px solid transparent;
+        overflow: visible;
+        transform-origin: center;
+        will-change: transform, background-color, border-color;
+        white-space: nowrap;
+        min-width: fit-content;
+    }
+
+    .dashboard-tab-trigger:hover {
+        background-color: oklch(var(--primary) / 0.15);
+        color: oklch(var(--primary));
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 
+            0 0 20px oklch(var(--primary) / 0.3),
+            0 0 40px oklch(var(--primary) / 0.15);
+    }
+
+    /* Shimmer particles on hover */
+    .dashboard-tab-trigger:hover::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        background: radial-gradient(
+            circle at 50% 50%,
+            oklch(var(--accent) / 0.2) 0%,
+            oklch(var(--primary) / 0.1) 40%,
+            transparent 70%
+        );
+        border-radius: inherit;
+        pointer-events: none;
+        animation: shimmerParticles 1.5s ease-in-out infinite;
+        z-index: -1;
+    }
+
+    @keyframes shimmerParticles {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+    }
+
+    /* Active tab styling with gold wave underline */
+    .dashboard-tab-trigger[data-state="active"] {
+        background-color: oklch(var(--primary) / 0.25);
+        color: oklch(var(--primary));
+        border-color: oklch(var(--primary) / 0.5);
+        box-shadow: 
+            0 0 24px oklch(var(--primary) / 0.4),
+            0 0 48px oklch(var(--primary) / 0.2);
+    }
+
+    /* Gold wave underline for active tab */
+    .dashboard-tab-trigger[data-state="active"]::after {
+        content: '';
+        position: absolute;
+        bottom: 8px;
+        left: 15%;
+        right: 15%;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            oklch(var(--accent)) 50%,
+            transparent 100%
+        );
+        border-radius: 2px;
+        animation: goldWaveFlow 2s ease-in-out infinite;
+        box-shadow: 
+            0 0 8px oklch(var(--accent) / 0.6),
+            0 0 16px oklch(var(--accent) / 0.4);
+    }
+
+    @keyframes goldWaveFlow {
+        0%, 100% {
+            transform: scaleX(0.8);
+            opacity: 0.6;
+        }
+        50% {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+    }
+
+    /* Dashboard save button with pearl blue bg and gold glow */
+    .dashboard-save-button {
+        background-color: oklch(var(--primary));
+        color: oklch(var(--primary-foreground));
+        border-radius: 1.875rem;
+        padding: 0.75rem 2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+        animation: goldPulseGlow 2s ease-in-out infinite;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .dashboard-save-button:hover {
+        background-color: oklch(var(--primary) / 0.9);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 0 24px oklch(var(--accent) / 0.5),
+            0 0 48px oklch(var(--accent) / 0.3),
+            0 0 72px oklch(var(--primary) / 0.2);
+    }
+
+    .dashboard-save-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        animation: none;
+    }
+
+    /* Premium spinner for save button */
+    .dashboard-save-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid oklch(var(--accent) / 0.3);
+        border-top-color: oklch(var(--accent));
+        border-radius: 50%;
+        animation: dashboardSpinnerRotate 0.6s linear infinite;
+    }
+
+    @keyframes dashboardSpinnerRotate {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Dashboard interactive elements glow */
+    .dashboard-scope .dashboard-interactive-glow {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dashboard-scope .dashboard-interactive-glow:hover,
+    .dashboard-scope .dashboard-interactive-glow:focus-visible {
+        box-shadow: 
+            0 0 16px oklch(var(--accent) / 0.4),
+            0 0 32px oklch(var(--accent) / 0.2);
+    }
+
+    /* ========================================
+       CART & CHECKOUT GOLDEN GLOW BUTTONS
+       Phase 5: Consistent gold hover/glow
+       ======================================== */
+
+    .cart-action-glow {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cart-action-glow:hover:not(:disabled) {
+        box-shadow: 
+            0 0 16px oklch(var(--accent) / 0.5),
+            0 0 32px oklch(var(--accent) / 0.3);
+        border-color: oklch(var(--accent) / 0.6);
+    }
+
+    .checkout-button-glow {
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: goldPulseGlow 2s ease-in-out infinite;
+    }
+
+    .checkout-button-glow:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 0 24px oklch(var(--accent) / 0.6),
+            0 0 48px oklch(var(--accent) / 0.4),
+            0 0 72px oklch(var(--accent) / 0.2);
+    }
+
+    .checkout-button-glow:disabled {
+        animation: none;
+        opacity: 0.7;
+    }
+
+    /* ========================================
+       TRENDING CATEGORIES SECTION
+       Myntra/Hotstar style carousel
+       ======================================== */
+
+    /* Trending shimmer ambience animation */
+    .trending-shimmer-ambience {
+        animation: trendingShimmer 8s ease-in-out infinite;
+    }
+
+    @keyframes trendingShimmer {
+        0%, 100% {
+            opacity: 0.1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.2;
+            transform: scale(1.05);
+        }
+    }
+
+    /* Horizontal scrollable carousel */
+    .trending-categories-carousel {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: oklch(var(--primary) / 0.3) transparent;
+        padding-bottom: 1rem;
+    }
+
+    .trending-categories-carousel::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .trending-categories-carousel::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .trending-categories-carousel::-webkit-scrollbar-thumb {
+        background: oklch(var(--primary) / 0.3);
+        border-radius: 4px;
+    }
+
+    .trending-categories-carousel::-webkit-scrollbar-thumb:hover {
+        background: oklch(var(--primary) / 0.5);
+    }
+
+    /* Category card styling */
+    .trending-category-card {
+        flex: 0 0 auto;
+        width: 320px;
+        border-radius: 28px;
+        overflow: hidden;
+        background-color: oklch(var(--card));
+        border: 1px solid oklch(var(--border) / 0.4);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        animation: trendingCardReveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes trendingCardReveal {
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .trending-category-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: oklch(var(--primary) / 0.6);
+        box-shadow: 
+            0 0 32px rgba(127, 179, 213, 0.4),
+            0 0 64px rgba(127, 179, 213, 0.2),
+            0 12px 32px rgba(212, 175, 55, 0.25);
+    }
+
+    /* Card hover glow effect */
+    .trending-card-glow {
+        background: radial-gradient(
+            circle at center,
+            oklch(var(--accent) / 0.15) 0%,
+            oklch(var(--primary) / 0.1) 50%,
+            transparent 100%
+        );
+    }
+
+    /* Mobile responsive stacking */
+    @media (max-width: 640px) {
+        .trending-category-card {
+            width: 280px;
+        }
+    }
+
+    /* Premium toast styling with fade animation */
     .premium-toast {
         backdrop-filter: blur(12px);
         border-radius: 0.75rem;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .premium-toast-fade {
+        animation: premiumToastFadeOut 0.5s ease-out 2.5s forwards;
+    }
+
+    @keyframes premiumToastFadeOut {
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
     }
 
     /* Prefers reduced motion overrides */
     @media (prefers-reduced-motion: reduce) {
+        .product-card-hover:hover {
+            transform: translateY(-4px) scale(1);
+        }
+
+        .fabric-ripple-hover::after {
+            animation: none;
+        }
+
+        .micro-ripple-layer {
+            animation: none;
+        }
+
+        .action-icon-glow:hover:not(:disabled) {
+            animation: none;
+        }
+
         .premium-card-hover:hover {
             transform: translateY(-4px) rotateX(0deg) rotateY(0deg);
         }
@@ -726,12 +1179,6 @@
             animation: none;
         }
 
-        .fabric-ripple-hover::after,
-        .micro-ripple-layer,
-        .action-icon-glow:hover {
-            animation: none;
-        }
-
         /* Disable roller animations */
         .roller-letter-active {
             animation: none !important;
@@ -756,6 +1203,67 @@
             animation: none;
         }
 
+        .checkout-button-glow {
+            animation: none;
+        }
+
+        .checkout-button-glow:hover:not(:disabled) {
+            transform: none;
+        }
+
+        /* Disable dashboard animations */
+        .dashboard-route-transition {
+            animation: none;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .dashboard-tabs-panel {
+            animation: none;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .dashboard-tab-trigger:hover {
+            transform: none;
+        }
+
+        .dashboard-tab-trigger[data-state="active"]::after {
+            animation: none;
+        }
+
+        .dashboard-tab-trigger:hover::before {
+            animation: none;
+        }
+
+        .dashboard-save-button {
+            animation: none;
+        }
+
+        .dashboard-save-button:hover {
+            transform: none;
+        }
+
+        /* Disable trending animations */
+        .trending-shimmer-ambience {
+            animation: none;
+            opacity: 0.15;
+        }
+
+        .trending-category-card {
+            animation: none;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .trending-category-card:hover {
+            transform: translateY(-4px) scale(1);
+        }
+
+        .premium-toast-fade {
+            animation: none;
+        }
+
         * {
             will-change: auto !important;
         }
@@ -763,8 +1271,24 @@
 
     /* Touch device hover fallbacks */
     @media (hover: none) {
+        .product-card-hover:hover {
+            transform: translateY(-4px) scale(1);
+        }
+
         .premium-card-hover:hover {
             transform: translateY(-4px);
+        }
+
+        .dashboard-tab-trigger:hover {
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        .trending-category-card:hover {
+            transform: translateY(-4px) scale(1);
+        }
+
+        .checkout-button-glow:hover:not(:disabled) {
+            transform: none;
         }
     }
 }

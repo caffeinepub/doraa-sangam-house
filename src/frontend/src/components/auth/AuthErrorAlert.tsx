@@ -9,6 +9,11 @@ interface AuthErrorAlertProps {
 export default function AuthErrorAlert({ error, className }: AuthErrorAlertProps) {
   if (!error) return null;
 
+  // Suppress "already authenticated" errors
+  if (error.message?.includes('already authenticated')) {
+    return null;
+  }
+
   return (
     <Alert variant="destructive" className={className}>
       <AlertCircle className="h-4 w-4" />

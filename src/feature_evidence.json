@@ -2,12 +2,34 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-replace-the-existing-plain-phone-number-input-on-the-login-page-with-an-advanced-international-phone-input-that-has-1-a-left-side-country-selector-showing-flag-country-name-dial-code-and-2-a-right-side-phone-number-input-the-dropdown-must-include-at-least-20-popular-countries-including-india-91-united-states-1-united-kingdom-44-uae-971-and-support-searching-to-manually-change-the-country",
-      "featureTitle": "Replace the existing plain phone number <Input> on the /login page with an advanced international phone input that has: (1) a left-side country selector showing flag + country name + dial code, and (2) a right-side phone number input. The dropdown must include at least 20 popular countries (including India +91, United States +1, United Kingdom +44, UAE +971) and support searching to manually change the country.",
+      "featureId": "feature-implement-a-full-clean-boot-reset-flow-that-wipes-all-client-side-persisted-state-auth-session-cart-wishlist-and-any-related-local-session-storage-used-by-storefront-auth-and-returns-the-app-to-a-clean-first-run-state",
+      "featureTitle": "Implement a “full clean boot” reset flow that wipes all client-side persisted state (auth session, cart, wishlist, and any related local/session storage used by storefront auth) and returns the app to a clean first-run state.",
       "files": [
-        "frontend/src/components/auth/InternationalPhoneInput.tsx",
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/utils/fullCleanBootReset.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-explicit-emergency-reset-entry-point-that-a-user-can-trigger-even-when-the-app-is-in-a-broken-auth-routing-state-e-g-a-dedicated-route-like-reset-or-a-login-query-flag-which-executes-the-full-clean-boot-reset-and-then-navigates-to-the-sign-in-view",
+      "featureTitle": "Add an explicit emergency reset entry point that a user can trigger even when the app is in a broken auth/routing state (e.g., a dedicated route like /reset or a /login query flag) which executes the full clean boot reset and then navigates to the Sign In view.",
+      "files": [
+        "frontend/STOREFRONT_LOGIN_VERIFICATION.md",
+        "frontend/src/App.tsx",
         "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/utils/phoneCountries.ts"
+        "frontend/src/pages/ResetPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -15,19 +37,21 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-18"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-auto-detect-and-pre-select-the-user-s-country-on-login-page-load-using-a-browser-based-approach-e-g-intl-locale-hints-if-detection-fails-or-produces-an-unsupported-unknown-country-default-to-india-91-the-selected-flag-dial-code-must-be-shown-immediately-without-user-interaction",
-      "featureTitle": "Auto-detect and pre-select the user's country on /login page load using a browser-based approach (e.g., Intl / locale hints). If detection fails or produces an unsupported/unknown country, default to India (+91). The selected flag + dial code must be shown immediately without user interaction.",
+      "featureId": "feature-fix-the-post-login-redirect-behavior-so-that-successful-login-otp-flow-and-internet-identity-flow-navigates-to-dashboard-or-to-a-stored-return-path-if-it-exists-and-is-safe-and-ensure-the-redirect-happens-consistently-without-a-blank-screen-on-first-load",
+      "featureTitle": "Fix the post-login redirect behavior so that successful login (OTP flow and Internet Identity flow) navigates to /dashboard (or to a stored return path if it exists and is safe), and ensure the redirect happens consistently without a blank screen on first load.",
       "files": [
+        "frontend/src/components/auth/ProtectedRoute.tsx",
         "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/utils/detectCountryFromLocale.ts"
+        "frontend/src/utils/safeReturnPath.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -35,20 +59,21 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-19"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-per-country-phone-validation-triggered-on-blur-of-the-phone-field-and-on-send-otp-click-validation-must-check-that-the-number-matches-the-selected-country-s-expected-length-format-e-g-india-must-validate-as-a-10-digit-national-number-and-block-otp-sending-when-invalid-display-an-inline-error-message-directly-below-the-phone-input-group-with-exact-text-please-enter-a-valid-country-mobile-number-country-name-based-on-current-selection",
-      "featureTitle": "Implement per-country phone validation triggered on blur of the phone field and on 'Send OTP' click. Validation must check that the number matches the selected country's expected length/format (e.g., India must validate as a 10-digit national number) and block OTP sending when invalid. Display an inline error message directly below the phone input group with exact text: \"Please enter a valid [country] mobile number\" (country name based on current selection).",
+      "featureId": "feature-resolve-the-dashboard-route-first-load-crash-by-making-dashboard-render-safely-when-auth-state-is-restoring-and-when-backend-query-dependencies-are-not-yet-ready-show-a-non-blank-loading-or-fallback-ui-instead-of-rendering-nothing-or-crashing",
+      "featureTitle": "Resolve the dashboard route first-load crash by making /dashboard render safely when auth state is restoring and when backend/query dependencies are not yet ready; show a non-blank loading or fallback UI instead of rendering nothing or crashing.",
       "files": [
-        "frontend/src/components/auth/InternationalPhoneInput.tsx",
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/utils/phoneValidation.ts"
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/ProtectedRoute.tsx",
+        "frontend/src/pages/DashboardPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -56,19 +81,21 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-20"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-login-page-styling-for-the-new-phone-input-so-it-matches-the-existing-dark-luxury-theme-black-dark-backgrounds-pearl-blue-7fb3d5-accents-and-gold-d4af37-hover-glow-on-the-dropdown-and-send-otp-button-ensure-the-send-otp-button-retains-the-existing-continuous-gold-pulse-glow-behavior-and-the-phone-input-group-is-fully-responsive-full-width-on-mobile-no-overflow",
-      "featureTitle": "Update /login page styling for the new phone input so it matches the existing dark luxury theme: black/dark backgrounds, pearl-blue (#7FB3D5) accents, and gold (#D4AF37) hover/glow on the dropdown and Send OTP button. Ensure the Send OTP button retains the existing continuous gold pulse/glow behavior and the phone input group is fully responsive (full-width on mobile, no overflow).",
+      "featureId": "feature-ensure-the-reset-flow-also-clears-any-in-memory-caches-that-can-preserve-broken-state-across-navigation-including-react-query-cache-and-then-forces-a-clean-navigation-to-the-login-screen",
+      "featureTitle": "Ensure the reset flow also clears any in-memory caches that can preserve broken state across navigation (including React Query cache) and then forces a clean navigation to the login screen.",
       "files": [
-        "frontend/src/components/auth/InternationalPhoneInput.tsx",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/pages/DashboardPage.tsx",
+        "frontend/src/pages/ResetPage.tsx",
+        "frontend/src/utils/fullCleanBootReset.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -76,49 +103,11 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-keep-the-existing-otp-login-flow-behavior-intact-send-otp-simulated-otp-alert-console-otp-input-verify-success-navigates-to-dashboard-lockout-attempt-handling-must-continue-to-work-the-stored-phone-number-used-by-the-otp-session-must-include-the-selected-international-dial-code-e-164-style-with-leading",
-      "featureTitle": "Keep the existing OTP login flow behavior intact: Send OTP → simulated OTP alert/console → OTP input → verify → success navigates to /dashboard; lockout/attempt handling must continue to work. The stored phone number used by the OTP session must include the selected international dial code (E.164-style with leading '+').",
-      "files": [
-        "frontend/src/hooks/useStorefrontAuth.ts",
-        "frontend/src/pages/LoginPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-brief-internal-qa-checklist-for-this-change-can-be-appended-to-frontend-release-notes-md-for-the-next-version-that-confirms-auto-detection-fallback-to-india-works-dropdown-shows-flags-names-codes-and-manual-selection-works-validation-is-per-country-no-ui-hover-animation-regressions-and-the-otp-flow-still-works-end-to-end",
-      "featureTitle": "Add a brief internal QA checklist for this change (can be appended to frontend/RELEASE_NOTES.md for the next version) that confirms: auto-detection fallback to India works, dropdown shows flags/names/codes and manual selection works, validation is per-country, no UI/hover/animation regressions, and the OTP flow still works end-to-end.",
-      "files": [
-        "frontend/RELEASE_NOTES.md"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
+        "REQ-21"
       ],
       "confidence": "high"
     }

@@ -1,89 +1,57 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T11:37:26.098Z",
-  "summary": "Implemented a new InternationalPhoneInput with searchable country picker, added locale-based auto-detection (fallback to India), added country list (29) and validation utilities, updated LoginPage to use them, and added release notes with QA checklist. However, some AC details (showing country name in the selector button, exact inline error styling/placement, and mobile responsiveness) are not fully evidenced in the truncated diff. Several unrelated app-wide UI changes also appear in the diff summaries.",
+  "generatedAt": "2026-02-04T22:45:16.779Z",
+  "summary": "Diff adds a full clean-boot reset utility, two emergency reset entry points (/reset route and /login?reset=1), safe return-path validation, and improves ProtectedRoute with visible loading/redirect UI. However, the diff evidence is insufficient to confirm the required post-login redirect fixes for both OTP and Internet Identity flows, and only partially shows dashboard crash/error-handling changes due to truncation. Several unrelated premium UI/theme/background and product UI changes appear outside the requested scope.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Country selector on /login must show flag + country name + dial code (visible in the left-side selector).",
-      "reason": "In the visible portion of InternationalPhoneInput, the selector button renders flag and dial code but does not show the country name; the dropdown content is truncated so it’s unclear if the name is shown there, and the requirement specifically calls for flag + country name + dial code in the selector.",
+      "id": "REQ-19",
+      "requirement": "Fix post-login redirect behavior so successful login (OTP and Internet Identity) navigates to /dashboard (or a stored safe return path) consistently; clear return path after navigation; hard refresh after login should not blank screen.",
+      "reason": "The diff shows return-path safety utilities and ProtectedRoute storing a safe return path, but does not show the actual success handlers for OTP verification or Internet Identity login being updated to navigate to /dashboard / safe return path and then clear it. LoginPage and DashboardPage are truncated before any successful login navigation logic is visible.",
       "evidence": [
-        "frontend/src/components/auth/InternationalPhoneInput.tsx"
+        "frontend/src/pages/LoginPage.tsx (truncated; only shows reset param handling and imports getSafeReturnPath)",
+        "frontend/src/utils/safeReturnPath.ts",
+        "frontend/src/components/auth/ProtectedRoute.tsx",
+        "frontend/src/pages/DashboardPage.tsx (truncated; shows getReturnPath/clearReturnPath imported/used but not the navigation flow)"
       ]
     },
     {
-      "id": "REQ-3",
-      "requirement": "Inline error message directly below the phone input group with pearl-blue text styling and a gold border treatment (exact sentence text).",
-      "reason": "The validation utility returns the exact required sentence, but the diff does not clearly show the error being rendered directly below the phone input group, nor the specified pearl-blue text + gold border styling. The only visible styling hook is `error && \"border-accent\"`, which does not evidence the required gold border treatment.",
+      "id": "REQ-20",
+      "requirement": "Resolve dashboard first-load crash: /dashboard must render safely during auth restoration and when backend/query dependencies aren’t ready; show visible loading/fallback; show visible error state with recovery action; ProtectedRoute must not silently null-render.",
+      "reason": "ProtectedRoute is updated to show visible loading and redirecting UI, but the DashboardPage changes required for safe rendering/loading/error recovery are not fully verifiable from the truncated content. While ordersError/ordersLoading variables appear, the diff summary does not show a dedicated visible error UI with recovery actions (retry/go to login/reset) or an explicit non-blank fallback for all critical dependencies on first load.",
       "evidence": [
-        "frontend/src/utils/phoneValidation.ts",
-        "frontend/src/components/auth/InternationalPhoneInput.tsx",
-        "frontend/src/pages/LoginPage.tsx"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Phone input group must be fully responsive (full-width on mobile, no overflow) while matching dark luxury theme; dropdown and interactive states show gold hover/glow effects; Send OTP keeps continuous gold pulse/glow.",
-      "reason": "Some gold hover/glow styling is evidenced on the country selector button, but responsiveness is not evidenced (the selector uses a fixed width `w-[180px]` with a simple `flex` layout in the shown snippet). The diff excerpt also doesn’t clearly evidence that the Send OTP button retains the existing continuous gold pulse/glow class.",
-      "evidence": [
-        "frontend/src/components/auth/InternationalPhoneInput.tsx",
-        "frontend/src/pages/LoginPage.tsx"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "OTP session must store the full international phone number including '+' and selected dial code (E.164) for the OTP session.",
-      "reason": "`validatePhoneNumber` produces an E.164 value and `useStorefrontAuth` documents that OTPSession phoneNumber is E.164, but the truncated LoginPage diff does not show where `createOTPSession` is called with `validation.e164` (or equivalent), so it’s not fully evidenced that the stored OTP session actually uses the dial code.",
-      "evidence": [
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/hooks/useStorefrontAuth.ts",
-        "frontend/src/utils/phoneValidation.ts"
+        "frontend/src/components/auth/ProtectedRoute.tsx",
+        "frontend/src/pages/DashboardPage.tsx (truncated; shows ordersLoading/ordersError variables but not the rendered fallback/error UI)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Persistent OceanBackground rendered as a fixed layer across all routes including admin areas (app-wide background behavior change).",
-      "reason": "BuildRequest constrains changes to the /login experience and related supporting components/utilities; this is an unrelated app-wide change per file summary.",
+      "description": "Large set of premium/luxury UI updates (header/footer redesign, product card visual overhaul, background animation changes, Tailwind theme/animation additions) unrelated to the reset/auth blank-screen requirements.",
+      "reason": "BuildRequest focuses on clean-boot reset, emergency reset entry points, redirect reliability, and dashboard safe rendering. The diff summary indicates substantial unrelated visual/UX changes across many components.",
       "evidence": [
-        "frontend/src/App.tsx (via frontend-file-summaries.txt)"
+        "frontend-file-summaries.txt (Header.tsx, Footer.tsx, ProductCard.tsx, OceanBackground.tsx, SangamBackground.tsx, index.css, tailwind.config.js, ProductsPage.tsx)"
       ]
     },
     {
-      "description": "Major new/updated canvas background animation components (e.g., SangamBackground, OceanBackground enhancements).",
-      "reason": "Not requested; outside the /login-focused scope.",
+      "description": "Release notes update claiming broader Phase 4 acceptance criteria confirmation unrelated to the requested fixes.",
+      "reason": "BuildRequest did not request updating RELEASE_NOTES.md or documenting unrelated phases; the diff summary includes a release notes modification.",
       "evidence": [
-        "frontend/src/components/SangamBackground.tsx (via frontend-file-summaries.txt)",
-        "frontend/src/components/OceanBackground.tsx (via frontend-file-summaries.txt)"
-      ]
-    },
-    {
-      "description": "Wishlist/cart duplicate-prevention behavior changes in ProductCard.",
-      "reason": "Explicit non-goal: do not redesign/alter cart/wishlist/checkout behavior; this is unrelated to /login phone input requirements.",
-      "evidence": [
-        "frontend/src/components/ProductCard.tsx (via frontend-file-summaries.txt)"
-      ]
-    },
-    {
-      "description": "Release notes claim 'Added libphonenumber-js for robust phone validation'.",
-      "reason": "Diff evidence for validation shows a custom digit-count rules implementation; no diff evidence shows libphonenumber-js usage/imports in the provided code snippets, so the release note appears to add an unrequested/unevidenced dependency claim.",
-      "evidence": [
-        "frontend/RELEASE_NOTES.md",
-        "frontend/src/utils/phoneValidation.ts"
+        "frontend-file-summaries.txt (frontend/RELEASE_NOTES.md)"
       ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/RELEASE_NOTES.md",
-    "frontend/src/components/auth/InternationalPhoneInput.tsx",
-    "frontend/src/hooks/useStorefrontAuth.ts",
+    "frontend/STOREFRONT_LOGIN_VERIFICATION.md",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/ProtectedRoute.tsx",
+    "frontend/src/pages/DashboardPage.tsx",
     "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/utils/detectCountryFromLocale.ts",
-    "frontend/src/utils/phoneCountries.ts",
-    "frontend/src/utils/phoneValidation.ts",
+    "frontend/src/pages/ResetPage.tsx",
+    "frontend/src/utils/fullCleanBootReset.ts",
+    "frontend/src/utils/safeReturnPath.ts",
     "project_state.json"
   ]
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { DummyProduct } from '../../data/dummyProducts';
 import { BanarasiCategory } from '../../data/banarasiCategories';
 import ProductCard from '../ProductCard';
 import {
@@ -16,7 +15,7 @@ import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion';
 
 interface BanarasiCollectionSectionProps {
   category: BanarasiCategory;
-  products: DummyProduct[];
+  products: any[];
   index: number;
   onQuickView: (productId: string) => void;
   onViewDetail: (productId: string) => void;
@@ -69,6 +68,9 @@ export function BanarasiCollectionSection({
       api.off('pointerDown', stopAutoplay);
     };
   }, [api, prefersReducedMotion]);
+
+  // Don't render if no products
+  if (products.length === 0) return null;
 
   return (
     <section

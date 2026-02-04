@@ -1,0 +1,11 @@
+# DoRaa Sangam House - Robots.txt
+User-agent: *
+Allow: /
+Allow: /product/*
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /dashboard
+Disallow: /login
+
+# Sitemap
+Sitemap: https://doraasangamhouse.com/sitemap.xml

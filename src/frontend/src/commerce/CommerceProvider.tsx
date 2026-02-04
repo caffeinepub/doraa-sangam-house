@@ -1,6 +1,5 @@
 import React, { createContext, useMemo, useCallback } from 'react';
 import { useLocalStorageState } from '../hooks/useLocalStorageState';
-import { DUMMY_PRODUCTS } from '../data/dummyProducts';
 
 export interface CartItem {
   productId: string;
@@ -19,6 +18,20 @@ export interface CommerceContextType {
 }
 
 export const CommerceContext = createContext<CommerceContextType | null>(null);
+
+const STORAGE_KEY = 'doraa-admin-products';
+
+function getStoredProducts() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Failed to load products:', error);
+  }
+  return [];
+}
 
 export function CommerceProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useLocalStorageState<CartItem[]>('doraa-cart', []);
@@ -69,9 +82,13 @@ export function CommerceProvider({ children }: { children: React.ReactNode }) {
   }, [setCart]);
 
   const cartTotal = useMemo(() => {
+    const products = getStoredProducts();
     return cart.reduce((total, item) => {
-      const product = DUMMY_PRODUCTS.find((p) => p.id === item.productId);
-      return total + (product?.price || 0) * item.quantity;
+      const product = products.find((p: any) => p.id === item.productId);
+      if (product) {
+        return total + product.price * item.quantity;
+      }
+      return total;
     }, 0);
   }, [cart]);
 
