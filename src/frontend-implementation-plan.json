@@ -1,154 +1,93 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Clean-boot reset + reliable post-login dashboard redirect with non-blank protected loading states",
+  "title": "Phase 7 (Minimal): Basic global error toasts (top-right, gold border, pearl text, 4s fade)",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Implement a full clean-boot reset that clears all storefront auth, cart, wishlist, and related persisted client state and returns the app to a first-run state.",
+      "id": "REQ-11",
+      "summary": "Add a minimal reusable error-toast helper that renders a top-right toast with gold border, pearl text (#F5F5F0), and auto-dismiss/fade after ~4 seconds using an English default message format.",
       "acceptanceCriteria": [
-        "After invoking the reset flow, the following are cleared from browser storage: OTP session, flash message, return path, OTP lockout state/attempts, cart, and wishlist.",
-        "After invoking the reset flow, the user is logged out of Internet Identity in the app context (if previously logged in).",
-        "After invoking the reset flow, navigating to /dashboard redirects to /login and does not show a blank screen."
+        "Triggering the helper displays a toast in the top-right corner (existing Toaster placement is preserved).",
+        "Toast text color is exactly #F5F5F0 and the toast has a gold border.",
+        "Toast fades out and is fully dismissed after ~4 seconds."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/fullCleanBootReset.ts",
+          "path": "frontend/src/utils/errorToasts.ts",
           "operation": "create",
-          "description": "Create a centralized full clean-boot reset utility that clears storefront-related localStorage/sessionStorage keys (OTP session, flash message, return path, OTP lockout/attempts, cart, wishlist, and other storefront-auth-related persisted keys such as local profile fallback), and supports clearing in-memory caches via injected callbacks (e.g., React Query clear, Internet Identity clear)."
+          "description": "Create a minimal reusable helper (e.g., showBasicErrorToast) built on the existing toast infrastructure (sonner) to display a top-right error toast with a gold border, pearl off-white text color #F5F5F0, and 4s auto-dismiss with fade; include a default message like \"Error: Please try again\"."
         },
         {
-          "path": "frontend/src/hooks/useStorefrontAuth.ts",
+          "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add a small exported helper (or returned function) that enumerates/clears all storefront-auth storage keys used by this hook (OTP session, flash message, return path, lockout, attempts) so the full clean-boot reset can reliably wipe them without missing any keys."
-        },
-        {
-          "path": "frontend/src/commerce/CommerceProvider.tsx",
-          "operation": "modify",
-          "description": "Ensure the cart persistence key is clearly defined/centralized (and optionally exported) so the full clean-boot reset can reliably wipe the cart state and storage without relying on hardcoded strings."
-        },
-        {
-          "path": "frontend/src/hooks/useWishlist.ts",
-          "operation": "modify",
-          "description": "Ensure the wishlist persistence key is clearly defined/centralized (and optionally exported) so the full clean-boot reset can reliably wipe wishlist state and storage without relying on hardcoded strings."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Update dashboard logout handling to call the shared full clean-boot reset utility (including Internet Identity clear + React Query cache clear) so logout and emergency reset behave consistently."
+          "description": "Add a small, scoped CSS class/animation to support a ~4s fade-out behavior for the basic error toast without altering existing theme tokens, hover effects, or layout."
         }
       ]
     },
     {
-      "id": "REQ-18",
-      "summary": "Add an emergency URL-only reset entry point that works even when auth/routing is broken and ends on the Sign In view.",
+      "id": "REQ-12",
+      "summary": "Wire the basic error toast into existing error paths for OTP send/verify, invalid OTP, Internet Identity login failures, and dashboard profile save failures without changing routing/auth flow/UI layout.",
       "acceptanceCriteria": [
-        "There is a documented, testable way to trigger the reset using only the browser URL (no prior navigation required).",
-        "After triggering the reset entry point, the app ends on /login?tab=signin (or equivalent Sign In state) and renders normally."
+        "Entering a wrong OTP triggers the error toast.",
+        "Forcing a profile save failure (e.g., actor/network failure) triggers the error toast.",
+        "Existing pages (login/dashboard/admin/storefront) remain visually stable with no layout shifts introduced by the change."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/ResetPage.tsx",
-          "operation": "create",
-          "description": "Create a minimal emergency reset view that runs the full clean-boot reset on mount and then navigates to /login?tab=signin; render a visible progress/loading UI while executing. Use shadcn-ui components (e.g., Card/Button/Alert) to ensure consistent UI. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Import and invoke the new basic error toast helper on: invalid OTP entry, OTP send failures, OTP verify failures, and Internet Identity login failures—while preserving existing OTP/II logic, routing behavior, and current UI structure."
         },
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/pages/DashboardPage.tsx",
           "operation": "modify",
-          "description": "Wire a dedicated /reset route into the custom SPA routing flow so it can be triggered directly via browser URL; ensure it renders ResetPage without relying on prior navigation state."
+          "description": "Invoke the new basic error toast helper when profile save fails (including network/actor errors) while keeping the current dashboard layout, animations, and save flow intact."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "Keep the change minimal and non-invasive: no notification UI, no rate limiting, no heavy logic; preserve current theme/hover/layout; do not change SPA routing or authentication flow.",
+      "acceptanceCriteria": [
+        "No new notification/bell UI is present anywhere.",
+        "No rate-limiting logic is introduced.",
+        "Navigation/routing behavior remains identical to the current reverted working version."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/errorToasts.ts",
+          "operation": "modify",
+          "description": "Ensure the helper remains lightweight (single utility, no new UI surfaces) and does not introduce rate-limiting/throttling logic or any routing/auth changes."
         },
         {
           "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Add a URL-triggered fallback reset mechanism (e.g., /login?reset=1) that runs the full clean-boot reset before showing the login UI, then ensures the final URL/state is /login?tab=signin."
+          "description": "Confirm wiring only adds toast calls in existing error branches (no new flows, routes, or layout changes) and does not introduce new notification UI elements."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Confirm changes are limited to error handling (toast invocation) without altering layout, animations, or navigation behavior."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Add a deployment verification checklist artifact to record the draft URL and confirm: no blank screen on login, error toast visible when triggered, and UI stability.",
+      "acceptanceCriteria": [
+        "A draft URL is provided after deployment.",
+        "Confirmation explicitly states: no blank screen on login; toast visible on wrong OTP and failed save; UI stable."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/RELEASE_NOTES.md",
+          "operation": "modify",
+          "description": "Add a short Phase 7 verification checklist section including fields/placeholders for the draft URL and explicit confirmation items: (1) no blank screen on login, (2) error toast visible on wrong OTP and failed save, (3) UI stable."
         },
         {
           "path": "frontend/STOREFRONT_LOGIN_VERIFICATION.md",
           "operation": "modify",
-          "description": "Document the emergency reset entry points (e.g., /reset and /login?reset=1) and the expected post-reset landing behavior for manual verification."
-        }
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "summary": "Make OTP and Internet Identity login redirect consistently to /dashboard (or a safe stored return path), clearing the return path after navigation and preventing blank-screen first load issues.",
-      "acceptanceCriteria": [
-        "After successful OTP verification, the app navigates to /dashboard when no return path is set.",
-        "After successful Internet Identity login, the app navigates to /dashboard when no return path is set.",
-        "If a return path exists, it is used instead of /dashboard, and the return path is cleared after navigation.",
-        "A hard refresh immediately after login does not produce a blank screen and the user remains on a valid route."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/safeReturnPath.ts",
-          "operation": "create",
-          "description": "Create a small utility to validate and normalize a stored return path (must be an internal path, disallow /login, /reset, /admin*, and any non-path values) and provide a safe fallback (default /dashboard)."
-        },
-        {
-          "path": "frontend/src/components/auth/ProtectedRoute.tsx",
-          "operation": "modify",
-          "description": "Update return-path capture to store the full in-app path (pathname + search when appropriate) and to avoid storing unsafe routes; ensure redirect behavior is deterministic under first-load conditions."
-        },
-        {
-          "path": "frontend/src/pages/LoginPage.tsx",
-          "operation": "modify",
-          "description": "Change post-success navigation for both OTP verification and Internet Identity login to go to a safe stored return path if present, otherwise /dashboard; ensure return path is cleared after successful navigation."
-        }
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "summary": "Prevent /dashboard first-load crashes by adding safe protected loading/error UI during auth restoration and while dashboard dependencies are not ready.",
-      "acceptanceCriteria": [
-        "Navigating to /dashboard never results in a permanently blank screen; if data is loading, a visible loading state is rendered.",
-        "If an error occurs while loading dashboard data, a visible error state is rendered with a recovery action (e.g., go to login, retry, or run reset).",
-        "ProtectedRoute does not leave the UI in a silent null-render state without any visible feedback during auth restoration."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/auth/ProtectedRoute.tsx",
-          "operation": "modify",
-          "description": "Replace the current null-render behavior with a visible fallback UI while auth is restoring and during redirect; ensure the component renders a non-blank loading state instead of returning null. Use shadcn-ui components (e.g., Card/Alert/Button) for the fallback UI. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Harden dashboard rendering to handle loading and error states from profile/orders queries and other dependencies; add an explicit error screen area with recovery actions (retry, go to login, run reset) to ensure no blank screen even if a query fails."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Ensure dashboard-related queries expose stable loading/error behavior without throwing unhandled exceptions that could break initial dashboard render; keep query functions resilient and let UI render an explicit error state when failures occur."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Ensure /dashboard route wiring remains stable on first load and hard refresh by keeping providers consistent and enabling the updated ProtectedRoute fallback UI to be visible during auth restoration."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Clear in-memory caches (including React Query) during reset and force clean navigation to login so the app works without manual refresh.",
-      "acceptanceCriteria": [
-        "After reset, React Query cache is cleared and subsequent page loads re-fetch data normally.",
-        "After reset, the login page works without requiring an additional manual refresh."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/fullCleanBootReset.ts",
-          "operation": "modify",
-          "description": "Extend the full clean-boot reset utility to accept and invoke React Query cache clearing (via QueryClient.clear), clear any relevant in-memory state via provided callbacks (e.g., cart/wishlist clears), and perform a forced clean navigation to /login?tab=signin."
-        },
-        {
-          "path": "frontend/src/pages/ResetPage.tsx",
-          "operation": "modify",
-          "description": "Wire ResetPage to clear React Query cache (useQueryClient), clear Internet Identity (useInternetIdentity().clear), clear commerce/wishlist in-memory state, then navigate to /login?tab=signin after the reset completes; keep a visible loading/progress UI during execution. Use shadcn-ui components for UI consistency. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Update the dashboard's logout/reset recovery actions to call the shared reset utility so React Query is cleared and navigation to /login?tab=signin is clean and immediate (no extra refresh needed)."
+          "description": "Extend the storefront login verification checklist to include validating the new top-right basic error toast on wrong OTP and Internet Identity login failure cases, without changing the existing login flow documentation structure."
         }
       ]
     }

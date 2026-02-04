@@ -8,8 +8,6 @@ import { useCheckout, useGetAllProducts } from '../../hooks/useQueries';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { initiateRazorpayPayment } from '../../utils/razorpay';
 import type { ShippingAddress } from '../../backend';
-import { showNetworkErrorToast } from '../../utils/premiumToasts';
-import { useNotifications } from '../../notifications/useNotifications';
 
 interface CheckoutPanelProps {
   onSuccess: (orderId: string) => void;
@@ -21,7 +19,6 @@ export default function CheckoutPanel({ onSuccess }: CheckoutPanelProps) {
   const { data: products = [] } = useGetAllProducts();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { addNotification } = useNotifications();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -51,7 +48,6 @@ export default function CheckoutPanel({ onSuccess }: CheckoutPanelProps) {
 
       if (!paymentResult.success) {
         setError(paymentResult.error || 'Payment failed');
-        showNetworkErrorToast();
         setIsProcessing(false);
         return;
       }
@@ -76,13 +72,11 @@ export default function CheckoutPanel({ onSuccess }: CheckoutPanelProps) {
         {
           onSuccess: (data) => {
             setIsProcessing(false);
-            addNotification('Order placed');
             onSuccess(data.orderId);
           },
           onError: (err) => {
             console.error('Order creation error:', err);
             setError('Failed to create order. Please contact support.');
-            showNetworkErrorToast();
             setIsProcessing(false);
           },
         }
@@ -90,7 +84,6 @@ export default function CheckoutPanel({ onSuccess }: CheckoutPanelProps) {
     } catch (err) {
       console.error('Checkout error:', err);
       setError('An unexpected error occurred. Please try again.');
-      showNetworkErrorToast();
       setIsProcessing(false);
     }
   };

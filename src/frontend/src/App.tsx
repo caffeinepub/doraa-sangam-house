@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { useActor } from './hooks/useActor';
@@ -14,17 +14,25 @@ import CheckoutSection from './pages/CheckoutSection';
 import FaqSection from './pages/FaqSection';
 import AboutSection from './pages/AboutSection';
 import RaaHiChatWidget from './components/RaaHiChatWidget';
-import AdminGate from './admin/components/AdminGate';
-import AdminArea from './admin/AdminArea';
-import AdminLoginPage from './admin/pages/AdminLoginPage';
 import { ADMIN_ROUTES } from './admin/adminConfig';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { useStorefrontAuth } from './hooks/useStorefrontAuth';
+import { useInternetIdentity } from './hooks/useInternetIdentity';
+import { useInactivityLogout } from './hooks/useInactivityLogout';
+import ProductDetailView from './pages/ProductDetailView';
+
+// Lazy load admin components for code splitting
+const AdminGate = lazy(() => import('./admin/components/AdminGate'));
+const AdminArea = lazy(() => import('./admin/AdminArea'));
+const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'));
 
 function App() {
   const { actor } = useActor();
   const [location, navigate] = useSpaLocation();
+  const { isAuthenticated, logout, setFlashMessage } = useStorefrontAuth();
+  const { clear: clearII } = useInternetIdentity();
 
   useEffect(() => {
     if (actor) {
@@ -32,16 +40,67 @@ function App() {
     }
   }, [actor]);
 
-  // Admin routes
+  // Register service worker for PWA
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
+  }, []);
+
+  // Auto-logout on inactivity (30 minutes)
+  useInactivityLogout({
+    enabled: isAuthenticated,
+    timeoutMs: 30 * 60 * 1000,
+    onLogout: async () => {
+      await logout(clearII);
+      setFlashMessage('You have been logged out due to inactivity', 'info');
+      navigate('/login?tab=signin');
+    },
+  });
+
+  // Handle product detail route
+  const productMatch = location.pathname.match(/^\/product\/([^/]+)$/);
+  if (productMatch) {
+    const productId = productMatch[1];
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <CommerceProvider>
+          <div className="relative min-h-screen bg-black">
+            <OceanBackground />
+            <div className="relative z-10">
+              <Header />
+              <ProductDetailView
+                productId={productId}
+                onClose={() => navigate('/')}
+              />
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </div>
+        </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
+  // Admin routes with lazy loading
   if (location.pathname === ADMIN_ROUTES.LOGIN) {
     return (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <div className="relative min-h-screen bg-black">
           <OceanBackground />
           <div className="relative z-10">
-            <AdminLoginPage navigate={navigate} />
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminLoginPage navigate={navigate} />
+            </Suspense>
           </div>
-          <Toaster />
+          <Toaster position="top-right" />
         </div>
       </ThemeProvider>
     );
@@ -53,17 +112,19 @@ function App() {
         <div className="relative min-h-screen bg-black">
           <OceanBackground />
           <div className="relative z-10">
-            <AdminGate navigate={navigate}>
-              <AdminArea currentPath={location.pathname} navigate={navigate} />
-            </AdminGate>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminGate navigate={navigate}>
+                <AdminArea currentPath={location.pathname} navigate={navigate} />
+              </AdminGate>
+            </Suspense>
           </div>
-          <Toaster />
+          <Toaster position="top-right" />
         </div>
       </ThemeProvider>
     );
   }
 
-  // Storefront login page
+  // Storefront login page (with query string support)
   if (location.pathname === '/login') {
     return (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
@@ -73,7 +134,7 @@ function App() {
             <div className="relative z-10">
               <LoginPage navigate={navigate} />
             </div>
-            <Toaster />
+            <Toaster position="top-right" />
           </div>
         </CommerceProvider>
       </ThemeProvider>
@@ -88,12 +149,12 @@ function App() {
           <ProtectedRoute navigate={navigate}>
             <div className="relative min-h-screen bg-black">
               <OceanBackground />
-              <div className="relative z-10">
+              <div className="relative z-10 dashboard-route-transition">
                 <Header />
                 <DashboardPage navigate={navigate} />
                 <Footer />
               </div>
-              <Toaster />
+              <Toaster position="top-right" />
             </div>
           </ProtectedRoute>
         </CommerceProvider>
@@ -129,7 +190,7 @@ function App() {
           {/* RaaHi Chat Widget - Global */}
           <RaaHiChatWidget />
           
-          <Toaster />
+          <Toaster position="top-right" />
         </div>
       </CommerceProvider>
     </ThemeProvider>

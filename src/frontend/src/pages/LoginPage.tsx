@@ -9,7 +9,8 @@ import { AlertCircle, Shield, Loader2, Clock } from 'lucide-react';
 import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { showLockoutToast, showInvalidOTPToast } from '../utils/premiumToasts';
+import { showLockoutToast } from '../utils/premiumToasts';
+import { showBasicErrorToast } from '../utils/errorToasts';
 import InternationalPhoneInput from '../components/auth/InternationalPhoneInput';
 import { detectCountryFromLocale } from '../utils/detectCountryFromLocale';
 import { validatePhoneNumber, type PhoneValidationResult } from '../utils/phoneValidation';
@@ -19,10 +20,6 @@ import { useOtpCountdown } from '../hooks/useOtpCountdown';
 import WebOtpPermissionModal from '../components/auth/WebOtpPermissionModal';
 import OtpLockoutModal from '../components/auth/OtpLockoutModal';
 import { getUrlParameter } from '../utils/urlParams';
-import { getSafeReturnPath } from '../utils/safeReturnPath';
-import { executeFullCleanBootReset } from '../utils/fullCleanBootReset';
-import { useQueryClient } from '@tanstack/react-query';
-import { useCommerce } from '../hooks/useCommerce';
 
 interface LoginPageProps {
   navigate: (path: string) => void;
@@ -32,36 +29,6 @@ type AuthStep = 'phone' | 'otp';
 type TabValue = 'signin' | 'signup';
 
 export default function LoginPage({ navigate }: LoginPageProps) {
-  const queryClient = useQueryClient();
-  const { clearCart } = useCommerce();
-  
-  // Check for emergency reset parameter
-  const resetParam = getUrlParameter('reset');
-  const [isResetting, setIsResetting] = useState(false);
-
-  useEffect(() => {
-    if (resetParam === '1' && !isResetting) {
-      setIsResetting(true);
-      executeFullCleanBootReset({
-        clearReactQuery: () => queryClient.clear(),
-        clearInternetIdentity: async () => {
-          try {
-            await clearII();
-          } catch (error) {
-            console.warn('Failed to clear II during reset:', error);
-          }
-        },
-        clearCartState: clearCart,
-      }).then(() => {
-        // Navigate to clean login state
-        navigate('/login?tab=signin');
-      }).catch((error) => {
-        console.error('Emergency reset failed:', error);
-        setIsResetting(false);
-      });
-    }
-  }, [resetParam]);
-
   // Read initial tab from URL query parameter
   const initialTab = (getUrlParameter('tab') as TabValue) || 'signin';
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
@@ -106,7 +73,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     clearReturnPath,
   } = useStorefrontAuth();
   
-  const { login: loginII, isLoggingIn, identity, clear: clearII } = useInternetIdentity();
+  const { login: loginII, isLoggingIn, identity } = useInternetIdentity();
   const [flashMessage, setFlashMessage] = useState<{ message: string; type: string } | null>(null);
   const [lockoutTime, setLockoutTime] = useState<number | null>(null);
 
@@ -267,6 +234,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     } catch (err: any) {
       console.error('Send OTP error:', err);
       setError('Failed to send OTP. Please try again.');
+      showBasicErrorToast('Error: Failed to send OTP');
     } finally {
       setIsSendingOtp(false);
     }
@@ -308,15 +276,17 @@ export default function LoginPage({ navigate }: LoginPageProps) {
           resetOTPAttempts();
           cancelWebOtp();
           
-          // Navigate to safe return path or dashboard
+          // Navigate to return path if exists, otherwise home
           const returnPath = getReturnPath();
-          const safePath = getSafeReturnPath(returnPath, '/dashboard');
-          clearReturnPath();
-          navigate(safePath);
+          if (returnPath) {
+            clearReturnPath();
+            navigate(returnPath);
+          } else {
+            navigate('/');
+          }
         }
       } else {
-        // Wrong OTP - show premium error toast
-        showInvalidOTPToast();
+        // Wrong OTP - show error toast
         const attempts = incrementOTPAttempts();
         if (attempts >= 3) {
           setOTPLockout();
@@ -324,13 +294,17 @@ export default function LoginPage({ navigate }: LoginPageProps) {
           setShowLockoutModalState(true);
           showLockoutToast();
           setError('Too many attempts. Retry after 10 minutes.');
+          showBasicErrorToast('Error: Too many attempts');
         } else {
-          setError(`Incorrect OTP. ${3 - attempts} attempt(s) remaining.`);
+          const errorMsg = `Incorrect OTP. ${3 - attempts} attempt(s) remaining.`;
+          setError(errorMsg);
+          showBasicErrorToast('Error: Invalid OTP');
         }
       }
     } catch (err: any) {
       console.error('Verify OTP error:', err);
       setError('Verification failed. Please try again.');
+      showBasicErrorToast('Error: Verification failed');
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -340,29 +314,39 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     // If already authenticated, just navigate
     if (identity && !identity.getPrincipal().isAnonymous()) {
       const returnPath = getReturnPath();
-      const safePath = getSafeReturnPath(returnPath, '/dashboard');
-      clearReturnPath();
-      navigate(safePath);
+      if (returnPath) {
+        clearReturnPath();
+        navigate(returnPath);
+      } else {
+        navigate('/');
+      }
       return;
     }
 
     try {
       await loginII();
-      // Navigate to safe return path or dashboard
+      // Navigate to return path if exists, otherwise home
       const returnPath = getReturnPath();
-      const safePath = getSafeReturnPath(returnPath, '/dashboard');
-      clearReturnPath();
-      navigate(safePath);
+      if (returnPath) {
+        clearReturnPath();
+        navigate(returnPath);
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       // Suppress "already authenticated" errors
       if (err?.message?.includes('already authenticated')) {
         const returnPath = getReturnPath();
-        const safePath = getSafeReturnPath(returnPath, '/dashboard');
-        clearReturnPath();
-        navigate(safePath);
+        if (returnPath) {
+          clearReturnPath();
+          navigate(returnPath);
+        } else {
+          navigate('/');
+        }
         return;
       }
       setError('Internet Identity login failed. Please try again.');
+      showBasicErrorToast('Error: Login failed');
     }
   };
 
@@ -395,19 +379,6 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     setActiveTab(value as TabValue);
     setError('');
   };
-
-  if (isResetting) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-card/95 backdrop-blur-xl border-border/40">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Resetting application...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">

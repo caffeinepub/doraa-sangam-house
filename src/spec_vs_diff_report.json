@@ -1,57 +1,46 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T22:45:16.779Z",
-  "summary": "Diff adds a full clean-boot reset utility, two emergency reset entry points (/reset route and /login?reset=1), safe return-path validation, and improves ProtectedRoute with visible loading/redirect UI. However, the diff evidence is insufficient to confirm the required post-login redirect fixes for both OTP and Internet Identity flows, and only partially shows dashboard crash/error-handling changes due to truncation. Several unrelated premium UI/theme/background and product UI changes appear outside the requested scope.",
+  "generatedAt": "2026-02-04T23:02:02.410Z",
+  "summary": "Added a reusable Sonner-based basic error toast helper (gold border, #F5F5F0 text, 4s duration). However, the diff summary does not provide clear evidence that the helper is actually invoked in all required frontend error paths, and it includes unrequested backend changes (violating the 'no backend changes' non-goal). Deployment URL/checklist was not added in code changes.",
   "missing_requirements": [
     {
-      "id": "REQ-19",
-      "requirement": "Fix post-login redirect behavior so successful login (OTP and Internet Identity) navigates to /dashboard (or a stored safe return path) consistently; clear return path after navigation; hard refresh after login should not blank screen.",
-      "reason": "The diff shows return-path safety utilities and ProtectedRoute storing a safe return path, but does not show the actual success handlers for OTP verification or Internet Identity login being updated to navigate to /dashboard / safe return path and then clear it. LoginPage and DashboardPage are truncated before any successful login navigation logic is visible.",
+      "id": "REQ-12",
+      "requirement": "Wire the new basic error toast into existing error paths: invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures.",
+      "reason": "Diff shows imports of showBasicErrorToast in LoginPage and DashboardPage, but the provided truncated snippets do not show actual calls in the specified failure branches (invalid OTP, send/verify failures, II login failure, profile save failure). Evidence is insufficient to confirm wiring.",
       "evidence": [
-        "frontend/src/pages/LoginPage.tsx (truncated; only shows reset param handling and imports getSafeReturnPath)",
-        "frontend/src/utils/safeReturnPath.ts",
-        "frontend/src/components/auth/ProtectedRoute.tsx",
-        "frontend/src/pages/DashboardPage.tsx (truncated; shows getReturnPath/clearReturnPath imported/used but not the navigation flow)"
+        "frontend/src/pages/LoginPage.tsx",
+        "frontend/src/pages/DashboardPage.tsx"
       ]
     },
     {
-      "id": "REQ-20",
-      "requirement": "Resolve dashboard first-load crash: /dashboard must render safely during auth restoration and when backend/query dependencies aren’t ready; show visible loading/fallback; show visible error state with recovery action; ProtectedRoute must not silently null-render.",
-      "reason": "ProtectedRoute is updated to show visible loading and redirecting UI, but the DashboardPage changes required for safe rendering/loading/error recovery are not fully verifiable from the truncated content. While ordersError/ordersLoading variables appear, the diff summary does not show a dedicated visible error UI with recovery actions (retry/go to login/reset) or an explicit non-blank fallback for all critical dependencies on first load.",
+      "id": "REQ-14",
+      "requirement": "After implementing and deploying, provide the draft URL and confirm checklist (no blank screen on login; toast visible on wrong OTP and failed save; UI stable).",
+      "reason": "No evidence in the diff summary of a provided deployment draft URL or an explicit checklist confirmation (typically would appear in release notes or a deployment note file).",
       "evidence": [
-        "frontend/src/components/auth/ProtectedRoute.tsx",
-        "frontend/src/pages/DashboardPage.tsx (truncated; shows ordersLoading/ordersError variables but not the rendered fallback/error UI)"
+        "frontend/RELEASE_NOTES.md"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Large set of premium/luxury UI updates (header/footer redesign, product card visual overhaul, background animation changes, Tailwind theme/animation additions) unrelated to the reset/auth blank-screen requirements.",
-      "reason": "BuildRequest focuses on clean-boot reset, emergency reset entry points, redirect reliability, and dashboard safe rendering. The diff summary indicates substantial unrelated visual/UX changes across many components.",
+      "description": "Backend changes added/modified (new confirmDeploymentChecks admin method; order creation/records; other backend logic adjustments).",
+      "reason": "BuildRequest explicitly lists backend changes as non-goals (“Any backend changes or schema migrations.”). These backend modifications are not requested by REQ-11/12/13 and violate the minimal frontend-only scope.",
       "evidence": [
-        "frontend-file-summaries.txt (Header.tsx, Footer.tsx, ProductCard.tsx, OceanBackground.tsx, SangamBackground.tsx, index.css, tailwind.config.js, ProductsPage.tsx)"
-      ]
-    },
-    {
-      "description": "Release notes update claiming broader Phase 4 acceptance criteria confirmation unrelated to the requested fixes.",
-      "reason": "BuildRequest did not request updating RELEASE_NOTES.md or documenting unrelated phases; the diff summary includes a release notes modification.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/RELEASE_NOTES.md)"
+        "backend/main.mo",
+        "backend/order.mo"
       ]
     }
   ],
   "confidence": 0.62,
   "changed_files": [
+    "backend/main.mo",
+    "backend/order.mo",
     "frontend-file-summaries.txt",
-    "frontend/STOREFRONT_LOGIN_VERIFICATION.md",
-    "frontend/src/App.tsx",
-    "frontend/src/components/auth/ProtectedRoute.tsx",
+    "frontend/src/index.css",
     "frontend/src/pages/DashboardPage.tsx",
     "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/pages/ResetPage.tsx",
-    "frontend/src/utils/fullCleanBootReset.ts",
-    "frontend/src/utils/safeReturnPath.ts",
+    "frontend/src/utils/errorToasts.ts",
     "project_state.json"
   ]
 }

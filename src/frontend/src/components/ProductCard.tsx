@@ -15,7 +15,6 @@ import { showDuplicateFavoriteToast, showDuplicateCartToast } from '../utils/pre
 import { BanarasiQuickDetailsOverlay } from './banarasi/BanarasiQuickDetailsOverlay';
 import { useSpaLocation } from '../hooks/useSpaLocation';
 import { formatReviewCount, formatRating, calculateDiscount, formatPrice } from '../utils/formatters';
-import { useNotifications } from '../notifications/useNotifications';
 
 interface ProductCardProps {
   productId: string;
@@ -37,7 +36,6 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   const [location, navigate] = useSpaLocation();
   const [showQuickDetails, setShowQuickDetails] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-  const { addNotification } = useNotifications();
 
   const inWishlist = isInWishlist(productId);
   const inCart = cart.some((item) => item.productId === productId);
@@ -84,7 +82,6 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
     createRipple(e);
     addToCart(productId, 1);
     animate({ sourceElement: e.currentTarget });
-    addNotification('Added to cart');
     toast.success('Added to cart', {
       description: product.name,
       duration: 2000,

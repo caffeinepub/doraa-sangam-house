@@ -1,540 +1,442 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "DoRaa Sangam House is a luxury-themed e-commerce single-page application built with React + TypeScript (TailwindCSS + shadcn/ui) and backed by an Internet Computer (Motoko) canister. The storefront supports browsing a canister-backed product catalog (collections and category overlays), viewing rich product details (shareable /product/:id routes with dynamic SEO metadata), wishlist and cart (localStorage), and checkout via Razorpay (test mode) followed by on-chain order creation. Users authenticate via a hybrid model: a simulated OTP session for storefront gating plus Internet Identity for authenticated canister calls (profile, orders, admin). A separate admin panel (Internet Identity + frontend guard + backend RBAC) supports product catalog management (CRUD, image upload UI, and bulk upload from CSV/ZIP). The app includes PWA support (manifest + service worker), premium toast styling, notifications bell UI, reduced-motion accessibility, and multiple ambient/cinematic background effects.",
+  "summary": "DoRaa Sangam House is a luxury-themed e-commerce SPA (React + TypeScript, Tailwind + shadcn/ui) for browsing and purchasing premium Banarasi sarees. It includes a storefront (catalog browsing, wishlist, cart, Razorpay test-mode checkout, user dashboard) and a separate admin panel (Internet Identity + RBAC) to manage a canister-backed product catalog on the Internet Computer (Motoko). The app also implements SEO/pwa/performance polish: shareable product URLs with dynamic metadata, sitemap/robots, image lazy-loading, route code-splitting, and offline app-shell caching via a service worker.",
   "existing_features": [
     {
       "id": "IF-1",
       "title": "Centralized brand identity constants",
       "synonyms": [
         "BRAND_ASSETS",
-        "BRAND_NAME",
-        "branding.ts"
+        "BRAND_NAME"
       ],
-      "description": "Exports consistent brand name and generated asset paths (logo mark, favicon, bot avatar) for use across the storefront and admin UI.",
+      "description": "Exports consistent brand name and generated asset paths (logo mark, favicon, bot avatar) for shared use across the app.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-2",
-      "title": "Dark luxury theme, premium UI utilities, and reduced-motion support",
+      "title": "Luxury dark theme system (Tailwind + CSS variables)",
       "synonyms": [
-        "Tailwind theme tokens",
-        "index.css utilities",
-        "usePrefersReducedMotion"
+        "tailwind.config.js",
+        "frontend/src/index.css",
+        "OKLCH tokens"
       ],
-      "description": "Implements a premium dark theme via CSS variables mapped into Tailwind and a rich set of interaction utilities (glows, shimmer skeletons, ripples, reveal animations) with prefers-reduced-motion fallbacks.",
+      "description": "Implements a premium dark UI theme with OKLCH CSS variables mapped into Tailwind colors, plus reusable glow/hover/animation utilities and reduced-motion overrides.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "Custom SPA routing without React Router",
+      "title": "Custom SPA routing and navigation sync",
       "synonyms": [
         "useSpaLocation",
         "History API routing",
         "spa-navigation event"
       ],
-      "description": "Provides minimal client-side routing using history.pushState/popstate plus a custom navigation event so all hook instances remain synchronized across the app.",
+      "description": "Implements minimal client-side routing with history.pushState/popstate and a custom event to keep all hook instances synchronized without React Router.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "Ambient cinematic background rendering",
+      "title": "PWA support (manifest + service worker + registration)",
       "synonyms": [
-        "OceanBackground",
-        "BanarasiShowcaseAmbience",
-        "canvas ambience"
+        "manifest.json",
+        "sw.js",
+        "serviceWorker.register"
       ],
-      "description": "Renders high-production canvas-based ambience layers (ocean waves/foam/sand shimmer and pearl shimmer ambience) with performance-conscious refs/caching and reduced-motion static fallbacks.",
-      "reqIds": [],
+      "description": "Provides installable PWA behavior with a web app manifest and a service worker that caches an app-shell asset list and serves cached responses with network fallback while skipping canister/external API requests.",
+      "reqIds": [
+        "REQ-7"
+      ],
       "version": 1
     },
     {
       "id": "IF-5",
-      "title": "Cinematic hero slider with gesture support",
+      "title": "Cinematic animated ocean background canvas",
       "synonyms": [
-        "CinematicHeroSlider",
-        "useCinematicSlider",
-        "GoldWaveWipeTransition"
+        "OceanBackground",
+        "foam particles",
+        "noise tables"
       ],
-      "description": "Full-screen hero carousel with autoplay, pause-on-interaction, pointer/touch swipe gestures, arrow/dot navigation, layered parallax visuals, and reduced-motion-aware transitions.",
+      "description": "Renders a fixed full-viewport ocean animation with layered waves/foam/sand shimmer and a static reduced-motion fallback.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-6",
-      "title": "Typography micro-animations",
+      "title": "Cinematic hero slider with layered effects and gestures",
       "synonyms": [
-        "LetterRevealText",
-        "RollerTagline"
+        "CinematicHeroSlider",
+        "CinematicHeroSlide",
+        "useCinematicSlider",
+        "GoldWaveWipeTransition"
       ],
-      "description": "Animated per-letter reveal for headlines and a per-letter roller/flip tagline interaction, both respecting reduced-motion preferences.",
+      "description": "Full-screen hero carousel with autoplay, pause-on-interaction, swipe/drag gestures, arrow/dot navigation, layered parallax visuals, and reduced-motion safe transitions.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Scroll reveal and staggered reveal system",
+      "title": "Scroll reveal and infinite scroll utilities",
       "synonyms": [
         "useScrollReveal",
         "useStaggeredScrollReveal",
-        "IntersectionObserver reveals"
+        "useInfiniteScroll"
       ],
-      "description": "IntersectionObserver-based reveal utilities for sections/cards with configurable thresholds/margins and stagger behavior; reveals immediately for reduced-motion users.",
+      "description": "IntersectionObserver-based reveal animations for sections/cards plus sentinel-driven infinite scroll loading for long product lists.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-8",
-      "title": "Infinite scroll helper hook",
+      "title": "Internet Identity auth provider (AuthClient)",
       "synonyms": [
-        "useInfiniteScroll",
-        "sentinelRef"
+        "InternetIdentityProvider",
+        "useInternetIdentity",
+        "@dfinity/auth-client"
       ],
-      "description": "Reusable sentinel-based infinite loading trigger with hasMore/isLoading guards and configurable threshold/rootMargin.",
+      "description": "Manages AuthClient initialization, login/logout, session restoration, status flags, and error handling/suppression for benign already-authenticated cases.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-9",
-      "title": "Internet Identity authentication context",
+      "title": "Backend actor lifecycle bound to identity with RBAC initialization",
       "synonyms": [
-        "InternetIdentityProvider",
-        "@dfinity/auth-client",
-        "AuthClient"
+        "useActor",
+        "createActorWithConfig",
+        "_initializeAccessControlWithSecret"
       ],
-      "description": "Initializes/restores AuthClient identities, provides login/logout and status flags, and surfaces errors (with benign “already authenticated” suppressed by AuthErrorAlert).",
+      "description": "Creates an anonymous or identity-bound canister actor and initializes RBAC using a secret parameter; invalidates/refetches React Query caches when the actor changes.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-10",
-      "title": "Canister actor creation bound to identity with RBAC initialization",
+      "title": "Motoko RBAC authorization and role management",
       "synonyms": [
-        "useActor",
-        "_initializeAccessControlWithSecret",
-        "caffeineAdminToken"
+        "authorization/access-control.mo",
+        "MixinAuthorization.mo",
+        "getCallerUserRole",
+        "assignCallerUserRole"
       ],
-      "description": "Creates anonymous or identity-bound canister actors; on authenticated creation, initializes RBAC using a secret token (from hash/session) and invalidates/refetches React Query caches when the actor identity changes.",
+      "description": "Implements admin/user/guest roles, one-time initialization, admin checks, and role assignment; used to protect admin-only and user-only backend endpoints.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-11",
-      "title": "Motoko RBAC authorization layer",
+      "title": "Canister-backed product catalog APIs (admin CRUD + public listing + bulk import)",
       "synonyms": [
-        "authorization/access-control.mo",
-        "MixinAuthorization.mo",
-        "roles: admin/user/guest"
+        "adminAddProduct",
+        "adminUpdateProduct",
+        "adminDeleteProduct",
+        "adminListProducts",
+        "publicListProducts",
+        "adminBulkImportProducts"
       ],
-      "description": "Role assignment and permission checks inside the canister: initialization assigns #admin (token match) or #user; exposes role queries, admin checks, and admin-only role assignment.",
+      "description": "Stores products in a canister map and exposes admin-only CRUD and bulk import plus a public product listing API for the storefront.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-12",
-      "title": "Motoko product catalog APIs (public listing + admin CRUD + bulk import)",
-      "synonyms": [
-        "publicListProducts",
-        "adminAddProduct",
-        "adminUpdateProduct",
-        "adminDeleteProduct",
-        "adminListProducts",
-        "adminBulkImportProducts"
-      ],
-      "description": "Stores products in canister memory and exposes public product listing plus admin-only catalog CRUD and bulk import endpoints.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Motoko order APIs",
-      "synonyms": [
-        "createOrder",
-        "getUserOrders",
-        "getUserOrdersByYearMonth"
-      ],
-      "description": "Allows authenticated users to create orders (paid status) and retrieve their order history, including a year/month filter endpoint.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "Motoko user profile APIs",
-      "synonyms": [
-        "getCallerUserProfile",
-        "saveCallerUserProfile",
-        "getUserProfile"
-      ],
-      "description": "Stores user profile data keyed by principal; users can get/save their own profile, and admins can query other users’ profiles.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Storefront product catalog queries with backend-to-storefront mapping",
+      "title": "Storefront catalog queries (React Query) with backend-to-storefront mapping",
       "synonyms": [
         "useGetAllProducts",
         "useGetProduct",
         "useGetProductsByCategory",
         "backendToStorefrontProduct"
       ],
-      "description": "Loads the catalog from the canister via React Query, converts backend products into StorefrontProduct shape (colors/sizes from variants, images, numeric price), supports category filtering and per-product lookup, and uses toast-based error handling.",
+      "description": "Fetches the canister catalog via publicListProducts, maps backend products into storefront shape (colors/sizes/images/price), provides product/category filtering, and caches results with error toasts.",
       "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Dedicated shareable product route (/product/:id) with full product detail UI",
+      "synonyms": [
+        "ProductDetailView route",
+        "/product/<productId> deep link"
+      ],
+      "description": "Supports stable, shareable product URLs that render the full product detail experience instead of relying on modal-only navigation.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Dynamic SEO metadata for product detail pages (title/description/OG/Twitter/canonical)",
+      "synonyms": [
+        "useDynamicMetadata",
+        "og:title",
+        "twitter:card",
+        "rel=canonical"
+      ],
+      "description": "Updates document title plus meta tags (description, Open Graph, Twitter card) and sets a canonical URL for product routes; restores original values on unmount.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Static SEO files (robots.txt and sitemap.xml)",
+      "synonyms": [
+        "/robots.txt",
+        "/sitemap.xml"
+      ],
+      "description": "Provides robots and sitemap files at the site root; allows indexing of storefront/product routes while disallowing admin/dashboard/login paths.",
+      "reqIds": [
+        "REQ-3"
+      ],
       "version": 1
     },
     {
       "id": "IF-16",
-      "title": "Collections page with category showcase, filtering overlays, and empty states",
+      "title": "Storefront performance optimizations (lazy images, code splitting, skeletons)",
       "synonyms": [
-        "ProductsPage",
-        "BanarasiCategoryShowcase",
-        "BanarasiCategoryCarouselOverlay",
-        "PremiumCatalogEmptyState"
+        "loading=\"lazy\"",
+        "React.lazy/Suspense",
+        "shimmer-skeleton"
       ],
-      "description": "Renders a responsive product grid with infinite scroll, a category carousel overlay for Banarasi collections, and premium empty states when no products exist.",
-      "reqIds": [],
+      "description": "Applies image lazy-loading, eager loading for primary images, route/component code splitting (admin + product detail), and standardized shimmer skeletons for key loading states.",
+      "reqIds": [
+        "REQ-4",
+        "REQ-5",
+        "REQ-6"
+      ],
       "version": 1
     },
     {
       "id": "IF-17",
-      "title": "Premium product cards with wishlist/cart actions and quick-details overlay",
+      "title": "Touch-friendly mobile UI hit targets",
       "synonyms": [
-        "ProductCard",
-        "BanarasiQuickDetailsOverlay",
-        "gold ripple",
-        "fly-to-cart animation"
+        "min-h-[44px]",
+        "min-w-[44px]"
       ],
-      "description": "Myntra/Flipkart-style product cards with luxury hover effects, deterministic discount formatting, wishlist and cart actions with auth gating, add-to-cart animation and ripple feedback, and a quick details overlay on desktop hover.",
-      "reqIds": [],
+      "description": "Ensures primary interactive controls use ~44px minimum hit targets across header, product cards, sheets, and key CTAs while preserving the luxury visual style.",
+      "reqIds": [
+        "REQ-8"
+      ],
       "version": 1
     },
     {
       "id": "IF-18",
-      "title": "Wishlist management (localStorage)",
+      "title": "Wishlist management persisted in localStorage",
       "synonyms": [
         "useWishlist",
-        "favorites"
+        "wishlist localStorage"
       ],
-      "description": "Stores a list of favorited product IDs in localStorage and exposes helpers to add/remove/toggle/clear and test membership.",
+      "description": "Allows users to add/remove/toggle favorite product IDs and persist them in localStorage.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-19",
-      "title": "Quick view product sheet",
+      "title": "Cart state management with UI sheets (cart + checkout)",
       "synonyms": [
-        "QuickViewSheet",
-        "shadcn Sheet"
+        "CommerceProvider",
+        "CartSheet",
+        "CartPanel",
+        "CheckoutSheet"
       ],
-      "description": "Right-side quick view sheet displaying product gallery, pricing, badges, and add-to-cart with auth gating, duplicate handling toasts, and skeleton loading state.",
+      "description": "Persists cart items in localStorage with add/update/remove/clear actions, provides cart UI with quantity controls, and opens checkout as a sheet flow.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-20",
-      "title": "Product detail route with zoom gallery and dynamic metadata",
+      "title": "Checkout flow with Razorpay test-mode payment and backend order creation",
       "synonyms": [
-        "/product/:id",
-        "ProductDetailView",
-        "ImageZoomGallery"
+        "initiateRazorpayPayment",
+        "CheckoutPanel",
+        "useCheckout",
+        "createOrder"
       ],
-      "description": "Dedicated shareable product route that renders a full product detail view with multi-image zoom/pan gallery, rich attributes, cart/wishlist actions, scroll locking, and SEO metadata updates (title/description/OG/Twitter/canonical).",
+      "description": "Collects contact/shipping details, initiates Razorpay Checkout (test key), creates an order record in the canister on success, clears cart, and displays confirmation with order ID.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-21",
-      "title": "Dynamic SEO metadata management",
+      "title": "Order history queries with optional year/month filtering",
       "synonyms": [
-        "useDynamicMetadata",
-        "Open Graph tags",
-        "Twitter card tags",
-        "canonical link"
+        "useGetOrders",
+        "useGetOrdersByYearMonth",
+        "getUserOrdersByYearMonth"
       ],
-      "description": "Dynamically sets and restores document.title, meta description, Open Graph tags, Twitter Card tags, and canonical URL; creates missing tags and cleans up on unmount.",
+      "description": "Fetches per-user orders from the canister and supports filtering by year/month (as implemented) for the dashboard order list and details dialog.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-22",
-      "title": "Cart state management with persistence and cart UI sheets",
+      "title": "Storefront authentication (simulated OTP + WebOTP helper + lockout) and route/action gating",
       "synonyms": [
-        "CommerceProvider",
-        "CartSheet",
-        "CartPanel",
-        "doraa-cart"
+        "LoginPage",
+        "useStorefrontAuth",
+        "useWebOtp",
+        "useOtpCountdown",
+        "ProtectedRoute",
+        "useAuthRedirect"
       ],
-      "description": "Implements cart add/update/remove/clear operations persisted in localStorage and provides a right-side cart sheet UI with quantity controls, removal, subtotal display, and checkout entry.",
+      "description": "Implements simulated OTP send/verify with a countdown expiry, optional WebOTP auto-read with permission guidance modal, 3-attempt lockout with countdown modal, flash messages, return paths, and guards for protected routes/actions.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-23",
-      "title": "Checkout flow with Razorpay test-mode payment and backend order creation",
+      "title": "Session hardening: unified logout and inactivity-based auto-logout",
       "synonyms": [
-        "CheckoutPanel",
-        "CheckoutSheet",
-        "initiateRazorpayPayment",
-        "useCheckout"
+        "Header logout",
+        "useInactivityLogout",
+        "React Query cache clear"
       ],
-      "description": "Collects contact/shipping details, initiates Razorpay Checkout (test mode), then creates an order in the canister and clears the cart on success; shows an order-confirmation screen with the order ID.",
-      "reqIds": [],
+      "description": "Logout clears OTP session/return path/flash message, clears Internet Identity state, clears React Query cache, and redirects to /login?tab=signin; optional inactivity timeout auto-logs out with a message.",
+      "reqIds": [
+        "REQ-9",
+        "REQ-10"
+      ],
       "version": 1
     },
     {
       "id": "IF-24",
-      "title": "Order history UI with year/month filtering and details dialog",
+      "title": "User dashboard (profile editing, addresses UI, orders list + details)",
       "synonyms": [
-        "DashboardPage orders tab",
-        "useGetOrdersByYearMonth"
+        "DashboardPage",
+        "useUserProfile",
+        "Order details dialog"
       ],
-      "description": "Fetches orders for the authenticated user and displays them with a year/month filter selector and a details dialog showing shipping and payment info.",
+      "description": "Provides a protected dashboard with profile load/save (backend-first with localStorage fallback), address management UI, and canister-backed order history with a details dialog.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-25",
-      "title": "Storefront authentication with simulated OTP + WebOTP assistance + lockout",
+      "title": "Admin panel access gating and layout shell",
       "synonyms": [
-        "LoginPage OTP flow",
-        "useStorefrontAuth",
-        "useWebOtp",
-        "useOtpCountdown",
-        "OtpLockoutModal",
-        "WebOtpPermissionModal"
+        "AdminGate",
+        "AdminLayout",
+        "adminGuard",
+        "principalFormat"
       ],
-      "description": "Implements a simulated phone OTP flow with 2-minute expiry, optional WebOTP auto-read, manual-entry assistance modal, 3-attempt lockout with countdown, flash messages, and return-path handling for protected routes/actions.",
+      "description": "Admin routes require Internet Identity; unauthorized users are redirected to /admin/login. Admin UI includes a header with principal display + logout and a sidebar navigation shell.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-26",
-      "title": "Protected routes and auth redirect utilities",
+      "title": "Admin products state management with canister-backed CRUD and storefront sync",
       "synonyms": [
-        "ProtectedRoute",
-        "useAuthRedirect",
-        "flash message + return path"
+        "AdminProductsProvider",
+        "backendProductToAdmin",
+        "adminFormToBackendProduct"
       ],
-      "description": "Guards protected pages and actions by redirecting unauthenticated users to /login?tab=signin while storing a return path and a deduplicated flash message.",
+      "description": "Loads products from the canister and exposes create/update/delete/bulkCreate with loading/error states and toasts; refresh invalidates storefront product queries to keep storefront in sync.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-27",
-      "title": "User dashboard profile persistence with backend-first and localStorage fallback",
+      "title": "Admin product management UI (list, create, edit, delete, confirmation)",
       "synonyms": [
-        "useUserProfile",
-        "getCallerUserProfile",
-        "saveCallerUserProfile"
+        "AdminProductsPage",
+        "AdminProductCreatePage",
+        "AdminProductEditPage",
+        "AlertDialog"
       ],
-      "description": "Loads/saves user profile data via the canister when authenticated (Internet Identity), falling back to localStorage when backend calls fail or the user is unauthenticated.",
+      "description": "Provides a responsive admin product grid with loading skeletons and error states, plus create/edit forms and delete confirmation dialogs.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-28",
-      "title": "Profile and address input sanitization/validation with premium error toasts",
+      "title": "Admin product form with validation and multi-image dropzone",
       "synonyms": [
-        "inputSanitizers",
-        "validatePersonName",
-        "validatePhoneNumber",
-        "showValidationErrorToast"
+        "ProductForm",
+        "ImageDropzone",
+        "FABRIC_PRESETS",
+        "COLOR_SWATCHES",
+        "SIZE_OPTIONS"
       ],
-      "description": "Sanitizes and validates profile and address form fields (name and phone), blocks saving when invalid, and displays premium-styled error toasts explaining validation failures.",
-      "reqIds": [
-        "REQ-11",
-        "REQ-12"
-      ],
+      "description": "Implements product creation/edit form with required-field validation (including 5–10 images), fabric presets/custom fabric, color swatches, size selection, blouse pairing, and image previews/removal.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-29",
-      "title": "Premium toast system for common storefront errors",
-      "synonyms": [
-        "premiumToasts",
-        "showInvalidOTPToast",
-        "showProfileSaveErrorToast",
-        "showNetworkErrorToast"
-      ],
-      "description": "Provides premium-styled top-right toasts (gold border, luxury dark background, pearl off-white text, timed fade) used across OTP failures, save failures, duplicates, and network errors.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-30",
-      "title": "Notification bell system with unread glow and action-triggered alerts",
-      "synonyms": [
-        "NotificationsProvider",
-        "Header bell dropdown",
-        "useNotifications"
-      ],
-      "description": "Adds an authenticated-only notification bell in the header with unread counter and glow; supports a simple notification list and triggers messages for key actions (Profile updated, Added to cart, Order placed), marking notifications read when opened.",
-      "reqIds": [
-        "REQ-14",
-        "REQ-15",
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-31",
-      "title": "International phone input with country detection and validation",
-      "synonyms": [
-        "InternationalPhoneInput",
-        "detectCountryFromLocale",
-        "phoneValidation"
-      ],
-      "description": "Compact country selector with search, locale/timezone-based default country detection, country-specific digit rules, and E.164 formatting for OTP session creation.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-32",
-      "title": "Admin panel with protected routing, layout, and catalog management",
-      "synonyms": [
-        "AdminGate",
-        "AdminLayout",
-        "AdminArea",
-        "AdminProductsProvider"
-      ],
-      "description": "Admin area protected by Internet Identity and a principal-based frontend guard; includes layout with principal display and logout, dashboard metrics UI, products listing with skeleton/error states, create/edit forms with validation, and delete confirmations; syncs updates to storefront by invalidating product queries.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-33",
-      "title": "Admin bulk upload from CSV/ZIP with client parsing and backend import",
+      "title": "Admin bulk upload from CSV/ZIP to backend bulk import",
       "synonyms": [
         "BulkUploadSection",
         "bulkUploadParsing",
         "zipCsvExtractor"
       ],
-      "description": "Validates and parses CSV (or extracts CSV from ZIP), converts rows to product form data, uploads via adminBulkImportProducts, shows progress UI and success/error toasts, and navigates back to the products list.",
+      "description": "Validates CSV/ZIP inputs, extracts/reads CSV, parses semicolon-delimited multi-values, builds form payloads with placeholders as needed, shows progress UI, and persists via adminBulkImportProducts with exact “X products added” success toast.",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "IF-34",
-      "title": "Admin product form with multi-image dropzone and variant generation inputs",
+      "id": "IF-30",
+      "title": "Premium UI feedback: toast styling, ripple and fly-to-cart animations, save highlights",
       "synonyms": [
-        "ProductForm",
-        "ImageDropzone",
-        "fabric presets",
-        "color swatches",
-        "size options"
-      ],
-      "description": "Admin UI for creating/editing products including required validation, 5–10 image dropzone with previews/removal, fabric presets/custom fabric input, multi-select colors and sizes, blouse pairing field, and category selection.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-35",
-      "title": "Admin save feedback and return highlight animation",
-      "synonyms": [
+        "premiumToasts",
+        "useGoldRipple",
+        "useAddToCartAnimation",
         "useAdminSaveFeedback",
         "adminSaveReturnHighlight"
       ],
-      "description": "Shows toast feedback and temporarily highlights the saved product in the admin list after returning from create/edit, with reduced-motion-aware animation classes.",
+      "description": "Provides luxury feedback effects (styled toasts, gold ripple interactions, fly-to-cart animation) and admin save return highlighting/animation for recent edits.",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "IF-36",
-      "title": "PWA support with service worker app-shell caching",
-      "synonyms": [
-        "manifest.json",
-        "sw.js",
-        "service worker registration"
-      ],
-      "description": "Adds an installable PWA experience with a web app manifest, a service worker that caches core static assets for offline app-shell loading, and runtime fetch caching for same-origin static content (skipping canister/external calls).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-37",
-      "title": "Static SEO root files",
-      "synonyms": [
-        "public/robots.txt",
-        "public/sitemap.xml"
-      ],
-      "description": "Provides robots.txt that allows storefront and blocks admin/dashboard/login, plus a sitemap.xml listing indexable storefront URLs.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-38",
+      "id": "IF-31",
       "title": "Rule-based RaaHi assistant chat widget",
       "synonyms": [
         "RaaHiChatWidget",
         "generateRaaHiResponse"
       ],
-      "description": "Floating assistant widget with session-based auto-greeting, typing simulation, message history, and keyword-based canned responses (no external LLM).",
+      "description": "Floating assistant widget with session-based greeting, typing simulation, message history, reduced-motion handling, and keyword-based canned responses (no external LLM).",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "IF-39",
-      "title": "Inactivity-based auto-logout",
-      "synonyms": [
-        "useInactivityLogout"
-      ],
-      "description": "Optionally logs users out after 30 minutes of inactivity by monitoring common interaction events and triggering a centralized logout flow with a flash message.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-40",
-      "title": "Canister HTTP outcalls helper module",
+      "id": "IF-32",
+      "title": "Motoko HTTP outcalls helper utilities",
       "synonyms": [
         "backend/http-outcalls/outcall.mo",
-        "http_request"
+        "http_request",
+        "transform"
       ],
-      "description": "Provides reusable Motoko helpers for HTTP GET/POST outcalls via the IC management canister, including a response transform that strips headers and cycle budgeting defaults.",
+      "description": "Provides HTTP GET/POST helper functions for IC outcalls with a transform that strips headers and basic idempotency key generation for POST requests.",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-implement-a-full-clean-boot-reset-flow-that-wipes-all-client-side-persisted-state-auth-session-cart-wishlist-and-any-related-local-session-storage-used-by-storefront-auth-and-returns-the-app-to-a-clean-first-run-state",
-      "title": "Implement a “full clean boot” reset flow that wipes all client-side persisted state (auth session, cart, wishlist, and any related local/session storage used by storefront auth) and returns the app to a clean first-run state.",
+      "id": "feature-implement-a-minimal-reusable-error-toast-helper-that-shows-a-top-right-toast-for-errors-with-1-gold-border-2-pearl-off-white-text-color-f5f5f0-and-3-automatic-fade-out-after-4-seconds-use-english-text-and-a-default-message-format-like-error-please-try-again",
+      "title": "Implement a minimal, reusable error-toast helper that shows a top-right toast for errors with: (1) gold border, (2) pearl off-white text color #F5F5F0, and (3) automatic fade-out after 4 seconds. Use English text and a default message format like \"Error: Please try again\".",
       "reqIds": [
-        "REQ-17"
+        "REQ-11"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-an-explicit-emergency-reset-entry-point-that-a-user-can-trigger-even-when-the-app-is-in-a-broken-auth-routing-state-e-g-a-dedicated-route-like-reset-or-a-login-query-flag-which-executes-the-full-clean-boot-reset-and-then-navigates-to-the-sign-in-view",
-      "title": "Add an explicit emergency reset entry point that a user can trigger even when the app is in a broken auth/routing state (e.g., a dedicated route like /reset or a /login query flag) which executes the full clean boot reset and then navigates to the Sign In view.",
+      "id": "feature-wire-the-new-basic-error-toast-into-existing-error-paths-without-changing-routing-auth-flow-ui-layout-show-the-toast-on-invalid-otp-entry-otp-send-verify-failures-internet-identity-login-failures-and-dashboard-profile-save-failures-including-network-actor-errors",
+      "title": "Wire the new basic error toast into existing error paths without changing routing/auth flow/UI layout: show the toast on invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).",
       "reqIds": [
-        "REQ-18"
+        "REQ-12"
       ],
       "version": 1
     },
     {
-      "id": "feature-fix-the-post-login-redirect-behavior-so-that-successful-login-otp-flow-and-internet-identity-flow-navigates-to-dashboard-or-to-a-stored-return-path-if-it-exists-and-is-safe-and-ensure-the-redirect-happens-consistently-without-a-blank-screen-on-first-load",
-      "title": "Fix the post-login redirect behavior so that successful login (OTP flow and Internet Identity flow) navigates to /dashboard (or to a stored return path if it exists and is safe), and ensure the redirect happens consistently without a blank screen on first load.",
+      "id": "feature-keep-the-change-minimal-do-not-add-a-notification-bell-do-not-implement-rate-limiting-and-do-not-add-heavy-logic-preserve-the-existing-theme-hover-effects-and-dashboard-layout-do-not-change-spa-routing-or-authentication-flow",
+      "title": "Keep the change minimal: do not add a notification bell, do not implement rate limiting, and do not add heavy logic. Preserve the existing theme, hover effects, and dashboard layout; do not change SPA routing or authentication flow.",
       "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-resolve-the-dashboard-route-first-load-crash-by-making-dashboard-render-safely-when-auth-state-is-restoring-and-when-backend-query-dependencies-are-not-yet-ready-show-a-non-blank-loading-or-fallback-ui-instead-of-rendering-nothing-or-crashing",
-      "title": "Resolve the dashboard route first-load crash by making /dashboard render safely when auth state is restoring and when backend/query dependencies are not yet ready; show a non-blank loading or fallback UI instead of rendering nothing or crashing.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-reset-flow-also-clears-any-in-memory-caches-that-can-preserve-broken-state-across-navigation-including-react-query-cache-and-then-forces-a-clean-navigation-to-the-login-screen",
-      "title": "Ensure the reset flow also clears any in-memory caches that can preserve broken state across navigation (including React Query cache) and then forces a clean navigation to the login screen.",
-      "reqIds": [
-        "REQ-21"
+        "REQ-13"
       ],
       "version": 1
     }
@@ -542,40 +444,42 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix blank screen immediately after login by resolving dashboard route crash and ensuring auth state restores/redirects to /dashboard reliably.",
+      "summary": "Add minimal global error toast (top-right, gold border, pearl off-white text) shown on invalid OTP/save/network errors; auto-fade after 4s; no routing/auth changes",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-2",
-      "summary": "Add a full clean-boot reset flow that wipes all local client data (auth session, cart, wishlist, etc.) to recover from broken auth/routing states.",
-      "reqIds": [],
+      "id": "AR-5",
+      "summary": "After implementing and deploying the update, provide the draft URL and confirm via a short checklist: (1) no blank screen on login, (2) error toast is visible when triggered (wrong OTP or failed save), and (3) UI is stable.",
+      "reqIds": [
+        "REQ-14"
+      ],
       "status": "pending"
     }
   ],
   "architectural_notes": [
     "Custom lightweight SPA routing via History API (useSpaLocation) instead of React Router.",
-    "TanStack React Query is used for canister data access (queries/mutations) and cache invalidation on identity/actor changes.",
-    "Context providers split client state by domain: CommerceProvider (cart), NotificationsProvider (notification bell), AdminProductsProvider (admin catalog).",
-    "Hybrid authentication model: simulated OTP session for storefront access plus Internet Identity (AuthClient) for canister identity/privileged actions.",
-    "Motoko backend uses a modular RBAC layer (AccessControl + MixinAuthorization) and traps unauthorized calls server-side.",
-    "Frontend uses explicit mapping layers between admin form models, backend canister types, and storefront view models.",
-    "SEO is handled via a custom hook that updates/restores document title, meta description, OpenGraph/Twitter tags, and canonical links on mount/unmount.",
-    "PWA app-shell caching is implemented via a simple service worker that intentionally skips caching canister and external API calls.",
-    "UI/animation system is built around a dark “luxury” theme with extensive Tailwind utilities and prefers-reduced-motion fallbacks.",
-    "Checkout integrates an external payment UI (Razorpay) client-side and then persists orders server-side via canister calls."
+    "TanStack React Query used for backend actor lifecycle, data fetching (products/orders), and cache invalidation on mutations/logout.",
+    "Client state split into Context providers (CommerceProvider for cart; AdminProductsProvider for admin catalog) with localStorage/sessionStorage persistence helpers.",
+    "Hybrid auth model: storefront OTP session (simulated + WebOTP helper) and/or Internet Identity; canister calls use Internet Identity and RBAC initialization via a secret token.",
+    "Backend is a Motoko canister with modular RBAC (AccessControl + MixinAuthorization), plus product catalog and order/profile storage in stable actor state.",
+    "Mapping layer converts AdminProduct form data into backend Product (variants from colors×sizes, bigint/Nat conversions).",
+    "PWA support uses static public assets (manifest.json, sw.js) and runtime registration from App.tsx; service worker avoids caching IC canister API calls.",
+    "Performance/UX emphasizes loading skeletons, lazy-loaded images, and code-splitting (lazy admin routes and product detail route).",
+    "Extensive motion/ambient visuals (canvas backgrounds, hero slider) are built to respect prefers-reduced-motion and reduce re-renders using refs.",
+    "Implement a minimal, reusable error-toast utility (top-right, 4s auto-dismiss) that can be invoked from existing OTP/profile-save/network error handlers without changing routing/auth flow or adding heavy new systems."
   ],
   "known_issues": [
-    "Frontend admin access is gated by a hardcoded ADMIN_PRINCIPAL set to the anonymous principal (\"2vxsx-fae\"), which prevents real admin principals from accessing the admin panel even if backend RBAC grants admin.",
-    "Cart totals are computed from a legacy localStorage product catalog key (\"doraa-admin-products\") rather than the React Query canister product list; totals may be wrong/zero if that cache is absent or stale.",
-    "Backend Order.createOrderRecord uses a fixed timestamp constant, so all orders share the same timestamp.",
-    "Backend getUserOrdersByYearMonth compares epoch-millisecond timestamps against YYYYMMDD-style numeric ranges, so date filtering is incorrect.",
-    "AdminProductsProvider.createProduct refreshes products then searches for the new item using a potentially stale captured `products` array; it may fail to find the created product.",
-    "Storefront product conversion assigns randomized rating/reviewCount on each fetch, leading to inconsistent values across refreshes.",
-    "ZIP CSV extraction is intentionally simplified (assumes uncompressed local file entries); many real ZIP archives will fail to parse.",
-    "RBAC initialization traps if CAFFEINE_ADMIN_TOKEN is not set in the canister environment; misconfigured deployments will break privileged flows.",
-    "AccessControl.getUserRole traps with \"User is not registered\" for principals that have not been initialized/registered, which may cause unexpected failures for authenticated users until initialization runs.",
-    "useRegisterUser() is a stub (no backend call), so explicit user registration is not implemented."
+    "Admin access is gated by a hardcoded principal (ADMIN_PRINCIPAL = \"2vxsx-fae\", the anonymous principal), which effectively blocks real admins unless reconfigured.",
+    "RBAC initialization traps if the canister env var CAFFEINE_ADMIN_TOKEN is not set; deployments without it will fail when initializing access control.",
+    "AccessControl.getUserRole traps for unregistered principals; callers must have run _initializeAccessControlWithSecret before invoking role-protected methods.",
+    "backend/order.mo uses a fixed timestamp constant (1712411343000), so order dates are incorrect.",
+    "getUserOrdersByYearMonth compares timestamps against a YYYYMMDD-like numeric range, so filtering logic is incorrect for real epoch timestamps.",
+    "CommerceProvider computes cartTotal from localStorage key \"doraa-admin-products\"; the authoritative product catalog is now canister-backed, so totals can be wrong unless localStorage is kept in sync.",
+    "Storefront product conversion assigns random rating/reviewCount on each fetch, causing inconsistent UX metrics across refreshes.",
+    "AdminProductsProvider.createProduct awaits refresh but then looks up the new product in a stale closure of `products`, which can fail to find the created product.",
+    "ZIP CSV extraction is a simplified implementation that assumes uncompressed ZIP entries; many real ZIP files will fail to parse.",
+    "Some placeholders are incomplete/empty: useRegisterUser mutation is a no-op; several files are empty stubs (e.g., SangamBackground.tsx, dummyProducts.ts, banarasiGrouping.ts)."
   ],
   "isFixRequest": true,
   "gameProjectType": "none",

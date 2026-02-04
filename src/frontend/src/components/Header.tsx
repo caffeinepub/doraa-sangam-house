@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu, X, LogOut, Bell } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import {
@@ -6,11 +6,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { BRAND_ASSETS, BRAND_NAME } from '../assets/branding';
 import { useState } from 'react';
 import { useGoldRipple } from '../hooks/useGoldRipple';
@@ -20,7 +18,6 @@ import CheckoutSheet from './checkout/CheckoutSheet';
 import { useSpaLocation } from '../hooks/useSpaLocation';
 import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
 import { useQueryClient } from '@tanstack/react-query';
-import { useNotifications } from '../notifications/useNotifications';
 
 export default function Header() {
   const { identity, clear: clearII } = useInternetIdentity();
@@ -32,7 +29,6 @@ export default function Header() {
   const [location, navigate] = useSpaLocation();
   const { isAuthenticated, logout, setFlashMessage, setReturnPath, clearOTPSession, clearReturnPath } = useStorefrontAuth();
   const queryClient = useQueryClient();
-  const { notifications, unreadCount, markAllRead } = useNotifications();
 
   // Don't render public header on admin routes
   if (location.pathname.startsWith('/admin')) {
@@ -92,10 +88,6 @@ export default function Header() {
     }
   };
 
-  const handleNotificationClick = () => {
-    markAllRead();
-  };
-
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-black/80 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60">
@@ -139,57 +131,6 @@ export default function Header() {
                 </Badge>
               )}
             </Button>
-
-            {/* Notification Bell - Only visible when authenticated */}
-            {isAuthenticated && (
-              <DropdownMenu onOpenChange={(open) => open && handleNotificationClick()}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`relative hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px] ${
-                      unreadCount > 0 ? 'notification-bell-glow' : ''
-                    }`}
-                  >
-                    <Bell className="h-5 w-5" />
-                    {unreadCount > 0 && (
-                      <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-accent text-accent-foreground border-0">
-                        {unreadCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80 bg-card/95 backdrop-blur-xl border-border/40">
-                  <div className="px-4 py-3 border-b border-border/40">
-                    <h3 className="font-semibold text-foreground">Notifications</h3>
-                  </div>
-                  <ScrollArea className="max-h-[400px]">
-                    {notifications.length === 0 ? (
-                      <div className="px-4 py-8 text-center text-muted-foreground text-sm">
-                        No notifications yet
-                      </div>
-                    ) : (
-                      notifications.map((notif) => (
-                        <DropdownMenuItem
-                          key={notif.id}
-                          className="px-4 py-3 cursor-default focus:bg-muted/20"
-                        >
-                          <div className="flex flex-col gap-1">
-                            <p className="text-sm text-foreground">{notif.message}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(notif.timestamp).toLocaleTimeString('en-IN', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </p>
-                          </div>
-                        </DropdownMenuItem>
-                      ))
-                    )}
-                  </ScrollArea>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
 
             {/* Profile Icon - Always visible - mobile friendly */}
             <Button

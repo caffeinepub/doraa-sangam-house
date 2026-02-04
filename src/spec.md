@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add a reliable client-side “full clean boot” reset and fix the blank-screen/redirect issues around login and first-load of `/dashboard`.
+**Goal:** Add a minimal, reusable global error toast that appears top-right with a gold border, pearl off-white text (#F5F5F0), and auto-dismisses after ~4 seconds.
 
 **Planned changes:**
-- Implement a full clean-boot reset that clears all client-side persisted auth/storefront state (OTP session/lockout, flash/return path, cart, wishlist, related local/session storage), logs the user out in the app’s Internet Identity context, clears in-memory caches (including React Query), and navigates to Sign In.
-- Add an emergency reset entry point reachable via URL (e.g., `/reset` or a `/login` query flag) that runs the full reset even when routing/auth is broken, then lands on `/login?tab=signin` (or equivalent Sign In state).
-- Fix post-login navigation so both OTP and Internet Identity logins consistently redirect to `/dashboard` by default, or to a stored safe return path when present, and then clear that return path.
-- Harden `/dashboard` first-load behavior so it never becomes a permanent blank screen during auth restoration or while dependencies/data are not ready; show explicit loading and error fallback UI with recovery actions (retry, go to login, run reset).
-- Ensure protected route behavior provides visible feedback during auth restoration instead of rendering `null`/blank.
+- Implement a small reusable frontend error-toast helper that shows an English error message (default like “Error: Please try again”) with gold border, text color #F5F5F0, and 4-second fade/dismiss, preserving the existing Toaster placement.
+- Wire the error-toast helper into existing error paths: invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).
+- Keep UI/routing/auth behavior unchanged and avoid adding new notification UI or heavy logic.
 
-**User-visible outcome:** Users can always recover from broken auth/routing via a URL-triggered reset, and after login they are reliably redirected to `/dashboard` (or a safe return path) without blank screens—even after a hard refresh.
+**User-visible outcome:** When an error occurs (e.g., wrong OTP, failed login, or failed profile save), a styled toast appears in the top-right and fades out after about 4 seconds without any layout shifts or changes to navigation/auth flow.

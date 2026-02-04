@@ -6,15 +6,14 @@ interface PremiumToastOptions {
   duration?: number;
 }
 
-export function showPremiumToast({ message, type = 'info', duration = 4000 }: PremiumToastOptions) {
+export function showPremiumToast({ message, type = 'info', duration = 3000 }: PremiumToastOptions) {
   const baseStyle = {
     background: 'oklch(0.68 0.10 210 / 0.95)',
     border: '2px solid oklch(0.72 0.12 70)',
     color: 'oklch(0.68 0.10 210)',
     backdropFilter: 'blur(12px)',
     boxShadow: '0 0 20px oklch(0.72 0.12 70 / 0.4)',
-    fontWeight: '600',
-    fontSize: '16px',
+    fontWeight: '500',
   };
 
   const toastOptions = {
@@ -33,8 +32,6 @@ export function showPremiumToast({ message, type = 'info', duration = 4000 }: Pr
         background: 'rgba(0, 0, 0, 0.85)',
         border: '2px solid oklch(0.72 0.12 70)',
         color: 'oklch(0.96 0.005 60)',
-        fontWeight: '600',
-        fontSize: '16px',
       },
     });
   } else if (type === 'success') {
@@ -44,8 +41,6 @@ export function showPremiumToast({ message, type = 'info', duration = 4000 }: Pr
         background: 'rgba(0, 0, 0, 0.85)',
         border: '2px solid oklch(0.72 0.12 70)',
         color: 'oklch(0.96 0.005 60)',
-        fontWeight: '600',
-        fontSize: '16px',
       },
     });
   } else {
@@ -86,30 +81,6 @@ export function showProfileSaveErrorToast() {
   showPremiumToast({
     message: 'Failed to save. Try again.',
     type: 'error',
-    duration: 4000,
-  });
-}
-
-export function showInvalidOTPToast() {
-  showPremiumToast({
-    message: 'Invalid OTP. Please try again.',
-    type: 'error',
-    duration: 4000,
-  });
-}
-
-export function showNetworkErrorToast() {
-  showPremiumToast({
-    message: 'Network error. Please check your connection.',
-    type: 'error',
-    duration: 4000,
-  });
-}
-
-export function showValidationErrorToast(message: string) {
-  showPremiumToast({
-    message,
-    type: 'error',
-    duration: 4000,
+    duration: 3000,
   });
 }

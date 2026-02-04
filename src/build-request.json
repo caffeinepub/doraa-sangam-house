@@ -1,109 +1,95 @@
 {
   "kind": "build_request",
-  "title": "Add full clean-boot reset and fix blank screen after login with reliable /dashboard redirect",
+  "title": "Phase 7 (Minimal): Basic global error toasts (top-right, gold border, pearl text, 4s fade)",
   "priority": "high",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Implement a “full clean boot” reset flow that wipes all client-side persisted state (auth session, cart, wishlist, and any related local/session storage used by storefront auth) and returns the app to a clean first-run state.",
+      "id": "REQ-11",
+      "text": "Implement a minimal, reusable error-toast helper that shows a top-right toast for errors with: (1) gold border, (2) pearl off-white text color #F5F5F0, and (3) automatic fade-out after 4 seconds. Use English text and a default message format like \"Error: Please try again\".",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-1"
         ],
         "quotes": [
-          "Wipe everything for a fully clean boot. Reset all data (cart, wishlist, session) — I don't mind losing temporary items."
+          "Add basic error toasts: - On any error (invalid OTP, save fail, network) show top-right toast: - Gold border, pearl off-white text (#F5F5F0) - Message example: \"Error: Please try again\" - Fade out after 4 seconds"
         ]
       },
       "acceptanceCriteria": [
-        "After invoking the reset flow, the following are cleared from browser storage: OTP session, flash message, return path, OTP lockout state/attempts, cart, and wishlist.",
-        "After invoking the reset flow, the user is logged out of Internet Identity in the app context (if previously logged in).",
-        "After invoking the reset flow, navigating to /dashboard redirects to /login and does not show a blank screen."
+        "Triggering the helper displays a toast in the top-right corner (existing Toaster placement is preserved).",
+        "Toast text color is exactly #F5F5F0 and the toast has a gold border.",
+        "Toast fades out and is fully dismissed after ~4 seconds."
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Add an explicit emergency reset entry point that a user can trigger even when the app is in a broken auth/routing state (e.g., a dedicated route like /reset or a /login query flag) which executes the full clean boot reset and then navigates to the Sign In view.",
+      "id": "REQ-12",
+      "text": "Wire the new basic error toast into existing error paths without changing routing/auth flow/UI layout: show the toast on invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-20"
+          "msg-1"
         ],
         "quotes": [
-          "Reset all data (cart, wishlist, session)"
+          "On any error (invalid OTP, save fail, network) show top-right toast",
+          "Do NOT change routing, auth flow, or add new components."
         ]
       },
       "acceptanceCriteria": [
-        "There is a documented, testable way to trigger the reset using only the browser URL (no prior navigation required).",
-        "After triggering the reset entry point, the app ends on /login?tab=signin (or equivalent Sign In state) and renders normally."
+        "Entering a wrong OTP triggers the error toast.",
+        "Forcing a profile save failure (e.g., actor/network failure) triggers the error toast.",
+        "Existing pages (login/dashboard/admin/storefront) remain visually stable with no layout shifts introduced by the change."
       ]
     },
     {
-      "id": "REQ-19",
-      "text": "Fix the post-login redirect behavior so that successful login (OTP flow and Internet Identity flow) navigates to /dashboard (or to a stored return path if it exists and is safe), and ensure the redirect happens consistently without a blank screen on first load.",
+      "id": "REQ-13",
+      "text": "Keep the change minimal: do not add a notification bell, do not implement rate limiting, and do not add heavy logic. Preserve the existing theme, hover effects, and dashboard layout; do not change SPA routing or authentication flow.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-19",
-          "msg-20"
+          "msg-1"
         ],
         "quotes": [
-          "Please force reset auth state, fix dashboard route, and make login load /dashboard properly without crash.",
-          "Wipe everything for a fully clean boot. Reset all data (cart, wishlist, session) — I don't mind losing temporary items."
+          "No notification bell, no rate limiting, no heavy logic.",
+          "Keep existing theme, hovers, dashboard layout.",
+          "Do NOT change routing, auth flow, or add new components."
         ]
       },
       "acceptanceCriteria": [
-        "After successful OTP verification, the app navigates to /dashboard when no return path is set.",
-        "After successful Internet Identity login, the app navigates to /dashboard when no return path is set.",
-        "If a return path exists, it is used instead of /dashboard, and the return path is cleared after navigation.",
-        "A hard refresh immediately after login does not produce a blank screen and the user remains on a valid route."
+        "No new notification/bell UI is present anywhere.",
+        "No rate-limiting logic is introduced.",
+        "Navigation/routing behavior remains identical to the current reverted working version."
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Resolve the dashboard route first-load crash by making /dashboard render safely when auth state is restoring and when backend/query dependencies are not yet ready; show a non-blank loading or fallback UI instead of rendering nothing or crashing.",
-      "target": "frontend",
+      "id": "REQ-14",
+      "text": "After implementing and deploying the update, provide the draft URL and confirm via a short checklist: (1) no blank screen on login, (2) error toast is visible when triggered (wrong OTP or failed save), and (3) UI is stable.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-19"
+          "msg-1"
         ],
         "quotes": [
-          "The blank screen is still there after hard refresh and revert. Please force reset auth state, fix dashboard route, and make login load /dashboard properly without crash."
+          "After update: - Give draft URL. - Confirm: - No blank screen on login. - Error toast visible when triggered (test with wrong OTP or failed save). - UI stable."
         ]
       },
       "acceptanceCriteria": [
-        "Navigating to /dashboard never results in a permanently blank screen; if data is loading, a visible loading state is rendered.",
-        "If an error occurs while loading dashboard data, a visible error state is rendered with a recovery action (e.g., go to login, retry, or run reset).",
-        "ProtectedRoute does not leave the UI in a silent null-render state without any visible feedback during auth restoration."
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "Ensure the reset flow also clears any in-memory caches that can preserve broken state across navigation (including React Query cache) and then forces a clean navigation to the login screen.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-20"
-        ],
-        "quotes": [
-          "Reset all data (cart, wishlist, session)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After reset, React Query cache is cleared and subsequent page loads re-fetch data normally.",
-        "After reset, the login page works without requiring an additional manual refresh."
+        "A draft URL is provided after deployment.",
+        "Confirmation explicitly states: no blank screen on login; toast visible on wrong OTP and failed save; UI stable."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files in frontend immutablePaths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*.",
-    "Respect the custom SPA routing approach (no React Router introduction).",
-    "Backend remains single-actor; do not introduce additional backend services or external databases."
+    "Do not change SPA routing, route paths, or navigation behavior.",
+    "Do not change the authentication flow logic (OTP flow and Internet Identity flow must remain functionally the same).",
+    "Do not add new UI components (compose existing infrastructure/utilities only).",
+    "Preserve existing theme tokens, hover effects, and dashboard layout.",
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*."
   ],
   "nonGoals": [
-    "Do not delete or modify canister-stored data such as existing orders, product catalog, or user profiles; the reset is client-side only.",
-    "Do not change Razorpay payment behavior beyond what is required to prevent crashes related to routing/auth boot state.",
-    "Do not implement third-party authentication providers; Internet Identity remains the only supported identity provider."
+    "Notification bell or any notification center UI.",
+    "Rate limiting / throttling / lockout logic beyond what already exists.",
+    "Any backend changes or schema migrations.",
+    "Any redesign of login/dashboard/admin layouts."
   ],
   "imageRequirements": {
     "required": [],

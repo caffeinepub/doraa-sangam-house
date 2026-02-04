@@ -1,162 +1,111 @@
-# Storefront Login & Authentication Verification Checklist
+# Storefront Login Verification Checklist
 
-## Emergency Reset Entry Points
+This document provides a comprehensive checklist for verifying the updated storefront login functionality after deployment.
 
-### /reset Route
-- [ ] Navigate to `/reset` in browser
-- [ ] Verify reset page loads with progress UI
-- [ ] Confirm all localStorage keys are cleared
-- [ ] Confirm sessionStorage is cleared
-- [ ] Verify React Query cache is cleared
-- [ ] Verify Internet Identity session is cleared
-- [ ] Confirm automatic redirect to `/login?tab=signin` after reset
-- [ ] Verify login page loads normally after reset
+## Deployment URL
+After deployment, record the updated draft/live URL here:
+- **Draft URL**: [To be filled from deployment output]
+- **Live URL**: [To be filled from deployment output]
 
-### /login?reset=1 Parameter
-- [ ] Navigate to `/login?reset=1` in browser
-- [ ] Verify reset executes before login UI loads
-- [ ] Confirm all state is cleared
-- [ ] Verify final URL is `/login?tab=signin`
-- [ ] Confirm login page works without manual refresh
+## Verification Checklist
 
-## Post-Login Navigation
+### 1. Country Code Dropdown (Compact Design)
+- [ ] Country selector trigger is visibly narrower (120px width) than phone input
+- [ ] Trigger shows small flag icon + dial code only (e.g., 🇮🇳 +91)
+- [ ] Dropdown panel is compact (300px width, 240px height)
+- [ ] Dropdown list is scrollable and searchable
+- [ ] Each dropdown item shows flag, country name, and dial code
+- [ ] Golden hover/glow effect appears on country selector button
+- [ ] Auto-detection defaults to India (+91) or detected country on first load
 
-### OTP Login Flow
-- [ ] Complete OTP verification successfully
-- [ ] Verify navigation to `/dashboard` when no return path exists
-- [ ] Verify return path is cleared after navigation
-- [ ] Hard refresh on dashboard - confirm no blank screen
-- [ ] Verify dashboard loads normally after refresh
+### 2. Sign In / Sign Up Button Navigation
+- [ ] Clicking "Sign In" button in header navigates to `/login?tab=signin`
+- [ ] Sign In tab is active immediately on page load
+- [ ] Sign In form (phone input + Send OTP) is visible instantly (no blank state)
+- [ ] Clicking "Sign Up" button in header navigates to `/login?tab=signup`
+- [ ] Sign Up tab is active immediately on page load
+- [ ] Sign Up form (name, email, phone + Send OTP) is visible instantly (no blank state)
+- [ ] Switching between tabs works smoothly without stuck states
+- [ ] Mobile menu Sign In / Sign Up buttons work correctly
 
-### Internet Identity Login Flow
-- [ ] Complete Internet Identity login successfully
-- [ ] Verify navigation to `/dashboard` when no return path exists
-- [ ] Verify return path is cleared after navigation
-- [ ] Hard refresh on dashboard - confirm no blank screen
-- [ ] Verify dashboard loads normally after refresh
+### 3. Internet Identity Login (Passkey)
+- [ ] "Login with Internet Identity" button is visible below OTP forms
+- [ ] Helper text "Secure password-less login with your device" is displayed
+- [ ] Clicking button opens Internet Identity authentication flow
+- [ ] Button shows spinner/loading state during authentication
+- [ ] Button is disabled during authentication (no double-submit)
+- [ ] Successful authentication redirects to `/dashboard`
+- [ ] No error messages appear when already authenticated
+- [ ] No repeated "authenticated" messages during navigation
 
-### Return Path Behavior
-- [ ] Navigate to protected route (e.g., `/dashboard`) while logged out
-- [ ] Verify redirect to `/login?tab=signin` with flash message
-- [ ] Complete login (OTP or II)
-- [ ] Verify navigation back to original protected route
-- [ ] Confirm return path is cleared after successful navigation
+### 4. OTP Flow (Simulated)
+- [ ] Send OTP button triggers OTP generation
+- [ ] OTP is logged to console (for testing)
+- [ ] Alert shows OTP in test mode
+- [ ] OTP entry UI has 6 slots with auto-advance
+- [ ] 2-minute countdown timer displays correctly
+- [ ] Expired OTP shows error message and blocks verification
+- [ ] Incorrect OTP shows remaining attempts (3 total)
+- [ ] After 3 failed attempts, lockout modal appears
+- [ ] Lockout modal shows 10-minute countdown
+- [ ] During lockout, Send OTP and Verify OTP are blocked
+- [ ] Correct OTP verification redirects to `/dashboard`
+- [ ] Golden hover/glow on Send OTP and Verify OTP buttons
 
-## Protected Route Loading States
+### 5. Sign Up Additional Fields
+- [ ] Sign Up tab shows Name input (optional)
+- [ ] Sign Up tab shows Email input (optional)
+- [ ] Name validation: if provided, must be 2+ characters
+- [ ] Email validation: if provided, must be valid email format
+- [ ] Validation errors display inline below fields
+- [ ] Send OTP is blocked if validation fails
+- [ ] Switching from Sign Up to Sign In resets form state
 
-### ProtectedRoute Component
-- [ ] Navigate to `/dashboard` while logged out
-- [ ] Verify visible "Verifying Access" loading card appears
-- [ ] Confirm no blank screen during auth check
-- [ ] Verify smooth redirect to login with visible UI feedback
-- [ ] Hard refresh on `/dashboard` while logged in
-- [ ] Confirm loading state appears briefly
-- [ ] Verify dashboard loads without blank screen
+### 6. Phone Number Validation
+- [ ] India (+91) requires exactly 10 digits
+- [ ] India numbers must start with 6-9
+- [ ] Changing country updates validation rules immediately
+- [ ] Validation error displays inline with pearl blue text and gold border
+- [ ] Invalid phone blocks Send OTP button
 
-### Dashboard Error Handling
-- [ ] Simulate network error during orders fetch
-- [ ] Verify error alert appears with recovery message
-- [ ] Confirm no blank screen on error
-- [ ] Test retry action works correctly
+### 7. Responsive Design
+- [ ] Login page is responsive on mobile (320px+)
+- [ ] Country selector and phone input align cleanly on mobile
+- [ ] No horizontal overflow on small screens
+- [ ] Buttons are touch-friendly on mobile
+- [ ] Modals (lockout, permission) display correctly on mobile
 
-## Logout & Reset
-
-### Dashboard Logout
-- [ ] Click logout button on dashboard
-- [ ] Verify all state is cleared (cart, wishlist, session)
-- [ ] Verify React Query cache is cleared
-- [ ] Verify Internet Identity session is cleared
-- [ ] Confirm navigation to `/login?tab=signin`
-- [ ] Verify login page works without manual refresh
-
-### Full Clean Boot Reset
-- [ ] Trigger reset via `/reset` route
-- [ ] Verify all localStorage keys are cleared:
-  - `doraa-otp-session`
-  - `doraa-flash-message`
-  - `doraa-return-path`
-  - `doraa-otp-lockout`
-  - `doraa-otp-attempts`
-  - `doraa-cart`
-  - `wishlist`
-  - `doraa_user_profile_local`
-- [ ] Verify sessionStorage is cleared
-- [ ] Confirm in-memory state is reset
-- [ ] Verify app works normally after reset
-
-## Safe Return Path Validation
-
-### Unsafe Path Blocking
-- [ ] Attempt to store `/login` as return path - verify blocked
-- [ ] Attempt to store `/reset` as return path - verify blocked
-- [ ] Attempt to store `/admin` as return path - verify blocked
-- [ ] Verify fallback to `/dashboard` for unsafe paths
-
-### Safe Path Storage
-- [ ] Navigate to `/dashboard` while logged out
-- [ ] Verify `/dashboard` is stored as return path
-- [ ] Complete login
-- [ ] Confirm navigation to `/dashboard`
-
-## Compact Country Dropdown (from previous verification)
-- [ ] Country selector width is 120px
-- [ ] Flag emoji and dial code display correctly
-- [ ] Dropdown opens with 300px × 240px dimensions
-- [ ] Search functionality works
-- [ ] Golden hover glow on selector
-
-## Sign In / Sign Up Navigation
-- [ ] URL `/login` defaults to Sign In tab
-- [ ] URL `/login?tab=signin` shows Sign In tab
-- [ ] URL `/login?tab=signup` shows Sign Up tab
-- [ ] Tab switching works correctly
-- [ ] State is preserved per tab
-
-## Internet Identity Passkey Login
-- [ ] Click "Login with Internet Identity" button
-- [ ] Verify redirect to Internet Identity
-- [ ] Complete authentication
-- [ ] Verify redirect to dashboard (not home)
-- [ ] Confirm user is authenticated
-
-## OTP Flow with Lockout Modal
-- [ ] Enter valid phone number
-- [ ] Click "Send OTP"
-- [ ] Receive OTP (check console/alert)
-- [ ] Enter wrong OTP 3 times
-- [ ] Verify lockout modal appears
-- [ ] Confirm 10-minute countdown displays
-- [ ] Verify modal auto-dismisses when lockout expires
-
-## Golden Hover/Glow Effects
+### 8. Golden Hover/Glow Effects
+- [ ] Sign In button has gold-pulse-glow animation
+- [ ] Sign Up button has gold-pulse-glow animation
+- [ ] Send OTP button has gold-pulse-glow animation
+- [ ] Verify OTP button has gold-pulse-glow animation
+- [ ] Login with Internet Identity button has gold-pulse-glow animation
 - [ ] Country selector has golden hover glow
-- [ ] "Send OTP" button has gold-pulse-glow
-- [ ] "Verify OTP" button has gold-pulse-glow
-- [ ] "Login with Internet Identity" button has gold-pulse-glow
+- [ ] Logout button has gold-pulse-glow animation
 
-## Responsive Design
-- [ ] Test on mobile (< 640px)
-- [ ] Test on tablet (640px - 1024px)
-- [ ] Test on desktop (> 1024px)
-- [ ] Verify all elements are accessible
-- [ ] Confirm touch targets are at least 44px
+### 9. Error Handling
+- [ ] Auth errors display in premium styled alerts
+- [ ] No layout jumps when errors appear
+- [ ] "Already authenticated" errors are suppressed
+- [ ] Network errors show user-friendly messages
+- [ ] Lockout errors trigger modal and toast
 
-## Error Handling
-- [ ] Invalid phone number shows inline error
-- [ ] Expired OTP shows error message
-- [ ] Network error shows user-friendly message
-- [ ] Lockout state prevents further attempts
+### 10. Accessibility & Motion
+- [ ] All buttons are keyboard accessible
+- [ ] Tab navigation works correctly
+- [ ] Reduced motion users see simplified animations
+- [ ] Screen readers can navigate forms
+- [ ] Focus indicators are visible
 
-## Accessibility
-- [ ] All form fields have labels
-- [ ] Error messages are announced
-- [ ] Keyboard navigation works
-- [ ] Focus states are visible
+## Notes
+- OTP flow is currently simulated (no real SMS delivery)
+- Backend integration for OTP verification is pending
+- Internet Identity uses @dfinity/auth-client for passkey authentication
+- All authentication state is managed via localStorage and Internet Identity
 
----
-
-**Test Environment:** [Draft/Live URL]  
-**Tested By:** [Name]  
-**Date:** [Date]  
-**Status:** [ ] Pass / [ ] Fail  
-**Notes:**
+## Deployment Output Reference
+After running deployment, capture the following from the output:
+- Draft canister URL
+- Live canister URL
+- Any deployment warnings or errors
