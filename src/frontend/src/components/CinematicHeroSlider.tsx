@@ -9,18 +9,18 @@ import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion';
 const slides = [
   {
     id: 1,
-    title: 'Crafted for You, Delivered with Care.',
-    subtitle: 'Where heritage meets modern lifestyle.',
+    title: 'Crafted for You',
+    subtitle: 'Delivered with Care',
   },
   {
     id: 2,
-    title: 'Crafted for You, Delivered with Care.',
-    subtitle: 'Where heritage meets modern lifestyle.',
+    title: 'Heritage Meets Elegance',
+    subtitle: 'Delivered with Care',
   },
   {
     id: 3,
-    title: 'Crafted for You, Delivered with Care.',
-    subtitle: 'Where heritage meets modern lifestyle.',
+    title: 'Timeless Traditions',
+    subtitle: 'Delivered with Care',
   },
 ];
 

@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import {
@@ -15,14 +15,23 @@ import { useGoldRipple } from '../hooks/useGoldRipple';
 import { useCommerce } from '../hooks/useCommerce';
 import CartSheet from './cart/CartSheet';
 import CheckoutSheet from './checkout/CheckoutSheet';
+import { useSpaLocation } from '../hooks/useSpaLocation';
+import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
 
 export default function Header() {
-  const { identity, login, clear, isLoginSuccess } = useInternetIdentity();
+  const { identity, clear: clearII } = useInternetIdentity();
   const { cartItemCount } = useCommerce();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const { createRipple } = useGoldRipple();
+  const [location, navigate] = useSpaLocation();
+  const { isAuthenticated, logout } = useStorefrontAuth();
+
+  // Don't render public header on admin routes
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   const navLinks = [
     { href: '#home', label: 'Home' },
@@ -41,6 +50,15 @@ export default function Header() {
   const handleCheckout = () => {
     setCartOpen(false);
     setCheckoutOpen(true);
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = async () => {
+    await logout(clearII);
+    navigate('/login');
   };
 
   return (
@@ -87,29 +105,46 @@ export default function Header() {
               )}
             </Button>
 
-            {isLoginSuccess ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-primary/10 hover:text-primary transition-all duration-300"
-                  >
-                    <User className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border-border/40">
-                  <DropdownMenuItem
-                    onClick={clear}
-                    className="cursor-pointer hover:bg-primary/10 hover:text-primary"
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            {isAuthenticated ? (
+              <>
+                <Button
+                  onClick={handleLogout}
+                  size="sm"
+                  variant="ghost"
+                  className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-primary/10 hover:text-primary transition-all duration-300"
+                    >
+                      <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-card/95 backdrop-blur-xl border-border/40">
+                    <DropdownMenuItem
+                      onClick={() => navigate('/dashboard')}
+                      className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                    >
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer hover:bg-primary/10 hover:text-primary"
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <Button
-                onClick={login}
+                onClick={handleLoginClick}
                 size="sm"
                 className="hidden md:inline-flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
               >
@@ -139,10 +174,33 @@ export default function Header() {
                       {link.label}
                     </a>
                   ))}
-                  {!isLoginSuccess && (
+                  {isAuthenticated ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          navigate('/dashboard');
+                          setMobileMenuOpen(false);
+                        }}
+                        className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"
+                      >
+                        Dashboard
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        variant="outline"
+                        className="text-primary border-primary hover:bg-primary/10 transition-all duration-300"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
                     <Button
                       onClick={() => {
-                        login();
+                        handleLoginClick();
                         setMobileMenuOpen(false);
                       }}
                       className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300"

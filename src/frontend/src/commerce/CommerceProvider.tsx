@@ -15,12 +15,20 @@ export interface CommerceContextType {
   clearCart: () => void;
   cartTotal: number;
   cartItemCount: number;
+  isInCart: (productId: string) => boolean;
 }
 
 export const CommerceContext = createContext<CommerceContextType | null>(null);
 
 export function CommerceProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useLocalStorageState<CartItem[]>('doraa-cart', []);
+
+  const isInCart = useCallback(
+    (productId: string) => {
+      return cart.some((item) => item.productId === productId);
+    },
+    [cart]
+  );
 
   const addToCart = useCallback(
     (productId: string, quantity: number) => {
@@ -80,8 +88,9 @@ export function CommerceProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       cartTotal,
       cartItemCount,
+      isInCart,
     }),
-    [cart, addToCart, updateQuantity, removeFromCart, clearCart, cartTotal, cartItemCount]
+    [cart, addToCart, updateQuantity, removeFromCart, clearCart, cartTotal, cartItemCount, isInCart]
   );
 
   return <CommerceContext.Provider value={value}>{children}</CommerceContext.Provider>;

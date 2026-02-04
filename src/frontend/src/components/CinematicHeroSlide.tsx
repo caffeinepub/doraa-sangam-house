@@ -3,6 +3,7 @@ import PearlShimmerParticles from './hero/PearlShimmerParticles';
 import ProductSilhouetteLayer from './hero/ProductSilhouetteLayer';
 import GoldWaveLayer from './hero/GoldWaveLayer';
 import LetterRevealText from './LetterRevealText';
+import RollerTagline from './hero/RollerTagline';
 import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion';
 
 interface Slide {
@@ -98,7 +99,7 @@ export default function CinematicHeroSlide({
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
 
-        <div className="relative z-10 max-w-5xl mx-auto text-center space-y-6">
+        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center space-y-6">
           {/* Headline with letter reveal */}
           <LetterRevealText
             text={slide.title}
@@ -106,16 +107,20 @@ export default function CinematicHeroSlide({
             className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-foreground"
           />
 
-          {/* Subtitle */}
-          <p
-            className={`text-xl md:text-2xl lg:text-3xl text-primary font-light tracking-wide transition-all duration-700 delay-500 ${
+          {/* Tagline with roller hover animation */}
+          <div
+            className={`flex items-center justify-center transition-all duration-700 delay-500 ${
               isActive
                 ? 'opacity-100 translate-y-0'
                 : 'opacity-0 translate-y-4'
             }`}
           >
-            {slide.subtitle}
-          </p>
+            <RollerTagline
+              text={slide.subtitle}
+              isActive={isActive}
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wide"
+            />
+          </div>
 
           {/* CTAs */}
           <div

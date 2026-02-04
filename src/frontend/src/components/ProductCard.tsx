@@ -7,10 +7,14 @@ import { toast } from 'sonner';
 import { useAddToCartAnimation } from '../hooks/useAddToCartAnimation';
 import { useGoldRipple } from '../hooks/useGoldRipple';
 import { useWishlist } from '../hooks/useWishlist';
+import { useCommerce } from '../hooks/useCommerce';
 import { useRef, useState } from 'react';
 import { DUMMY_PRODUCTS } from '../data/dummyProducts';
 import { BanarasiQuickDetailsOverlay } from './banarasi/BanarasiQuickDetailsOverlay';
 import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
+import { useSpaLocation } from '../hooks/useSpaLocation';
+import { showDuplicateFavoriteToast, showDuplicateCartToast } from '../utils/premiumToasts';
 
 interface ProductCardProps {
   productId: string;
@@ -23,20 +27,35 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   const addToCart = useAddToCart();
   const { animate } = useAddToCartAnimation();
   const { createRipple } = useGoldRipple();
-  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isInWishlist, addToWishlist } = useWishlist();
+  const { isInCart } = useCommerce();
   const imageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const [showQuickDetails, setShowQuickDetails] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { requireAuth } = useAuthRedirect();
+  const [, navigate] = useSpaLocation();
 
   if (!product) return null;
 
   const isBanarasi = product.category === 'banarasi';
   const inWishlist = isInWishlist(productId);
+  const inCart = isInCart(productId);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    
+    if (!requireAuth(navigate, window.location.pathname)) {
+      return;
+    }
+
+    // Check for duplicate
+    if (inCart) {
+      showDuplicateCartToast();
+      return;
+    }
+
     createRipple(e);
 
     if (imageRef.current) {
@@ -69,9 +88,20 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
 
   const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    
+    if (!requireAuth(navigate, window.location.pathname)) {
+      return;
+    }
+
+    // Check for duplicate - only add, never remove
+    if (inWishlist) {
+      showDuplicateFavoriteToast();
+      return;
+    }
+
     createRipple(e);
-    toggleWishlist(productId);
-    toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
+    addToWishlist(productId);
+    toast.success('Added to wishlist');
   };
 
   const handleImageClick = (e: React.MouseEvent) => {
@@ -167,18 +197,18 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
           <Button
             variant="outline"
             size="icon"
-            className={`ripple-container transition-all duration-300 action-icon-glow ${
+            className={`ripple-container transition-all duration-300 action-icon-glow gold-pulse-glow ${
               inWishlist
                 ? 'bg-accent/20 border-accent text-accent hover:bg-accent/30 shadow-glow-gold'
                 : 'hover:bg-primary/10 hover:border-primary hover:text-primary hover:shadow-glow-pearl'
             }`}
             onClick={handleWishlistToggle}
-            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-label={inWishlist ? 'Already in wishlist' : 'Add to wishlist'}
           >
             <Heart className={`h-4 w-4 transition-all duration-300 ${inWishlist ? 'fill-current scale-110' : ''}`} />
           </Button>
           <Button
-            className="ripple-container flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 action-icon-glow"
+            className="ripple-container flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 action-icon-glow gold-pulse-glow"
             onClick={handleAddToCart}
             disabled={product.stock === 0 || addToCart.isPending}
           >

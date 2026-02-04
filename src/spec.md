@@ -1,18 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Expand the Banarasi saree catalog to ~150 products and elevate the Collections/product browsing experience with richer animations, improved product card interactions, and enhanced quick-details—while keeping everything client-side and responsive.
+**Goal:** Upgrade the /login phone number entry to a premium international phone input with country auto-detection, searchable country selection, and per-country validation while preserving the existing OTP flow and styling.
 
 **Planned changes:**
-- Expand the static Banarasi product dataset to ~150 items and ensure it’s fully wired into all existing product render paths (collections sliders/sections, grids, quick view, PDP overlay, wishlist, cart).
-- Add a client-side heuristic auto-grouping mechanism to assign each product to exactly one creative collection (e.g., Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold) and render separate collection sections/sliders with accurate counts.
-- Update the Collections browsing flow with scroll reveal per category, gold wave transitions between sections, and horizontal carousels supporting arrows, dots, and optional autoplay/auto-swipe (respecting prefers-reduced-motion).
-- Enhance product card visuals to a consistent mannequin/on-model-style presentation, with hover/focus spin/zoom and fabric ripple effects that are performant and reduced-motion friendly.
-- Improve product card hover micro-interactions (lift, pearl-blue + gold glow border, subtle scale, micro-ripple under image) without layout shift; add glowing/pulsing wishlist and add-to-cart icons.
-- Implement a clear “saree flows/fly-to-cart” success animation tied to the cart icon/badge area on add-to-cart (reduced-motion friendly).
-- Expand the quick-details overlay to include: color swatches, pattern name, fabric label (“Banarasi Silk”), price, size chart dropdown/accordion, blouse pairing suggestions, star rating + reviews count, share action, COD badge, and express delivery tag (English labels).
-- Ensure image click supports a zoom-lens style interaction and provides a clear path to open the full product detail view (PDP overlay), preserving existing quick view behavior.
-- Polish the overall Banarasi showcase styling toward a dark luxury look (dark black background, pearl shimmer particle ambience, cinematic scroll reveals) while maintaining responsiveness.
-- Improve performance/SEO behavior by making images responsive + lazy-loaded and updating document title/meta description appropriately for overlay-based product detail navigation.
+- Replace the plain phone number input in both Sign In and Sign Up tabs on /login with a responsive two-part control: a left country selector (flag + country name + dial code) and a right phone number input, including a searchable dropdown with at least 20 popular countries (must include India +91, US +1, UK +44, UAE +971).
+- Auto-detect and pre-select the user’s country on /login page load using browser-based hints; if unsupported/unknown, default to India (+91) and show the flag + dial code immediately on render.
+- Add per-country phone validation on blur and on “Send OTP” click; block OTP progression when invalid and show an inline error under the phone input group with exact text: “Please enter a valid [country] mobile number”, styled with pearl-blue text and a gold border treatment.
+- Update styling of the new phone input group to match the existing dark luxury theme (black/dark backgrounds, pearl-blue #7FB3D5 accents, gold #D4AF37 hover/glow), keep the existing continuous gold pulse/glow on the Send OTP button, and ensure the control is fully responsive with no overflow on mobile.
+- Keep the existing OTP login flow behavior intact (including attempt counting and 10-minute lockout), and store/use the full international phone number with leading “+” and selected dial code for the OTP session.
+- Append a brief internal QA checklist to frontend/RELEASE_NOTES.md covering auto-detect fallback, dropdown content/selection, per-country validation, UI/hover/animation regressions, and end-to-end OTP flow.
 
-**User-visible outcome:** Users can browse ~150 Banarasi sarees across multiple animated collection sections, interact with richer product cards (hover effects, quick-details, zoom), add items with a visible fly-to-cart animation, and use wishlist/cart flows smoothly across desktop and mobile with improved performance and metadata updates.
+**User-visible outcome:** On /login, users see a country-aware phone input with a searchable flag/name/dial-code selector that auto-fills their country (defaults to India if unknown), validates numbers per selected country with an inline error, and successfully continues through the existing OTP login flow using a full international (+) phone number.

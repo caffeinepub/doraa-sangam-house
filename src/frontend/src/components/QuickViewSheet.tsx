@@ -6,8 +6,12 @@ import { DUMMY_PRODUCTS } from '../data/dummyProducts';
 import { useAddToCart } from '../hooks/useQueries';
 import { toast } from 'sonner';
 import { useGoldRipple } from '../hooks/useGoldRipple';
+import { useCommerce } from '../hooks/useCommerce';
 import { useRef } from 'react';
 import { useAddToCartAnimation } from '../hooks/useAddToCartAnimation';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
+import { useSpaLocation } from '../hooks/useSpaLocation';
+import { showDuplicateCartToast } from '../utils/premiumToasts';
 
 interface QuickViewSheetProps {
   productId: string | null;
@@ -20,11 +24,27 @@ export default function QuickViewSheet({ productId, open, onOpenChange }: QuickV
   const addToCart = useAddToCart();
   const { createRipple } = useGoldRipple();
   const { animate } = useAddToCartAnimation();
+  const { isInCart } = useCommerce();
   const imageRef = useRef<HTMLDivElement>(null);
+  const { requireAuth } = useAuthRedirect();
+  const [, navigate] = useSpaLocation();
 
   if (!product) return null;
 
+  const inCart = isInCart(product.id);
+
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!requireAuth(navigate, window.location.pathname)) {
+      onOpenChange(false);
+      return;
+    }
+
+    // Check for duplicate
+    if (inCart) {
+      showDuplicateCartToast();
+      return;
+    }
+
     createRipple(e);
 
     if (imageRef.current) {
@@ -82,7 +102,7 @@ export default function QuickViewSheet({ productId, open, onOpenChange }: QuickV
             </div>
           </div>
           <Button
-            className="ripple-container w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-gold hover:shadow-glow-pearl transition-all duration-300 h-12 text-lg"
+            className="ripple-container w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-gold hover:shadow-glow-pearl transition-all duration-300 h-12 text-lg gold-pulse-glow"
             onClick={handleAddToCart}
             disabled={product.stock === 0 || addToCart.isPending}
           >

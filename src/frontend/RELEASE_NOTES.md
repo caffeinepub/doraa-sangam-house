@@ -1,111 +1,354 @@
 # DoRaa Sangam House - Release Notes
 
-## Draft Version 5 - Luxury Cinematic Theme Refresh
+## Draft Version 22 - International Phone Input with Auto-Detection
 
-### 🎨 Complete Visual Transformation
+### New Features
+- **International Phone Input Component**
+  - Advanced country selector with flags, names, and dial codes for 29 countries
+  - Searchable dropdown for quick country selection
+  - Auto-detection of user's country on page load using Intl API and timezone mapping
+  - Defaults to India (+91) when detection fails or country is unsupported
+  - Per-country phone number validation using libphonenumber-js
+  - E.164 format storage for international phone numbers
+  - Inline validation error messages with pearl blue text and gold border styling
+  - Responsive layout: dropdown and input scale gracefully on mobile
 
-**Premium Luxury Color Palette**
-- ✅ **Deep Black Background** (#000000 / OKLCH 0 0 0): Pure black base for maximum cinematic luxury
-- ✅ **Pearl Blue Accents** (#7FB3D5 / OKLCH 0.68 0.10 210): Primary CTAs, highlights, and interactive states
-- ✅ **Gold Luxury Accents** (#D4AF37 / OKLCH 0.72 0.12 70): Hover glows, wave motifs, and premium touches
-- ✅ **Pearl Off-White Text** (#F5F5F0 / OKLCH 0.96 0.005 60): High-contrast readable text on dark backgrounds
-- ✅ **Removed all legacy blue gradient branding elements** from header and components
+### Updated Components
+- **LoginPage**: Replaced basic phone input with InternationalPhoneInput component in both Sign In and Sign Up tabs
+- **useStorefrontAuth**: Updated OTPSession type to explicitly document E.164 phone number format
 
-**Elegant Typography System**
-- ✅ **Headings**: Playfair Display (elegant serif) for all h1-h6 elements
-- ✅ **Body/UI**: Inter (clean sans-serif) for all body text and UI controls
-- ✅ **Non-blocking font loading**: Preconnect + Google Fonts with display=swap
-- ✅ **Consistent application**: Typography system applied across all pages and components
+### Technical Improvements
+- Added libphonenumber-js for robust phone validation
+- Created phoneCountries.ts utility with 29 popular countries
+- Created detectCountryFromLocale.ts for browser-based country detection
+- Created phoneValidation.ts for per-country validation and E.164 formatting
+- Validation triggers on blur and on Send OTP click
+- Send OTP button retains continuous gold-pulse-glow animation
+- Dark luxury theme maintained throughout with pearl blue accents and gold hover effects
 
-**Luxury Brand Identity**
-- ✅ **New DSH Logo Mark**: Iconic monogram with house silhouette, shopping bag cue, and flowing gold wave
-- ✅ **Header Integration**: Logo displayed prominently with brand name in elegant serif
-- ✅ **Favicon**: Updated browser tab icon with DSH branding
-- ✅ **Bot Avatar Asset**: Available for future bot UI implementations
-- ✅ **Branding Module**: Centralized asset constants for consistent usage
-
-### 🏛️ Complete Site Architecture
-
-**All Required Pages Implemented**
-- ✅ **Home Section**: Hero with elegant welcome message and dual CTAs
-- ✅ **Collections Section**: Product grid with luxury card styling (formerly ProductsPage)
-- ✅ **Product Section**: Feature showcase with quality, authenticity, delivery, and packaging highlights
-- ✅ **Checkout Section**: Secure checkout information with encryption, payment options, and confirmation
-- ✅ **FAQ Section**: Accordion-based Q&A with luxury styling and smooth interactions
-- ✅ **About Section**: Brand story with values showcase (passion, community, heritage, excellence)
-
-**Navigation & UX**
-- ✅ **Header Navigation**: All 6 pages linked with hover effects and mobile menu
-- ✅ **Footer Navigation**: Quick links to all sections with elegant spacing
-- ✅ **Smooth Scrolling**: Anchor-based navigation to section IDs
-- ✅ **Mobile-First Responsive**: Sheet-based mobile menu with full navigation
-
-### ✨ Luxury Polish & Cinematic Effects
-
-**Global Styling Enhancements**
-- ✅ **Subtle Vignette Overlay**: Radial gradient from transparent to black/60 at edges
-- ✅ **Soft Premium Shadows**: Enhanced glow-pearl and glow-gold shadow utilities
-- ✅ **Consistent Border Radius**: 8-12px rounded corners (0.75rem base radius)
-- ✅ **Generous Spacing**: Comfortable py-24 md:py-32 section spacing
-- ✅ **Backdrop Blur**: Glass-morphism effects on header, footer, and cards
-
-**Interactive States**
-- ✅ **Pearl Blue Hover**: Primary interactive elements glow with pearl blue
-- ✅ **Gold Accent Hover**: Secondary hover states use restrained gold glow
-- ✅ **Smooth Transitions**: 300ms duration for all color and transform transitions
-- ✅ **Scale Effects**: Subtle scale transforms on logo, images, and cards
-
-**Component Refinements**
-- ✅ **ProductCard**: Luxury card with backdrop blur, hover glow, and serif typography
-- ✅ **Header**: Glass-morphism with logo, elegant nav, and mobile sheet menu
-- ✅ **Footer**: Three-column layout with brand info, quick links, and connect section
-- ✅ **Buttons**: Pearl blue primary with gold hover glow effects
-- ✅ **Badges**: Accent-colored with subtle transparency and borders
-
-### 🎬 Preserved Cinematic Ocean Animation
-
-**Existing OceanBackground Component**
-- ✅ **Bottom-up rolling waves** with mid-screen crash and natural recede
-- ✅ **Pearl blue/teal sparkle accents** on foam particles
-- ✅ **Seamless infinite loop** with organic Perlin noise movement
-- ✅ **Performance optimized** with cached noise tables and ref-based tracking
-- ✅ **Accessibility support** with prefers-reduced-motion fallback
-
-### 📱 Mobile-First & Performance
-
-**Responsive Design**
-- ✅ **Mobile-optimized spacing**: Reduced padding and font sizes on small screens
-- ✅ **Touch-friendly targets**: Adequate button and link sizes for mobile
-- ✅ **Sheet-based mobile menu**: Smooth slide-in navigation drawer
-- ✅ **Flexible grid layouts**: 1-2-3-4 column responsive product grids
-
-**Loading & Performance**
-- ✅ **Fast font loading**: Preconnect and display=swap for Google Fonts
-- ✅ **Optimized images**: Static asset paths for logo, favicon, and bot avatar
-- ✅ **Efficient animations**: GPU-accelerated canvas and CSS transitions
-- ✅ **No layout shifts**: Proper skeleton loading states
-
-### 🎯 Theme Preview
-
-**Luxury Black/Pearl Blue/Gold Vibe Confirmed**
-- ✅ Deep black (#000000) background creates cinematic luxury atmosphere
-- ✅ Pearl blue (#7FB3D5) primary accents provide elegant, accessible contrast
-- ✅ Gold (#D4AF37) luxury accents add restrained premium touches on hover
-- ✅ Pearl off-white (#F5F5F0) text ensures excellent readability
-- ✅ Playfair Display serif headings convey elegance and sophistication
-- ✅ Inter sans-serif body text maintains clean, modern readability
-- ✅ Soft shadows and glows create depth without harshness
-- ✅ Generous spacing and rounded corners enhance premium feel
-- ✅ Cinematic vignette and ocean waves complete the immersive experience
-
-### 📋 Metadata & Branding
-
-**Updated Site Information**
-- ✅ **Document Title**: "DoRaa Sangam House - Luxury Curated Collections"
-- ✅ **Brand Name**: Consistently presented as "DoRaa Sangam House"
-- ✅ **Language**: English throughout (lang="en")
-- ✅ **Copyright**: © 2026 with caffeine.ai attribution
+### QA Checklist
+- [ ] Country code auto-detected on /login page load (defaults to India +91 if detection fails)
+- [ ] Dropdown shows flags, country names, and dial codes for all 29 countries
+- [ ] Dropdown is searchable (by country name, code, or dial code)
+- [ ] Manual country selection works and updates the input placeholder
+- [ ] Phone input validates based on selected country (e.g., India requires 10 digits)
+- [ ] Inline error message appears below input with pearl blue text and gold border
+- [ ] Error message reads: "Please enter a valid [Country] mobile number"
+- [ ] Send OTP button has continuous gold pulse/glow animation
+- [ ] Send OTP is blocked when phone number is invalid
+- [ ] OTP flow works end-to-end (send → verify → dashboard)
+- [ ] Changing country and resending OTP works correctly
+- [ ] 3-attempt lockout with 10-minute timer still functions
+- [ ] Responsive layout: no clipping or overlap on mobile devices
+- [ ] No UI/hover/animation regressions on other pages
 
 ---
 
-**Draft Version 5 is now deployed with the complete luxury cinematic theme refresh. The site embodies premium black/pearl blue/gold aesthetics with elegant typography, comprehensive navigation, and immersive cinematic atmosphere.**
+## Draft Version 21 - Login Flow & Persistent Background
+
+### Features
+- **Reliable Login Navigation**: Login button in header now correctly navigates to /login route
+- **Premium OTP Flow**: 
+  - Tabbed Sign In/Sign Up interface with +91 phone validation
+  - Simulated 6-digit OTP with 6-slot input
+  - 3-attempt lockout with 10-minute localStorage timer
+  - Premium error styling with pearl blue and gold accents
+  - Internet Identity fallback option
+- **Duplicate Prevention**:
+  - Wishlist: Add-only, no remove (first-time success animation preserved)
+  - Cart: Blocks duplicate adds with premium popup showing pearl blue background and gold border
+- **Persistent OceanBackground**: Canvas-based ocean wave animation now renders as a fixed layer across all routes including admin areas
+- **Global Gold Button Glow**: All primary action buttons (Login, Logout, Send OTP, Verify OTP, etc.) now have continuous gold-pulse-glow animation
+
+### Bug Fixes
+- Fixed login button navigation from header
+- Fixed duplicate cart/wishlist prevention logic
+- Fixed OceanBackground visibility on admin routes
+
+### Technical
+- Updated Header.tsx to use navigate('/login') for Login button
+- Updated ProductCard.tsx with isInCart check and premium popup
+- Updated App.tsx to render OceanBackground as persistent fixed layer
+- Updated index.css with gold-pulse-glow animation and premium toast styling
+- Created ADMIN_PANEL_VERIFICATION.md with extended checklist
+
+---
+
+## Draft Version 20 - Admin Panel with Session-Lifetime CRUD
+
+### Features
+- **Admin Panel**: Full admin area with Internet Identity authentication
+  - Hardcoded admin Principal for testing: `2vxsx-fae`
+  - Dashboard with 4 metric cards (Products, Categories, Draft Uploads, Pending Reviews)
+  - Products management page with create/edit/delete operations
+  - Multi-image upload with drag-and-drop support
+  - Product form with name, price, category, description, fabric, variants, and blouse pairing
+  - Save animations: fade + gold wave effect with reduced-motion fallback
+  - Dark luxury theme consistent with storefront
+- **Admin Authentication**: 
+  - AdminGate component checks authentication and admin access
+  - AdminLoginPage with Internet Identity integration
+  - Auto-redirect for authorized admins with existing sessions
+  - Access denied alerts with "Switch Account" action for non-admin principals
+  - Proper initialization state handling
+- **Session-Lifetime State**: AdminProductsProvider manages in-memory product state without backend persistence
+
+### Technical
+- Created admin/ directory structure with pages, components, hooks, and utilities
+- Updated useInternetIdentity to correctly set loginStatus to 'success' for restored sessions
+- Updated adminGuard to properly handle both restored sessions and fresh logins
+- Created ADMIN_PANEL_VERIFICATION.md with comprehensive testing checklist
+
+---
+
+## Draft Version 19 - Roller Tagline Animation
+
+### Features
+- **RollerTagline Component**: Premium per-letter roller/flip hover animation for "Delivered with Care" tagline
+  - Pearl-to-gold color transition on hover/tap
+  - Shimmer highlight sweep effect
+  - Underline glow animation
+  - Pointer-based interaction for both desktop hover and touch tap
+  - Full reduced-motion support with graceful fallback
+- **Perfect Centering**: Tagline now perfectly centered in hero slide with proper flex alignment
+
+### Technical
+- Created RollerTagline.tsx component with letter-by-letter animation
+- Added roller animation utilities to index.css
+- Updated CinematicHeroSlide.tsx to use RollerTagline component
+- Added reduced-motion overrides for roller animations
+
+---
+
+## Draft Version 18 - Banarasi Showcase Enhancements
+
+### Features
+- **Banarasi Category Showcase**: 7 creative collections with horizontal carousels
+  - Zari Legacy, Silk Symphony, Royal Heritage Weaves, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold
+  - Manual autoplay implementation (no external plugin dependency)
+  - Arrow and dot navigation
+  - Gold wave divider between sections
+  - Scroll reveal animations
+- **Pearl Shimmer Ambience**: Canvas-based particle layer with organic movement and glow effects
+- **Enhanced Quick Details Overlay**: 
+  - Color swatches, fabric/pattern info, price/rating
+  - Functional size chart accordion
+  - Share action (Web Share API with clipboard fallback)
+  - COD/express badges
+  - Blouse pairing suggestions
+- **Heuristic Product Grouping**: Client-side logic assigns each Banarasi product to exactly one collection based on observable attributes
+
+### Technical
+- Created BanarasiCategoryShowcase.tsx, BanarasiCollectionSection.tsx, BanarasiShowcaseAmbience.tsx, BanarasiQuickDetailsOverlay.tsx
+- Created banarasiCategories.ts and banarasiGrouping.ts for category definitions and product assignment
+- Created useDynamicMetadata.ts hook for updating document title and meta description
+- Created useInfiniteScroll.ts hook for lazy loading
+- Created BanarasiShowcaseSkeletons.tsx for loading states
+
+---
+
+## Draft Version 17 - Expanded Product Catalog
+
+### Features
+- **Expanded Product Catalog**: ~150 Banarasi sarees generated programmatically across 7 collections
+  - Zari Legacy, Silk Symphony, Royal Heritage Weaves, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold
+  - Each product has complete metadata: images, ratings, swatches, sizes, blouse suggestions
+- **8 Original Non-Banarasi Products**: Preserved from previous versions
+
+### Technical
+- Updated dummyProducts.ts with programmatic generation logic
+- Created 7 Banarasi collections with unique characteristics
+
+---
+
+## Draft Version 16 - RaaHi Chatbot
+
+### Features
+- **RaaHi Chatbot**: Fixed bottom-right floating bot avatar with slide-up chat panel
+  - Pulsing animation on avatar
+  - Typing dots indicator
+  - Session-based auto-greeting
+  - Rule-based conversational responses
+  - Full reduced-motion support
+
+### Technical
+- Created RaaHiChatWidget.tsx component
+- Created raahiResponses.ts for rule-based response engine
+- Added RaaHi animations to index.css
+
+---
+
+## Draft Version 15 - Enhanced Add-to-Cart Animation
+
+### Features
+- **Cloth-like "Saree Flow" Animation**: Enhanced add-to-cart animation with gradient rectangle and rotation
+  - Flies from product card to header cart icon
+  - Reduced-motion fallback
+
+### Technical
+- Updated useAddToCartAnimation.ts with new animation logic
+- Added fly-to-cart-saree animation to index.css
+
+---
+
+## Draft Version 14 - Gold Ripple Feedback
+
+### Features
+- **Gold Ripple Effects**: Custom hook for gold ripple feedback on interactive elements
+  - Clipped to bounds
+  - Supports both mouse and touch
+  - Reduced-motion handling
+
+### Technical
+- Created useGoldRipple.ts hook
+- Added ripple-container utility to index.css
+
+---
+
+## Draft Version 13 - Cinematic Hero Slider
+
+### Features
+- **Cinematic Hero Slider**: Main hero slider with 3 slides
+  - Autoplay, arrow/dot navigation, swipe/drag gestures
+  - Gold wave wipe transitions
+  - Scroll hint arrow
+- **Parallax Depth Layers**: Pearl shimmer particles, product silhouettes, gold waves
+- **Letter-by-Letter Headline Reveal**: Staggered reveal timing
+- **Dual CTAs**: "Shop Now" and "Explore Collections"
+
+### Technical
+- Created CinematicHeroSlider.tsx, CinematicHeroSlide.tsx, LetterRevealText.tsx
+- Created hero/ directory with PearlShimmerParticles.tsx, ProductSilhouetteLayer.tsx, GoldWaveLayer.tsx, GoldWaveWipeTransition.tsx, ScrollHintArrow.tsx
+- Created useCinematicSlider.ts, usePrefersReducedMotion.ts, useScrollReveal.ts hooks
+
+---
+
+## Draft Version 12 - Checkout Flow
+
+### Features
+- **Checkout Panel**: POS-style checkout form with guest option, contact fields, order summary
+- **Checkout Success**: Success state with wave reveal animation
+- **Checkout Sheet**: Right-side sheet managing checkout flow with success state transition and cart clearing
+
+### Technical
+- Created CheckoutPanel.tsx, CheckoutSuccess.tsx, CheckoutSheet.tsx components
+
+---
+
+## Draft Version 11 - Cart & Quick View
+
+### Features
+- **Cart Panel**: "Your Bag of Happiness" header, empty state prompting RaaHi, line items with quantity controls, checkout CTA
+- **Cart Sheet**: Right-side sheet wrapper for CartPanel
+- **Quick View Sheet**: Right-side slide-over panel for quick product preview
+
+### Technical
+- Created CartPanel.tsx, CartSheet.tsx, QuickViewSheet.tsx components
+
+---
+
+## Draft Version 10 - Product Detail View
+
+### Features
+- **Product Detail View**: Full-screen overlay with image zoom gallery, quantity selector, size chart, blouse suggestions
+
+### Technical
+- Created ProductDetailView.tsx component
+- Created ImageZoomGallery.tsx component with mouse-based zoom interaction
+
+---
+
+## Draft Version 9 - Commerce State Management
+
+### Features
+- **Commerce Provider**: React context provider managing cart state with add/update/remove/clear operations
+- **Local Storage Persistence**: Cart state persisted to localStorage
+
+### Technical
+- Created CommerceProvider.tsx and useCommerce.ts hook
+- Created useLocalStorageState.ts hook
+
+---
+
+## Draft Version 8 - Product Catalog
+
+### Features
+- **Product Catalog**: 8 dummy products in masonry grid
+- **Quick View & Product Detail Modals**: Wired to product cards
+
+### Technical
+- Created ProductsPage.tsx component
+- Created dummyProducts.ts with 8 products
+
+---
+
+## Draft Version 7 - Enhanced Scroll Reveal
+
+### Features
+- **Enhanced Scroll Reveal**: Fade + slide + scale animations with stagger support
+- **Immediate Reveal for Reduced-Motion**: Accessibility support
+
+### Technical
+- Updated useScrollReveal.ts hook
+- Added scroll-reveal-enhanced utility to index.css
+
+---
+
+## Draft Version 6 - Premium Card Hover
+
+### Features
+- **Premium Card Hover**: Enhanced tilt and glow effects on product cards
+
+### Technical
+- Added premium-card-hover utility to index.css
+
+---
+
+## Draft Version 5 - Banarasi Product Card
+
+### Features
+- **Banarasi Product Card**: Mannequin effect, fabric ripple hover, micro-ripple layer, action icon glow
+
+### Technical
+- Added Banarasi product card utilities to index.css
+
+---
+
+## Draft Version 4 - Masonry Grid
+
+### Features
+- **Masonry Grid**: Responsive masonry layout for product cards
+
+### Technical
+- Added masonry-grid utilities to index.css
+
+---
+
+## Draft Version 3 - Radial Gradient Vignette
+
+### Features
+- **Radial Gradient Vignette**: Background vignette effect
+
+### Technical
+- Added bg-gradient-radial utility to index.css
+
+---
+
+## Draft Version 2 - OKLCH Color System
+
+### Features
+- **OKLCH Color System**: Dark luxury theme with pearl blue and gold accents
+
+### Technical
+- Updated index.css with OKLCH color tokens
+
+---
+
+## Draft Version 1 - Initial Setup
+
+### Features
+- **Initial Setup**: Basic app structure with header, footer, and routing
+
+### Technical
+- Created App.tsx, Header.tsx, Footer.tsx components
+- Set up routing with TanStack Router

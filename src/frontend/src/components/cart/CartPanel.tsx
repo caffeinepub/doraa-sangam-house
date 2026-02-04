@@ -4,6 +4,8 @@ import { Separator } from '@/components/ui/separator';
 import { useCommerce } from '../../hooks/useCommerce';
 import { useUpdateCartQuantity, useRemoveFromCart } from '../../hooks/useQueries';
 import { DUMMY_PRODUCTS } from '../../data/dummyProducts';
+import { useAuthRedirect } from '../../hooks/useAuthRedirect';
+import { useSpaLocation } from '../../hooks/useSpaLocation';
 
 interface CartPanelProps {
   onCheckout: () => void;
@@ -13,11 +15,19 @@ export default function CartPanel({ onCheckout }: CartPanelProps) {
   const { cart, cartTotal, cartItemCount } = useCommerce();
   const updateQuantity = useUpdateCartQuantity();
   const removeFromCart = useRemoveFromCart();
+  const { requireAuth } = useAuthRedirect();
+  const [, navigate] = useSpaLocation();
 
   const cartItems = cart.map((item) => {
     const product = DUMMY_PRODUCTS.find((p) => p.id === item.productId);
     return { ...item, product };
   });
+
+  const handleCheckout = () => {
+    if (requireAuth(navigate, window.location.pathname)) {
+      onCheckout();
+    }
+  };
 
   if (cartItemCount === 0) {
     return (
@@ -50,7 +60,7 @@ export default function CartPanel({ onCheckout }: CartPanelProps) {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-7 w-7 gold-pulse-glow"
                     onClick={() => updateQuantity.mutate({ productId: item.productId, quantity: item.quantity - 1 })}
                     disabled={updateQuantity.isPending}
                   >
@@ -60,7 +70,7 @@ export default function CartPanel({ onCheckout }: CartPanelProps) {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-7 w-7 gold-pulse-glow"
                     onClick={() => updateQuantity.mutate({ productId: item.productId, quantity: item.quantity + 1 })}
                     disabled={updateQuantity.isPending}
                   >
@@ -71,7 +81,7 @@ export default function CartPanel({ onCheckout }: CartPanelProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-destructive/10 hover:text-destructive"
+                className="hover:bg-destructive/10 hover:text-destructive gold-pulse-glow"
                 onClick={() => removeFromCart.mutate(item.productId)}
                 disabled={removeFromCart.isPending}
               >
@@ -94,8 +104,8 @@ export default function CartPanel({ onCheckout }: CartPanelProps) {
           </div>
         </div>
         <Button
-          className="w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-gold hover:shadow-glow-pearl transition-all duration-300 h-12 text-lg"
-          onClick={onCheckout}
+          className="w-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow-gold hover:shadow-glow-pearl transition-all duration-300 h-12 text-lg gold-pulse-glow"
+          onClick={handleCheckout}
         >
           Proceed to Checkout
         </Button>

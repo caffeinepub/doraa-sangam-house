@@ -1,465 +1,615 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "DoRaa Sangam House is a React + TypeScript single-page luxury storefront with a cinematic dark ocean theme (canvas backgrounds, pearl/gold accents, premium motion design) and a frontend-first commerce experience. It ships a curated dummy catalog and an elevated Banarasi saree showcase that is being expanded toward ~150 products with auto-grouped creative collections, category slider sections, and highly animated product cards (mannequin-style display, hover glow/micro-interactions, quick-details overlays), while preserving the existing quick view, PDP overlay with zoom gallery, wishlist, add-to-cart micro-interactions, and guest checkout flow. Optional Internet Identity authentication remains for ICP readiness (backend is currently a stub canister).",
+  "summary": "DoRaa Sangam House is a frontend-first luxury e-commerce single-page application built with React + TypeScript and Tailwind/shadcn-ui. It showcases a premium Banarasi saree catalog using in-repo dummy data, featuring a cinematic fixed canvas OceanBackground across all routes, a hero slider with layered animations, Banarasi collection showcases and carousels, product quick view and full-screen product detail overlays, wishlist and cart state persisted to localStorage, and a simulated guest checkout that generates an order ID and clears the cart. Storefront authentication is implemented client-side via a simulated OTP flow (+91 input, 6-digit OTP via alert/console, 3-attempt lockout with 10-minute timer, return-path + flash messaging) with an Internet Identity fallback. An admin panel exists with Internet Identity login and a principal-based gate, and supports in-memory product CRUD with multi-image previews and save feedback toasts/animations. A Motoko backend canister provides role-based access control (admin/user/guest) plus authenticated user-profile read/write and an admin-only deployment confirmation endpoint, though most storefront/admin data is not yet persisted to or read from the backend.",
   "existing_features": [
     {
       "id": "IF-1",
-      "title": "Minimal ICP Motoko backend canister stub",
+      "title": "Centralized brand identity constants",
       "synonyms": [
-        "backend/main.mo",
-        "confirmDesignPreview"
+        "BRAND_ASSETS",
+        "BRAND_NAME",
+        "frontend/src/assets/branding.ts"
       ],
-      "description": "Provides a single public method confirmDesignPreview(): async Text returning a static confirmation string; no commerce endpoints are implemented.",
+      "description": "Provides a single source of truth for the brand name and asset paths (logo mark, favicon, bot avatar) for consistent usage across the app.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-2",
-      "title": "Internet Identity authentication provider and hook",
+      "title": "Luxury dark theme tokens and Tailwind integration (OKLCH)",
       "synonyms": [
-        "InternetIdentityProvider",
-        "useInternetIdentity",
-        "@dfinity/auth-client"
+        "OKLCH CSS variables",
+        "frontend/src/index.css",
+        "tailwind.config.js"
       ],
-      "description": "Implements login/logout, persisted identity loading on mount, and a detailed loginStatus state machine with delegation validity checks and configurable derivation origin.",
+      "description": "Implements a premium black/pearl-blue/gold design system using OKLCH CSS variables mapped into Tailwind theme tokens, with custom shadows, typography, and component utilities.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "Identity-aware backend actor creation and caching",
+      "title": "Global gold pulse/glow button styling with reduced-motion support",
       "synonyms": [
-        "useActor",
-        "createActorWithConfig",
-        "React Query actor cache"
+        "gold-pulse-glow",
+        "frontend/src/index.css"
       ],
-      "description": "Creates an anonymous actor when unauthenticated and an identity-bound actor when authenticated; caches by principal and invalidates/refetches non-actor queries when the actor changes.",
+      "description": "Defines a consistent premium gold pulsing glow effect usable across buttons and interactive UI, and disables continuous motion under prefers-reduced-motion.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "App bootstrap with theme, providers, and global layout",
+      "title": "Custom SPA routing hook with synchronized navigation events",
       "synonyms": [
-        "App.tsx",
-        "main.tsx",
-        "ThemeProvider",
-        "QueryClientProvider",
-        "Toaster"
+        "useSpaLocation",
+        "History API routing",
+        "spa-navigation event"
       ],
-      "description": "Bootstraps React Query and Internet Identity providers, applies dark theme via next-themes, wraps the app in CommerceProvider, and renders global background, header/footer, section pages, chat widget, and toast system.",
+      "description": "Tracks pathname and navigates with pushState while broadcasting a custom event so all hook instances update immediately, avoiding delayed/stuck route transitions.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-5",
-      "title": "Centralized brand identity constants",
+      "title": "App shell route composition with per-area providers and guards",
       "synonyms": [
-        "BRAND_NAME",
-        "BRAND_ASSETS",
-        "branding.ts"
+        "App.tsx conditional routing",
+        "ThemeProvider",
+        "CommerceProvider",
+        "ProtectedRoute",
+        "AdminGate"
       ],
-      "description": "Exports brand name and static asset paths (logo mark, favicon, bot avatar) for consistent usage across the app.",
+      "description": "Composes storefront, login, dashboard, and admin areas via App.tsx route branching, applying the appropriate providers (theme, commerce), and access guards.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-6",
-      "title": "Dummy product catalog including 30 Banarasi static images",
+      "title": "Persistent cinematic OceanBackground across all routes",
       "synonyms": [
-        "DUMMY_PRODUCTS",
-        "dummyProducts.ts",
-        "static /assets/uploads/banarasi/* images"
+        "OceanBackground",
+        "fixed canvas background",
+        "App shell background"
       ],
-      "description": "Provides a frontend-first catalog including non-Banarasi items and a 30-product Banarasi saree collection with rich metadata (images arrays, ratings, swatches, fabric/pattern text, COD/express flags, optional sizes, blouse suggestions).",
-      "reqIds": [
-        "REQ-1"
-      ],
+      "description": "Renders a fixed full-viewport canvas background behind all pages, sheets, and overlays, maintaining readability via controlled opacity and layering.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Banarasi categorization layer (7 creative collections)",
+      "title": "Procedural ocean wave background animation with performance optimizations",
       "synonyms": [
-        "BANARASI_CATEGORIES",
-        "banarasiCategories.ts",
-        "Zari Legacy",
-        "Silk Symphony",
-        "Royal Heritage Weaves",
-        "Blooming Banarasi",
-        "Midnight Elegance",
-        "Celestial Threads",
-        "Eternal Gold"
+        "noise-based waves",
+        "foam particles",
+        "cached noise tables",
+        "sand texture cache"
       ],
-      "description": "Defines a typed registry of uniquely named Banarasi categories with descriptions and cover images; each Banarasi product is assigned exactly one primary category via banarasiCategory.",
-      "reqIds": [
-        "REQ-2"
-      ],
+      "description": "Animates layered waves with crash/recede cycles, foam particles, shimmer accents, and mouse/scroll parallax; uses refs for input tracking and caches noise/sand texture to reduce flicker and overhead.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-8",
-      "title": "Home/Collections Banarasi category showcase with scroll-triggered reveal",
+      "title": "Reduced-motion background fallback rendering",
       "synonyms": [
-        "BanarasiCategoryShowcase",
-        "useStaggeredScrollReveal"
+        "prefers-reduced-motion",
+        "static ocean frame"
       ],
-      "description": "Renders a premium grid of Banarasi category cards with lazy-loaded cover images, product counts, wave/gold styling, and scroll-triggered reveal animations; integrates with the cinematic dark luxury theme and reduced-motion preferences.",
-      "reqIds": [
-        "REQ-3"
-      ],
+      "description": "When reduced motion is preferred, OceanBackground renders a simplified static frame instead of continuous animation.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-9",
-      "title": "Interactive Banarasi category carousel overlay",
+      "title": "Cinematic hero slider with autoplay, swipe/drag, arrows, dots, and transition overlay",
       "synonyms": [
-        "BanarasiCategoryCarouselOverlay",
-        "Dialog overlay",
-        "Carousel",
-        "CarouselNext/Previous"
+        "CinematicHeroSlider",
+        "useCinematicSlider",
+        "GoldWaveWipeTransition"
       ],
-      "description": "Clicking a category opens a modal overlay containing a looping horizontal carousel of products for that category with arrows and premium styling; integrates Quick View and Product Detail overlays and updates dynamic metadata while open.",
-      "reqIds": [
-        "REQ-4"
-      ],
+      "description": "Full-screen hero carousel with autoplay and interaction pause/resume, pointer gesture navigation, arrow/dot controls, and a gold wipe transition (reduced-motion aware).",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-10",
-      "title": "Products/Collections page with masonry grid and optional infinite scroll",
+      "title": "Hero slide layered visuals and animated typography components",
+      "synonyms": [
+        "CinematicHeroSlide",
+        "PearlShimmerParticles",
+        "ProductSilhouetteLayer",
+        "GoldWaveLayer",
+        "LetterRevealText",
+        "RollerTagline"
+      ],
+      "description": "Each hero slide composes multiple animated layers, letter-by-letter headline reveal, and interactive roller tagline animation with reduced-motion fallbacks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Scroll reveal animations using IntersectionObserver",
+      "synonyms": [
+        "useScrollReveal",
+        "useStaggeredScrollReveal",
+        "scroll-reveal-enhanced"
+      ],
+      "description": "Reveals sections/cards as they enter the viewport with optional staggering, and reveals immediately for reduced-motion users.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Dynamic metadata management for overlays and pages",
+      "synonyms": [
+        "useDynamicMetadata",
+        "document.title",
+        "meta description"
+      ],
+      "description": "Temporarily updates document title and description while a component is mounted and restores originals on unmount; creates description tag if missing.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Curated dummy product catalog with generated Banarasi inventory",
+      "synonyms": [
+        "DUMMY_PRODUCTS",
+        "generateBanarasiProduct",
+        "frontend/src/data/dummyProducts.ts"
+      ],
+      "description": "Provides a development catalog including core non-Banarasi items and a large generated Banarasi collection with images, ratings, swatches, sizes, and blouse suggestions.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Banarasi category registry and deterministic grouping heuristics",
+      "synonyms": [
+        "BANARASI_CATEGORIES",
+        "groupBanarasiProducts"
+      ],
+      "description": "Defines seven Banarasi collections with metadata and groups Banarasi products into collections using existing category assignments or heuristics from attributes/keywords.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Banarasi collections showcase with ambience and collection sections",
+      "synonyms": [
+        "BanarasiCategoryShowcase",
+        "BanarasiShowcaseAmbience",
+        "BanarasiCollectionSection"
+      ],
+      "description": "Renders a premium Banarasi showcase with a fixed shimmer ambience layer and multiple scroll-revealed collection sections.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-16",
+      "title": "Banarasi collection carousel with manual autoplay (reduced-motion aware)",
+      "synonyms": [
+        "BanarasiCollectionSection carousel",
+        "Embla/shadcn carousel API"
+      ],
+      "description": "Displays products in a horizontal carousel per collection, with manual autoplay that stops on user interaction and is disabled when reduced motion is preferred.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-17",
+      "title": "Banarasi category carousel overlay modal",
+      "synonyms": [
+        "BanarasiCategoryCarouselOverlay",
+        "Dialog + Carousel overlay"
+      ],
+      "description": "Shows a full-screen dialog overlay for a specific Banarasi category with a carousel of ProductCards and integrated quick view and product detail overlays, plus dynamic metadata updates.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Products page with masonry grid, skeleton loading, and infinite scroll",
       "synonyms": [
         "ProductsPage",
         "masonry-grid",
         "useInfiniteScroll",
         "BanarasiProductCardSkeleton"
       ],
-      "description": "Composes the Banarasi showcase and a masonry grid for non-Banarasi products; supports incremental loading via an IntersectionObserver sentinel and displays shimmer skeletons during simulated load-more.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Premium product card with hover micro-interactions and mannequin-style motion cues",
-      "synonyms": [
-        "ProductCard",
-        "premium-card-hover",
-        "lazy image fade-in",
-        "hover tilt/rotate"
-      ],
-      "description": "Displays product imagery and metadata with luxury hover lift/glow, lazy-loaded image fade-in, quick view action, click-to-detail behavior, and bottom action row; Banarasi cards show fabric badge and can display a rich quick-details overlay on hover.",
-      "reqIds": [
-        "REQ-5",
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Wishlist support (localStorage persisted)",
-      "synonyms": [
-        "useWishlist",
-        "doraa-wishlist",
-        "heart icon"
-      ],
-      "description": "Implements wishlist state stored in localStorage with add/remove/toggle helpers; wired into product cards with visual states and toast feedback.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Banarasi quick-details overlay (premium mini-panel)",
-      "synonyms": [
-        "BanarasiQuickDetailsOverlay",
-        "swatches",
-        "share",
-        "COD badge",
-        "express delivery"
-      ],
-      "description": "Hover-triggered Banarasi panel showing color swatches, fabric/pattern, price, star rating + reviews, share action (Web Share API or clipboard fallback), COD and express delivery badges, and blouse pairing suggestions.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "Quick View right-side sheet",
-      "synonyms": [
-        "QuickViewSheet",
-        "SheetContent side=right"
-      ],
-      "description": "Slide-over product preview showing image, price, stock, description, and an add-to-cart CTA with ripple and fly-to-cart/cart-bump feedback.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Product Detail full-screen overlay (PDP)",
-      "synonyms": [
-        "ProductDetailView",
-        "modal overlay",
-        "size chart",
-        "blouse suggestions"
-      ],
-      "description": "Full-screen product detail overlay including zoom gallery, ratings, pricing, optional size chart table, optional blouse suggestions, and add-to-cart with ripple + fly-to-cart/cart-bump feedback.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-16",
-      "title": "Image zoom gallery with thumbnails and navigation",
-      "synonyms": [
-        "ImageZoomGallery",
-        "hover zoom lens",
-        "thumbnail strip"
-      ],
-      "description": "Provides a square image gallery with hover-zoom/pan interaction (disabled under reduced-motion), next/prev controls, and thumbnail selection.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-17",
-      "title": "Client-side commerce provider with localStorage cart persistence",
-      "synonyms": [
-        "CommerceProvider",
-        "useCommerce",
-        "doraa-cart"
-      ],
-      "description": "Manages cart items (add/update/remove/clear) persisted to localStorage and exposes derived totals and item counts based on the dummy catalog.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-18",
-      "title": "React Query commerce hooks and simulated checkout",
-      "synonyms": [
-        "useQueries.ts",
-        "useGetAllProducts",
-        "useAddToCart",
-        "useRemoveFromCart",
-        "useCheckout"
-      ],
-      "description": "Implements product queries backed by dummy products (mapped into bigint-typed Product), cart query backed by CommerceProvider state, and mutations for cart operations plus a simulated checkout that clears cart and returns a generated orderId.",
+      "description": "Displays Banarasi showcase plus a masonry grid for other products with incremental loading via IntersectionObserver sentinel and skeleton placeholders during simulated loading.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-19",
-      "title": "Cart drawer UI with quantity controls and empty state",
+      "title": "Product card with quick view, add-to-cart, wishlist, and Banarasi hover quick-details",
       "synonyms": [
-        "CartSheet",
-        "CartPanel",
-        "Your Bag of Happiness"
+        "ProductCard",
+        "Quick View",
+        "BanarasiQuickDetailsOverlay"
       ],
-      "description": "Right-side cart sheet displaying line items, +/- quantity controls, remove action, totals, and checkout CTA; includes an empty-cart state encouraging users to browse or ask RaaHi.",
+      "description": "Renders premium product cards with hover effects, quick view launcher, wishlist action, add-to-cart action, and Banarasi-specific quick-details overlay when hovered.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-20",
-      "title": "Checkout drawer with guest form and success state",
+      "title": "Premium interaction feedback: gold ripple and fly-to-cart animation",
       "synonyms": [
-        "CheckoutSheet",
-        "CheckoutPanel",
-        "CheckoutSuccess"
+        "useGoldRipple",
+        "useAddToCartAnimation",
+        "cart-bump"
       ],
-      "description": "Right-side checkout flow with contact/shipping form, order summary, simulated processing state, and an order confirmation screen with wave-reveal styling.",
+      "description": "Adds a gold ripple click/touch effect and a cloth-like “fly to cart” animation from product imagery to the header cart icon; respects reduced-motion by skipping animation.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-21",
-      "title": "Sticky luxury header with navigation, cart badge, and auth controls",
+      "title": "Wishlist persisted to localStorage",
       "synonyms": [
-        "Header",
-        "mobile menu sheet",
-        "cart badge",
-        "Internet Identity login/logout"
+        "useWishlist",
+        "wishlist localStorage key"
       ],
-      "description": "Implements a glass-morphism sticky header with brand mark/name, anchor navigation, live cart count badge, Internet Identity login/logout UI, and a responsive mobile navigation sheet.",
+      "description": "Manages a list of favorited product IDs with add/remove/toggle/clear helpers backed by localStorage.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-22",
-      "title": "Cinematic hero slider with layered visuals and transitions",
+      "title": "Cart (CommerceProvider) persisted to localStorage with totals and helpers",
       "synonyms": [
-        "CinematicHeroSlider",
-        "CinematicHeroSlide",
-        "useCinematicSlider",
-        "GoldWaveWipeTransition",
-        "ScrollHintArrow",
-        "LetterRevealText"
+        "CommerceProvider",
+        "useCommerce",
+        "doraa-cart"
       ],
-      "description": "Full-screen hero carousel with autoplay, pause-on-interaction, arrow/dot navigation, swipe/drag gestures, layered parallax visuals (particles/silhouettes/gold waves), letter-by-letter headline reveal, and a scroll hint link; motion adapts to prefers-reduced-motion.",
+      "description": "Stores cart items in localStorage and provides add/update/remove/clear operations, derived cart total and item count from dummy prices, and an isInCart helper.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-23",
-      "title": "Procedural OceanBackground cinematic canvas animation",
+      "title": "Duplicate prevention for cart and wishlist with premium toasts",
       "synonyms": [
-        "OceanBackground",
-        "noise waves",
-        "foam particles",
-        "sand shimmer"
+        "showDuplicateCartToast",
+        "showDuplicateFavoriteToast",
+        "isInCart",
+        "isInWishlist"
       ],
-      "description": "Fixed full-viewport canvas rendering multi-layer waves with crash/recede cycles, foam particle effects, parallax influence from mouse/scroll, and performance optimizations (cached noise tables and stable sand texture) with reduced-motion fallback.",
+      "description": "Prevents duplicate adds across ProductCard, QuickViewSheet, and ProductDetailView; shows premium styled toasts with exact messages for already-added items while preserving first-time animations.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-24",
-      "title": "Scroll-triggered reveal animations with reduced-motion support",
+      "title": "Premium toast utility helpers",
       "synonyms": [
-        "useScrollReveal",
-        "useStaggeredScrollReveal",
-        "IntersectionObserver"
+        "premiumToasts.ts",
+        "showLockoutToast"
       ],
-      "description": "Hooks and CSS utilities implement consistent scroll-triggered fades/slides/scales with optional stagger delays; reduced-motion users reveal immediately.",
-      "reqIds": [
-        "REQ-3",
-        "REQ-8"
-      ],
+      "description": "Wraps sonner toasts with a premium pearl-blue/gold style and provides specialized helpers for duplicates and OTP lockout messaging.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-25",
-      "title": "Premium micro-interactions (gold ripple + fly-to-cart + cart bump)",
+      "title": "Quick view sheet with add-to-cart and auth gating",
       "synonyms": [
-        "useGoldRipple",
-        "useAddToCartAnimation",
-        "cart-bump",
-        "fly-to-cart-element"
+        "QuickViewSheet",
+        "Sheet quick preview"
       ],
-      "description": "Adds tactile click/touch ripple feedback and a fly-to-cart animation that targets the header cart button and triggers a bump effect on arrival; disabled/simplified under reduced-motion preferences.",
+      "description": "Provides a right-side product preview sheet with add-to-cart, duplicate detection, ripple/fly animations, and redirects unauthenticated users to /login before adding.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-26",
-      "title": "RaaHi assistant chat widget (rule-based)",
+      "title": "Full-screen product detail overlay with zoom gallery and add-to-cart",
       "synonyms": [
-        "RaaHiChatWidget",
-        "generateRaaHiResponse",
-        "session greeting",
-        "typing indicator"
+        "ProductDetailView",
+        "ImageZoomGallery",
+        "body scroll lock"
       ],
-      "description": "Floating chat widget with session-based auto-greeting, message history, simulated typing delay, auto-scroll, and keyword-matched canned responses (no external AI/LLM).",
+      "description": "Shows a full-screen PDP overlay with zoomable image gallery, quantity selector, metadata updates, body scroll lock, auth-gated add-to-cart, and duplicate detection toasts.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-27",
-      "title": "SEO-oriented dynamic metadata updates for SPA overlays",
+      "title": "Image zoom gallery with thumbnails and reduced-motion handling",
       "synonyms": [
-        "useDynamicMetadata",
-        "document.title",
-        "meta description"
+        "ImageZoomGallery",
+        "hover zoom/pan"
       ],
-      "description": "Hook updates document title and meta description for views like Banarasi showcase and category carousel overlay, restoring previous metadata on cleanup.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-28",
-      "title": "Luxury design system and Tailwind utilities",
-      "synonyms": [
-        "tailwind.config.js",
-        "src/index.css",
-        "OKLCH tokens",
-        "premium-card-hover",
-        "shimmer-skeleton"
-      ],
-      "description": "Defines the dark luxury palette (pearl blue + gold), typography (Playfair Display + Inter), glow shadows, masonry utilities, shimmer skeletons, wave underline/wipe, checkout wave reveal, and reduced-motion overrides.",
+      "description": "Interactive gallery supports next/prev navigation, thumbnail selection, and mouse-position zoom/pan that is disabled under reduced motion.",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-expand-the-frontend-banarasi-saree-catalog-to-approximately-150-products-using-the-existing-static-image-approach-and-ensure-the-expanded-catalog-is-fully-integrated-everywhere-products-are-rendered-collections-page-sections-sliders-product-grids-quick-view-pdp-overlay-wishlist-and-cart-flows",
-      "title": "Expand the frontend Banarasi saree catalog to approximately 150 products using the existing static image approach, and ensure the expanded catalog is fully integrated everywhere products are rendered (Collections page sections/sliders, product grids, quick view, PDP overlay, wishlist, and cart flows).",
+      "id": "IF-28",
+      "title": "Cart drawer UI with quantity controls and checkout call-to-action",
+      "synonyms": [
+        "CartSheet",
+        "CartPanel"
+      ],
+      "description": "Implements a right-side cart sheet with line items, quantity +/- controls, remove action, totals, and an empty state; checkout is gated by authentication.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-29",
+      "title": "Checkout drawer with simulated processing and success screen",
+      "synonyms": [
+        "CheckoutSheet",
+        "CheckoutPanel",
+        "CheckoutSuccess",
+        "useCheckout"
+      ],
+      "description": "Collects contact/shipping details, displays order summary, simulates processing, clears the cart, and shows an order confirmation with generated order ID.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-30",
+      "title": "Storefront authentication helper: OTP session, flash messages, return path, and lockout",
+      "synonyms": [
+        "useStorefrontAuth",
+        "doraa-otp-session",
+        "doraa-flash-message",
+        "doraa-return-path",
+        "doraa-otp-lockout"
+      ],
+      "description": "Implements OTP session persistence (24h), redirect flash messages, return-path tracking, OTP attempt counting, and a 10-minute lockout stored in localStorage.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-31",
+      "title": "Protected routes and protected action redirect helper",
+      "synonyms": [
+        "ProtectedRoute",
+        "useAuthRedirect",
+        "requireAuth"
+      ],
+      "description": "Redirects unauthenticated users to /login when entering protected routes (e.g., /dashboard) or attempting gated actions (cart/wishlist/checkout), storing flash message and return path.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-32",
+      "title": "Premium /login page with tabbed OTP flow and Internet Identity fallback",
+      "synonyms": [
+        "LoginPage",
+        "InputOTP",
+        "Sign In/Sign Up tabs"
+      ],
+      "description": "Premium dark-themed login UI with +91 validation, simulated 6-digit OTP generation (alert + console), 6-slot OTP input, 3-attempt lockout with countdown, and an Internet Identity login option.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-33",
+      "title": "User dashboard page with profile, order filter placeholder, and address management UI",
+      "synonyms": [
+        "DashboardPage",
+        "Tabs",
+        "address add/edit/delete dialogs"
+      ],
+      "description": "Protected dashboard with profile form, orders empty-state/filter UI, address book with add/edit/delete via dialogs, logout, and continue-shopping using stored return path.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-34",
+      "title": "Internet Identity authentication provider with status flags and session restoration",
+      "synonyms": [
+        "InternetIdentityProvider",
+        "useInternetIdentity",
+        "AuthClient"
+      ],
+      "description": "Wraps DFINITY AuthClient to initialize and restore identity, provides login/logout helpers and detailed status flags (initializing/logging-in/success/error) for UI flows.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-35",
+      "title": "Identity-aware backend actor creation with access control initialization",
+      "synonyms": [
+        "useActor",
+        "createActorWithConfig",
+        "_initializeAccessControlWithSecret"
+      ],
+      "description": "Creates anonymous or identity-bound backend actor instances cached by principal; initializes backend access control using a secret token from URL hash/session; invalidates/refetches other queries when actor changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-36",
+      "title": "Motoko access control module with admin/user/guest roles",
+      "synonyms": [
+        "backend/authorization/access-control.mo",
+        "MixinAuthorization.mo",
+        "CAFFEINE_ADMIN_TOKEN"
+      ],
+      "description": "Role assignment system where the first eligible principal can become admin using an environment token/secret; supports querying role, checking admin, assigning roles (admin-only), and permission checks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-37",
+      "title": "Motoko backend user profile storage with permission enforcement",
+      "synonyms": [
+        "backend/main.mo userProfiles",
+        "getCallerUserProfile",
+        "saveCallerUserProfile"
+      ],
+      "description": "Stores user profiles keyed by Principal and exposes query/update methods that enforce authentication/authorization via access control checks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-38",
+      "title": "Backend health check and admin-only deployment confirmation endpoint",
+      "synonyms": [
+        "healthCheck",
+        "confirmDeploymentChecks"
+      ],
+      "description": "Provides a public health check query and an admin-only method that returns a deployment confirmation message after permission checks.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-39",
+      "title": "Admin area principal-based access gate and login flow",
+      "synonyms": [
+        "AdminGate",
+        "AdminLoginPage",
+        "checkAdminAccess",
+        "ADMIN_PRINCIPAL"
+      ],
+      "description": "Admin routes require an authenticated non-anonymous principal matching a configured admin principal; unauthorized users are redirected to /admin/login and non-admins see access denied with switch-account flow.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-40",
+      "title": "Admin layout with sidebar navigation, principal display, and logout",
+      "synonyms": [
+        "AdminLayout",
+        "principalFormat",
+        "ADMIN_ROUTES"
+      ],
+      "description": "Admin shell includes header showing formatted principal, logout, and sidebar navigation between dashboard and products screens.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-41",
+      "title": "Admin dashboard with metric cards (placeholder data)",
+      "synonyms": [
+        "AdminDashboard"
+      ],
+      "description": "Displays key metrics including product count from in-memory state and placeholder counts for other metrics, with explanatory notes about state-only behavior.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-42",
+      "title": "Admin product CRUD using in-memory provider state",
+      "synonyms": [
+        "AdminProductsProvider",
+        "AdminProductsPage",
+        "create/update/delete"
+      ],
+      "description": "Implements session-lifetime product catalog management with create/edit dialogs, delete confirmation, product grid rendering images/variants/category, and simulated async submit behavior.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-43",
+      "title": "Admin product form with validation and variant management",
+      "synonyms": [
+        "ProductForm",
+        "AdminProductFormData",
+        "BANARASI_CATEGORIES select"
+      ],
+      "description": "Controlled product form with required field validation, category selection, variant add/remove UX, optional fabric/blouse pairing fields, and image editing integration.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-44",
+      "title": "Admin multi-image dropzone with previews and removal",
+      "synonyms": [
+        "ImageDropzone",
+        "object URL previews"
+      ],
+      "description": "Supports drag-and-drop and file input for multiple images, creates preview blob URLs, and allows per-image removal with URL revocation on removal.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-45",
+      "title": "Admin save feedback via toast and card highlight animation",
+      "synonyms": [
+        "useAdminSaveFeedback",
+        "sonner toast",
+        "admin-save-fade-wave"
+      ],
+      "description": "Triggers success toasts and temporary highlight animations on saved products with reduced-motion friendly timing and CSS classes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-46",
+      "title": "RaaHi assistant chat widget with rule-based responses",
+      "synonyms": [
+        "RaaHiChatWidget",
+        "generateRaaHiResponse",
+        "raahiResponses"
+      ],
+      "description": "Floating chat widget with session-based greeting, message history, typing simulation, auto-scroll, branded avatar, and keyword-based canned responses without external AI.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-47",
+      "title": "URL hash/session parameter utilities for secrets and routing support",
+      "synonyms": [
+        "urlParams.ts",
+        "getSecretParameter",
+        "sessionStorage persistence"
+      ],
+      "description": "Utilities to read URL parameters and securely extract secret parameters from the hash fragment, persist them to sessionStorage, and optionally clear them from the URL.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-plain-phone-number-input-on-the-login-page-with-an-advanced-international-phone-input-that-has-1-a-left-side-country-selector-showing-flag-country-name-dial-code-and-2-a-right-side-phone-number-input-the-dropdown-must-include-at-least-20-popular-countries-including-india-91-united-states-1-united-kingdom-44-uae-971-and-support-searching-to-manually-change-the-country",
+      "title": "Replace the existing plain phone number <Input> on the /login page with an advanced international phone input that has: (1) a left-side country selector showing flag + country name + dial code, and (2) a right-side phone number input. The dropdown must include at least 20 popular countries (including India +91, United States +1, United Kingdom +44, UAE +971) and support searching to manually change the country.",
       "reqIds": [
-        "REQ-10"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-an-automatic-banarasi-product-grouping-mechanism-that-assigns-each-product-to-a-creative-collection-based-on-observable-attributes-e-g-color-family-pattern-name-occasion-tags-or-filename-derived-hints-producing-collection-names-aligned-with-zari-legacy-silk-symphony-royal-motif-blooming-banarasi-midnight-elegance-celestial-threads-eternal-gold-and-render-separate-sections-sliders-for-each-resulting-category",
-      "title": "Implement an automatic Banarasi product grouping mechanism that assigns each product to a creative collection based on observable attributes (e.g., color family, pattern name, occasion tags, or filename-derived hints), producing collection names aligned with: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; and render separate sections/sliders for each resulting category.",
+      "id": "feature-auto-detect-and-pre-select-the-user-s-country-on-login-page-load-using-a-browser-based-approach-e-g-intl-locale-hints-if-detection-fails-or-produces-an-unsupported-unknown-country-default-to-india-91-the-selected-flag-dial-code-must-be-shown-immediately-without-user-interaction",
+      "title": "Auto-detect and pre-select the user's country on /login page load using a browser-based approach (e.g., Intl / locale hints). If detection fails or produces an unsupported/unknown country, default to India (+91). The selected flag + dial code must be shown immediately without user interaction.",
       "reqIds": [
-        "REQ-11"
+        "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-collections-products-browsing-experience-so-that-category-sections-reveal-on-scroll-with-a-gold-wave-transition-between-sections-and-each-category-is-presented-as-a-horizontal-slider-carousel-supporting-arrows-and-dot-navigation-and-an-optional-auto-swipe-autoplay-mode-with-reduced-motion-respecting-system-preferences",
-      "title": "Update the Collections/Products browsing experience so that category sections reveal on scroll with a gold wave transition between sections, and each category is presented as a horizontal slider/carousel supporting arrows and dot navigation and an optional auto-swipe/autoplay mode (with reduced-motion respecting system preferences).",
+      "id": "feature-implement-per-country-phone-validation-triggered-on-blur-of-the-phone-field-and-on-send-otp-click-validation-must-check-that-the-number-matches-the-selected-country-s-expected-length-format-e-g-india-must-validate-as-a-10-digit-national-number-and-block-otp-sending-when-invalid-display-an-inline-error-message-directly-below-the-phone-input-group-with-exact-text-please-enter-a-valid-country-mobile-number-country-name-based-on-current-selection",
+      "title": "Implement per-country phone validation triggered on blur of the phone field and on 'Send OTP' click. Validation must check that the number matches the selected country's expected length/format (e.g., India must validate as a 10-digit national number) and block OTP sending when invalid. Display an inline error message directly below the phone input group with exact text: \"Please enter a valid [country] mobile number\" (country name based on current selection).",
       "reqIds": [
-        "REQ-12"
+        "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-enhance-the-banarasi-product-card-visual-treatment-to-consistently-present-each-saree-image-as-a-mannequin-on-model-style-display-using-the-existing-placeholder-assumed-on-model-treatment-including-subtle-hover-spin-zoom-and-a-fabric-ripple-effect-implemented-via-css-or-an-animation-library-already-present-in-the-project-without-introducing-new-unsupported-dependencies",
-      "title": "Enhance the Banarasi product card visual treatment to consistently present each saree image as a mannequin/on-model-style display (using the existing placeholder/assumed-on-model treatment), including subtle hover spin/zoom and a fabric ripple effect implemented via CSS (or an animation library already present in the project), without introducing new unsupported dependencies.",
+      "id": "feature-update-login-page-styling-for-the-new-phone-input-so-it-matches-the-existing-dark-luxury-theme-black-dark-backgrounds-pearl-blue-7fb3d5-accents-and-gold-d4af37-hover-glow-on-the-dropdown-and-send-otp-button-ensure-the-send-otp-button-retains-the-existing-continuous-gold-pulse-glow-behavior-and-the-phone-input-group-is-fully-responsive-full-width-on-mobile-no-overflow",
+      "title": "Update /login page styling for the new phone input so it matches the existing dark luxury theme: black/dark backgrounds, pearl-blue (#7FB3D5) accents, and gold (#D4AF37) hover/glow on the dropdown and Send OTP button. Ensure the Send OTP button retains the existing continuous gold pulse/glow behavior and the phone input group is fully responsive (full-width on mobile, no overflow).",
       "reqIds": [
-        "REQ-13"
+        "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-product-card-hover-micro-interactions-to-include-lift-pearl-blue-gold-glowing-border-slight-scale-up-and-a-micro-ripple-animation-under-the-saree-image-ensure-the-effects-are-performant-and-do-not-cause-layout-shift",
-      "title": "Update product card hover micro-interactions to include: lift, pearl-blue + gold glowing border, slight scale-up, and a micro-ripple animation under the saree image; ensure the effects are performant and do not cause layout shift.",
+      "id": "feature-keep-the-existing-otp-login-flow-behavior-intact-send-otp-simulated-otp-alert-console-otp-input-verify-success-navigates-to-dashboard-lockout-attempt-handling-must-continue-to-work-the-stored-phone-number-used-by-the-otp-session-must-include-the-selected-international-dial-code-e-164-style-with-leading",
+      "title": "Keep the existing OTP login flow behavior intact: Send OTP → simulated OTP alert/console → OTP input → verify → success navigates to /dashboard; lockout/attempt handling must continue to work. The stored phone number used by the OTP session must include the selected international dial code (E.164-style with leading '+').",
       "reqIds": [
-        "REQ-14"
+        "REQ-5"
       ],
       "version": 1
     },
     {
-      "id": "feature-upgrade-the-product-card-action-row-so-the-wishlist-and-add-to-cart-icons-are-visually-glowing-and-pulse-on-hover-gold-pearl-blue-and-on-successful-add-to-cart-trigger-a-saree-flows-to-cart-success-animation-that-is-clearly-visible-and-ties-into-the-existing-cart-icon-badge-area",
-      "title": "Upgrade the product card action row so the wishlist and add-to-cart icons are visually glowing and pulse on hover (gold/pearl-blue), and on successful add-to-cart trigger a “saree flows to cart” success animation that is clearly visible and ties into the existing cart icon/badge area.",
+      "id": "feature-add-a-brief-internal-qa-checklist-for-this-change-can-be-appended-to-frontend-release-notes-md-for-the-next-version-that-confirms-auto-detection-fallback-to-india-works-dropdown-shows-flags-names-codes-and-manual-selection-works-validation-is-per-country-no-ui-hover-animation-regressions-and-the-otp-flow-still-works-end-to-end",
+      "title": "Add a brief internal QA checklist for this change (can be appended to frontend/RELEASE_NOTES.md for the next version) that confirms: auto-detection fallback to India works, dropdown shows flags/names/codes and manual selection works, validation is per-country, no UI/hover/animation regressions, and the OTP flow still works end-to-end.",
       "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-expand-the-banarasi-quick-details-overlay-on-hover-click-to-include-color-swatches-pattern-name-fabric-english-label-banarasi-silk-price-a-functional-size-chart-dropdown-accordion-blouse-pairing-suggestions-gold-star-rating-display-reviews-count-share-icon-action-cod-badge-and-an-express-delivery-tag-myntra-flipkart-style-presentation-while-keeping-user-facing-text-in-english",
-      "title": "Expand the Banarasi quick-details overlay on hover/click to include: color swatches, pattern name, fabric (English label: “Banarasi Silk”), price, a functional size chart dropdown/accordion, blouse pairing suggestions, gold star rating display, reviews count, share icon action, COD badge, and an express delivery tag (Myntra/Flipkart-style presentation) while keeping user-facing text in English.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-product-image-click-supports-a-zoom-lens-style-interaction-and-provides-a-clear-navigation-path-to-the-full-product-detail-view-pdp-overlay-from-each-product-card-preserving-existing-quick-view-behavior-where-applicable",
-      "title": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path to the full product detail view (PDP overlay) from each product card, preserving existing quick view behavior where applicable.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-polish-the-overall-banarasi-showcase-presentation-to-feel-ultra-impressive-with-a-consistently-dark-black-background-treatment-pearl-shimmer-particle-ambience-gold-wave-transitions-and-cinematic-scroll-reveals-while-maintaining-responsiveness-and-performance-best-practices",
-      "title": "Polish the overall Banarasi showcase presentation to feel “ultra-impressive” with a consistently dark black background treatment, pearl shimmer particle ambience, gold wave transitions, and cinematic scroll reveals, while maintaining responsiveness and performance best practices.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-improve-performance-and-seo-behavior-for-the-expanded-catalog-by-ensuring-images-are-lazy-loaded-and-responsive-and-product-cards-provide-seo-friendly-metadata-updates-for-overlay-navigation-title-description-updates-consistent-with-the-existing-spa-metadata-approach",
-      "title": "Improve performance and SEO behavior for the expanded catalog by ensuring images are lazy-loaded and responsive, and product cards provide SEO-friendly metadata updates for overlay navigation (title/description updates) consistent with the existing SPA metadata approach.",
-      "reqIds": [
-        "REQ-19"
+        "REQ-6"
       ],
       "version": 1
     }
@@ -467,78 +617,38 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Expand Banarasi catalog to ~150 products using static images and treat them as front-facing/on-model for display",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Auto-group Banarasi images into unique creative categories by observed pattern/color/occasion and render separate sections for each category",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Collections page: wave-transition scroll reveals + per-category horizontal slider/carousel with optional auto-swipe and arrows/dots",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Animated Banarasi product cards: mannequin-style presentation with hover spin/zoom and fabric ripple effect (GSAP/CSS) + lift/glow/scale/micro-ripple on hover",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Product card action row: glowing wishlist/cart icons with pulse hover and 'saree flows to cart' success animation",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Quick details overlay on card hover/click: swatches, pattern name, fabric, price, size chart dropdown, blouse suggestions, ratings/reviews, share, COD, express tag (premium Myntra/Flipkart-style)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add zoom lens on image click and link to full product details page; ensure lazy-loaded responsive images and SEO-friendly product cards",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Cinematic polish for Banarasi showcase: pearl shimmer particles, gold wave transitions, cinematic scroll reveals; responsive and performant",
+      "summary": "Upgrade /login mobile input to international phone input with country flag/code dropdown (20+ countries), auto-detect default country (fallback India +91), searchable selection, per-country validation, and luxury-themed styling while keeping existing OTP flow",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "architecturalNotes": [
-    "React SPA built as scrollable anchor-linked sections (Home, Collections, Product, Checkout, FAQ, About) with modal/sheet overlays (Quick View, PDP, Cart, Checkout).",
-    "TanStack React Query is used as a lightweight client data layer (queries/mutations + cache invalidation), while actual commerce state is managed in a dedicated React Context provider.",
-    "Commerce is frontend-only: cart state is managed via CommerceProvider and persisted to localStorage; mutations call context actions and invalidate React Query caches for UI refresh.",
-    "ICP authentication is integrated via an InternetIdentityProvider using @dfinity/auth-client; an identity-aware backend actor is created and cached via React Query (anonymous vs authenticated).",
-    "Cinematic visuals are implemented using fixed-position canvas renderers (OceanBackground and hero layers) plus Tailwind-driven micro-interactions; motion is consistently gated by prefers-reduced-motion.",
-    "UI uses Tailwind CSS + shadcn/ui primitives; design tokens are driven via CSS variables (OKLCH) with next-themes handling dark mode."
+  "architectural_notes": [
+    "Custom lightweight SPA routing implemented via History API (useSpaLocation) with a custom browser event broadcast to synchronize navigation across multiple hook instances (no React Router).",
+    "The app shell is assembled via conditional route rendering in App.tsx (storefront, /login, /dashboard protected route, /admin/* with gate), and mounts OceanBackground as a persistent fixed layer behind all screens and overlays.",
+    "UI is composed with Tailwind CSS + shadcn/ui primitives; design tokens use OKLCH CSS variables, with many bespoke luxury micro-interactions (glows, ripples, wipe transitions, skeleton shimmer).",
+    "Accessibility pattern: all major animations and autoplay behaviors are gated by prefers-reduced-motion (usePrefersReducedMotion) with static/simplified fallbacks.",
+    "Client state is split into: (1) CommerceProvider cart context persisted to localStorage with derived totals; (2) wishlist localStorage hook; (3) admin products provider using in-memory React state only.",
+    "TanStack React Query is used as a data façade for dummy products, cart mutations, and simulated checkout; query invalidation is used to refresh dependent state after mutations.",
+    "Authentication is hybrid: OTP sessions persisted in localStorage for storefront, and Internet Identity (AuthClient) as a stronger identity option used for dashboard/admin; redirect-to-login uses flash message + return path stored in localStorage.",
+    "Backend integration pattern: identity-aware actor creation via useActor (React Query cached by principal) and backend-side access control initialization using a secret token obtained from the URL hash/session helper.",
+    "Motoko backend uses a mixin approach (MixinAuthorization) to inject access-control methods into the main actor and enforces permissions by trapping on unauthorized access.",
+    "Login page phone input may use a dedicated library (e.g., react-phone-input-2 or intl-tel-input) or custom component; should support country auto-detection (Intl API or lightweight geo lookup with fallback to India +91) and per-country validation integrated into existing OTP flow."
   ],
-  "knownIssues": [
-    "Backend canister (backend/main.mo) is a stub with only confirmDesignPreview(); no product/cart/order/user APIs exist, so all commerce is client-side and non-authoritative.",
-    "Orders are not implemented: useGetOrders() returns an empty array and useRegisterUser() is a no-op; invalidating the 'orders' query has no functional effect.",
-    "Type/model mismatch: frontend domain types use bigint for ids/prices/quantities, while the dummy catalog and CommerceProvider use string ids + number values; bridging conversions exist and may cause future integration friction.",
-    "React Query cart queryKey is ['cart', cart] (includes array reference), which can cause cache churn; invalidation calls use ['cart'] which may not precisely target all cart-key variants.",
-    "frontend/src/components/SangamBackground.tsx is present but empty (implementation drift vs summaries/reference docs).",
-    "Two global stylesheets exist (frontend/index.css and frontend/src/index.css) with different token sets; the app imports src/index.css, but the extra file can confuse maintenance or accidental inclusion.",
-    "useCinematicSlider uses NodeJS.Timeout typing for a browser timeout ref, which can conflict depending on TS lib settings (setTimeout returns number in DOM typings).",
-    "OceanBackground reduced-motion mode draws a single static frame and returns; on resize it may not redraw for reduced-motion users unless the component re-mounts.",
-    "Banarasi quick-details overlay includes a 'Size Chart' button without a wired action (placeholder behavior).",
-    "Some files include unused imports/vars (e.g., BanarasiCategoryCarouselOverlay imports icons that are not used), which may trip lint rules."
+  "known_issues": [
+    "Backend is only partially integrated with the frontend: products, orders, checkout, and admin CRUD are not persisted to or fetched from the Motoko canister; useGetOrders returns an empty array and useRegisterUser is a no-op.",
+    "Admin access is controlled by a hardcoded ADMIN_PRINCIPAL (currently set to the anonymous principal '2vxsx-fae'), which makes admin access impossible until configured to a real principal; docs also mention different testing principals, indicating configuration drift.",
+    "Simulated OTP UX uses window.alert and console logging to expose the OTP, and OTP validation is entirely client-side (no SMS delivery/server-side verification).",
+    "Type-model mismatch remains: React Query product/cart types use bigint while the UI generally consumes DUMMY_PRODUCTS (number/string IDs). This increases conversion complexity for future backend wiring.",
+    "React Query cart queryKey includes the cart array reference (['cart', cart]) which can cause cache churn and unnecessary re-renders/refetches as the array identity changes.",
+    "There appear to be two different index.css files (frontend/index.css and frontend/src/index.css); only src/index.css is imported in main.tsx, so the root-level CSS may be stale/unused and confusing.",
+    "frontend/src/components/SangamBackground.tsx is present but empty/placeholder despite summaries suggesting an implementation, indicating dead code or an incomplete migration.",
+    "Admin ImageDropzone uses window.alert for invalid file-type feedback, inconsistent with the premium toast system used elsewhere.",
+    "Some timers are typed as NodeJS.Timeout in browser code (e.g., carousel autoplay), which can cause typing friction depending on TS lib configuration.",
+    "useLocalStorageState’s setter closes over state (dependency on state), which can be error-prone under rapid successive updates compared to a ref-based implementation."
   ],
   "isFixRequest": false,
   "gameProjectType": "none",
   "projectName": "DoRaa Sangam House",
   "clarification_mode": "instant",
-  "clarification_rounds": 0,
-  "requiresBackendChanges": false,
-  "requiresFrontendChanges": true
+  "clarification_rounds": 0
 }

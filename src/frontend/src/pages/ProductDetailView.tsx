@@ -8,6 +8,10 @@ import { DUMMY_PRODUCTS } from '../data/dummyProducts';
 import { useAddToCart } from '../hooks/useQueries';
 import { toast } from 'sonner';
 import { useDynamicMetadata } from '../hooks/useDynamicMetadata';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
+import { useCommerce } from '../hooks/useCommerce';
+import { useSpaLocation } from '../hooks/useSpaLocation';
+import { showDuplicateCartToast } from '../utils/premiumToasts';
 
 interface ProductDetailViewProps {
   productId: string;
@@ -18,6 +22,9 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
   const product = DUMMY_PRODUCTS.find((p) => p.id === productId);
   const addToCart = useAddToCart();
   const [quantity, setQuantity] = useState(1);
+  const { requireAuth } = useAuthRedirect();
+  const { isInCart } = useCommerce();
+  const [, navigate] = useSpaLocation();
 
   useDynamicMetadata({
     title: product ? `${product.name} - DoRaa Sangam House` : 'Product Details',
@@ -33,7 +40,20 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
 
   if (!product) return null;
 
+  const inCart = isInCart(product.id);
+
   const handleAddToCart = () => {
+    if (!requireAuth(navigate, window.location.pathname)) {
+      onClose();
+      return;
+    }
+
+    // Check for duplicate
+    if (inCart) {
+      showDuplicateCartToast();
+      return;
+    }
+
     addToCart.mutate(
       { productId: product.id, quantity },
       {
@@ -48,7 +68,7 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm overflow-y-auto">
       <div className="container py-8 md:py-12">
         <Button
           variant="ghost"
@@ -96,6 +116,7 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
                   size="icon"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
+                  className="gold-pulse-glow"
                 >
                   -
                 </Button>
@@ -105,6 +126,7 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
                   size="icon"
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   disabled={quantity >= product.stock}
+                  className="gold-pulse-glow"
                 >
                   +
                 </Button>
@@ -113,7 +135,7 @@ export default function ProductDetailView({ productId, onClose }: ProductDetailV
 
             <Button
               size="lg"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all gold-pulse-glow"
               onClick={handleAddToCart}
               disabled={product.stock === 0 || addToCart.isPending}
             >

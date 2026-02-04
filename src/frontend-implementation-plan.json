@@ -1,286 +1,146 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Banarasi catalog expansion + animated collections + enhanced product card interactions",
+  "title": "Upgrade /login phone field to international phone input with autodetect, per-country validation, and luxury theming",
   "requirements": [
     {
-      "id": "REQ-10",
-      "summary": "Expand the static Banarasi catalog to ~150 products and ensure all product-rendering surfaces (collections sliders/sections, grids, quick view, PDP overlay, wishlist, cart) work for the expanded set.",
+      "id": "REQ-1",
+      "summary": "Replace /login phone <Input> with an international phone input (flag + country name + dial code selector + number input) with searchable dropdown and at least 20 popular countries.",
       "acceptanceCriteria": [
-        "The app renders ~150 Banarasi products without layout breakage across desktop and mobile.",
-        "All existing product interactions (wishlist, add-to-cart, quick view, PDP overlay, zoom gallery) work for the newly added products."
+        "In both Sign In and Sign Up tabs on /login, the phone step shows a country dropdown (flag + country name + dial code) and a number input side-by-side, responsive to small screens.",
+        "The country dropdown is searchable and allows changing the country manually.",
+        "At least 20 countries are available in the dropdown, including India (+91), United States (+1), United Kingdom (+44), and UAE (+971)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/data/dummyProducts.ts",
+          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
+          "operation": "create",
+          "description": "Create a reusable InternationalPhoneInput wrapper component for /login that renders a left-side searchable country selector (flag + country name + dial code) and a right-side phone number input, designed to be used in both Sign In and Sign Up tabs. Use shadcn-ui primitives already present in the project (e.g., Button/Input/Label/Popover-like patterns) to compose UI without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/utils/phoneCountries.ts",
+          "operation": "create",
+          "description": "Add a curated country list (>= 20 entries) containing ISO country code, country name, dial code, and flag display metadata for the dropdown (must include India +91, United States +1, United Kingdom +44, UAE +971)."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Expand the Banarasi product entries to approximately 150 items using the existing static image URL approach; ensure each new product includes the required metadata used across the UI (images array, price, rating, reviewCount, swatches, sizes, COD/express flags, pattern/fabric fields) so wishlist/cart/quick view/PDP overlay continue to function."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0028.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0029.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0030.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0031.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0032.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0033.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0034.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0035.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0036.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
-        },
-        {
-          "path": "frontend/public/assets/uploads/banarasi/IMG-20251116-WA0037.jpg",
-          "operation": "create",
-          "description": "Add static Banarasi catalog asset image to be referenced by the expanded dummy catalog."
+          "description": "Replace the existing plain phone number Input fields in both Sign In and Sign Up flows with the new InternationalPhoneInput component and wire its value into the existing /login OTP flow state. Use existing shadcn-ui components (Tabs/Card/Button/etc.) as-is; do not modify frontend/src/components/ui. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-11",
-      "summary": "Implement deterministic client-side heuristic grouping so every Banarasi product maps to exactly one creative collection aligned with the specified collection names, and render separate category sections/sliders based on the resulting grouping.",
+      "id": "REQ-2",
+      "summary": "Auto-detect and pre-select the user’s country on /login load; default to India (+91) when detection fails or is unsupported.",
       "acceptanceCriteria": [
-        "Every product is assigned to exactly one collection category (with a deterministic fallback category if insufficient metadata is present).",
-        "Each category section shows an accurate product count and renders a horizontal slider/carousel of products.",
-        "Category grouping does not require any backend calls and works fully client-side."
+        "On first load of /login, the country selector is pre-populated automatically without user input.",
+        "If auto-detection cannot determine a supported country, the selector defaults to India (+91).",
+        "The selected flag and dial code are visible immediately on render."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/data/banarasiGrouping.ts",
+          "path": "frontend/src/utils/detectCountryFromLocale.ts",
           "operation": "create",
-          "description": "Create a client-side heuristic grouping utility that assigns each Banarasi product to exactly one of: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; use observable attributes (colorFamily, patternDescription, tags inferred from name/description, and filename hints) and include a deterministic fallback to ensure total coverage."
+          "description": "Implement a browser-based country detection helper (e.g., Intl locale / navigator.language region hints) that maps to a supported country from the curated list and falls back to India (IN) when unknown/unsupported."
         },
         {
-          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Switch Banarasi collection rendering to use the new heuristic grouping results (instead of relying on preassigned per-product category IDs) and render separate category sections with accurate product counts. Use the shadcn-ui Carousel component to support horizontal sliders for each category; verify the component's usage instructions before implementing."
+          "description": "On /login initial render, call the locale-based detection utility to set the initial selected country for the InternationalPhoneInput; ensure fallback to India (+91) and that the flag/dial code render immediately without user interaction."
         }
       ]
     },
     {
-      "id": "REQ-12",
-      "summary": "Update the Collections/Products browsing experience so Banarasi category sections reveal on scroll with gold wave transitions between sections, and each category slider includes arrows, dot navigation, and optional autoplay that respects prefers-reduced-motion.",
+      "id": "REQ-3",
+      "summary": "Add per-country phone validation on blur and on Send OTP; block OTP sending when invalid; show inline error below the phone input group with required text and styling.",
       "acceptanceCriteria": [
-        "Scrolling down the Collections experience reveals categories with a visually distinct wave/wipe transition.",
-        "Each category carousel supports next/prev arrows and dot indicators on both desktop and mobile.",
-        "Autoplay/auto-swipe is disabled or simplified when prefers-reduced-motion is enabled."
+        "Invalid numbers show an inline error directly below the phone input group (not only as a top-of-card alert).",
+        "Inline error uses pearl-blue text styling and a gold border treatment as specified, and uses the exact required sentence with the country name substituted.",
+        "Clicking 'Send OTP' does not proceed to the OTP step when the phone number is invalid for the selected country.",
+        "India selection validates as a 10-digit national number (with +91 country code applied in the stored/sent value)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
-          "operation": "create",
-          "description": "Create a Banarasi collection section component that combines scroll reveal, a gold wave divider/wipe between sections, and an in-section horizontal carousel with arrows + dot navigation + optional autoplay (disabled/simplified for reduced motion). Use the shadcn-ui Carousel component for the slider mechanics; verify the component's usage instructions before implementing."
+          "path": "frontend/package.json",
+          "operation": "modify",
+          "description": "Add a robust phone parsing/validation dependency (e.g., libphonenumber-js) to support per-country validation and E.164 formatting entirely on the frontend."
         },
         {
-          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
+          "path": "frontend/src/utils/phoneValidation.ts",
+          "operation": "create",
+          "description": "Implement per-country phone validation utilities that (a) validate national number vs selected country rules and (b) produce an E.164 formatted number with leading '+'. Ensure India validates as a 10-digit national number."
+        },
+        {
+          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
           "operation": "modify",
-          "description": "Replace the current grid-of-categories + overlay-only experience with an inline scroll-driven list of Banarasi collection sections that reveal as the user scrolls, inserting gold wave transitions between them and wiring dot/arrows/autoplay controls."
+          "description": "Wire blur-triggered validation behavior: when the phone number input loses focus, validate against the selected country and surface an inline error state to the parent. Inline error rendering must appear directly below the phone input group and read exactly: \"Please enter a valid [country] mobile number\" with [country] from the current selection. Use shadcn-ui primitives as needed without modifying frontend/src/components/ui. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Update Send OTP click handling to run the same per-country validation prior to generating OTP; prevent transition to the OTP step and display the inline error when invalid. Keep existing lockout/attempt logic intact."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Match the new phone input group styling to the existing dark luxury theme with pearl-blue accents and gold hover/glow; ensure responsive layout and preserve Send OTP button pulse/glow behavior.",
+      "acceptanceCriteria": [
+        "Country dropdown and phone input visually match the app’s dark luxury theme and do not introduce mismatched light styles.",
+        "Dropdown and interactive states show gold hover/glow effects; pearl-blue is used for primary accents.",
+        "Send OTP button continues to use the continuous pulse/glow styling already used on the page.",
+        "Mobile layout stacks or compresses gracefully with no clipping/overlap; the overall control remains full-width."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Apply layout and className adjustments around the new phone input group so it is fully responsive (full-width on mobile, no overflow) and so the existing Send OTP button retains its current gold-pulse-glow behavior."
+        },
+        {
+          "path": "frontend/src/components/auth/InternationalPhoneInput.tsx",
+          "operation": "modify",
+          "description": "Implement dark-luxury themed styling for the dropdown + input: dark backgrounds, pearl-blue accent focus states, and gold hover/glow states on the dropdown trigger/list items. Use existing Tailwind tokens (primary/accent) and avoid introducing light default styles. Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Add CSS utilities/animations for a gold wave transition between Banarasi collection sections and dot navigation styling, ensuring reduced-motion variants are respected and animations do not cause layout shift."
+          "description": "Add small, globally-scoped utility classes (or refinements) needed for the phone input group’s gold hover/glow and inline validation treatment (pearl-blue text + gold border), ensuring consistency with existing luxury theme tokens and reduced-motion behavior."
         }
       ]
     },
     {
-      "id": "REQ-13",
-      "summary": "Enhance Banarasi product cards to present a consistent mannequin/on-model style treatment and add subtle hover spin/zoom plus a fabric ripple effect without new unsupported dependencies, respecting reduced motion.",
+      "id": "REQ-5",
+      "summary": "Preserve existing OTP flow (send → simulated OTP → verify → /dashboard, attempts/lockout) while storing/sending the phone number in E.164 format with the selected dial code.",
       "acceptanceCriteria": [
-        "Product cards display a consistent mannequin/on-model style presentation for all catalog images (even when source angles vary).",
-        "On hover/focus, the image exhibits subtle spin/zoom plus a fabric-ripple-like effect.",
-        "Animations degrade gracefully for reduced-motion users."
+        "The OTP step UI and verification logic continue to function as before (including attempt counting and 10-minute lockout).",
+        "The OTP session stores the full international phone number including '+' and the selected country dial code.",
+        "Changing country + number and resending OTP still transitions correctly to the OTP step when valid."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/ProductCard.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Adjust the Banarasi product image presentation inside the card to apply a consistent mannequin/on-model style treatment (e.g., silhouette/lighting overlay, framing rules, consistent object-position) and add a fabric-ripple visual layer that can animate on hover/focus while preserving existing quick view and click-to-detail behavior."
+          "description": "Refactor /login state so OTP generation/verification still behaves identically, but the stored session phone number is the validated E.164 value (leading '+', includes selected dial code). Ensure resend with changed country/number still works and continues to respect lockout/attempt handling."
         },
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/hooks/useStorefrontAuth.ts",
           "operation": "modify",
-          "description": "Add CSS classes/keyframes for a performant fabric-ripple effect and mannequin/on-model visual treatment using transforms/opacity and pseudo-elements; ensure reduced-motion users get a static/less-animated equivalent."
+          "description": "Confirm OTPSession creation continues to persist the phoneNumber string as provided by /login; update any naming/assumptions in comments/types if needed so it is explicitly treated as an international E.164-style value."
         }
       ]
     },
     {
-      "id": "REQ-14",
-      "summary": "Update product card hover micro-interactions (lift, pearl-blue + gold glowing border, slight scale-up, micro-ripple under image) with performance safeguards and no layout shift.",
+      "id": "REQ-6",
+      "summary": "Append an internal QA checklist for this change to frontend/RELEASE_NOTES.md.",
       "acceptanceCriteria": [
-        "Hover/focus states show lift + glow + scale without reflow/layout shift.",
-        "The glow styling matches the dark luxury theme (pearl-blue and gold accents).",
-        "Effects remain smooth on mobile (tap/press feedback) and desktop (hover)."
+        "Release notes include a short checklist covering the specified confirmations for manual verification."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/ProductCard.tsx",
+          "path": "frontend/RELEASE_NOTES.md",
           "operation": "modify",
-          "description": "Refine card hover/focus interaction states to add lift + glow border (pearl-blue/gold) + slight scale and a micro-ripple under the image using transform/opacity only (no size changes) to avoid layout shift, including touch/keyboard-friendly focus-visible behavior."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Extend/override the existing premium-card-hover utility with Banarasi-specific glow and micro-ripple styling (including focus-visible and hover:none fallbacks) while maintaining reduced-motion overrides."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Add/adjust Tailwind keyframes/animations/shadows needed for micro-ripple and glow variants (pearl-blue + gold accents) to keep the interactions consistent with the dark luxury theme."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Upgrade product card action row with glowing/pulsing wishlist and add-to-cart icons and a clear 'saree flows to cart' success animation tied to the existing cart icon/badge area, respecting reduced motion.",
-      "acceptanceCriteria": [
-        "Wishlist and add-to-cart buttons visibly pulse/glow on hover/focus and provide tap feedback on mobile.",
-        "Adding to cart triggers a clear “fly/flow to cart” success animation and updates the cart badge/count.",
-        "Animation is disabled or simplified under prefers-reduced-motion."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "modify",
-          "description": "Update wishlist and add-to-cart action styling to use glowing/pulsing hover/focus states (gold/pearl-blue) and trigger the enhanced add-to-cart flow animation on success while keeping cart badge updates intact."
-        },
-        {
-          "path": "frontend/src/hooks/useAddToCartAnimation.ts",
-          "operation": "modify",
-          "description": "Enhance the existing add-to-cart animation from a generic flying dot to a more saree-like 'flow' animation (e.g., flying image clone/gradient cloth streak) that targets the header cart area; keep a reduced-motion fallback that skips or simplifies animation."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add CSS for pulsing/glowing action icons and the visual styling of the fly-to-cart element so it reads as a 'saree flow' rather than a simple dot, ensuring animation remains performant."
-        }
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "summary": "Expand the Banarasi quick-details overlay to include all requested fields (English labels), including functional size chart dropdown/accordion and share action behavior.",
-      "acceptanceCriteria": [
-        "Quick-details overlay displays all requested fields using English labels.",
-        "Size chart dropdown/accordion expands/collapses and shows size information for the current product.",
-        "Share icon triggers a reasonable client-side share behavior (Web Share API when available; otherwise copy link/text feedback)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
-          "operation": "modify",
-          "description": "Add the requested quick-details fields and layout polish: color swatches, pattern name, fabric label displayed as “Banarasi Silk”, price, star rating + reviews count, share icon action, COD badge, express delivery tag, blouse pairing suggestions, and a functional size chart dropdown/accordion that renders size data for the active product. Use shadcn-ui Accordion (or equivalent existing shadcn primitives) for expand/collapse; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/data/dummyProducts.ts",
-          "operation": "modify",
-          "description": "Ensure Banarasi products include consistent metadata needed by the expanded quick-details overlay (swatches, patternDescription/pattern name value, sizes for the size chart, blouseSuggestions, codAvailable, expressDelivery) and keep user-facing text in English."
-        }
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "summary": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path from the product card to the full product detail view (PDP overlay), preserving quick view.",
-      "acceptanceCriteria": [
-        "Clicking/tapping the product image provides a zoom-lens interaction and/or opens the existing zoom-capable gallery experience.",
-        "From the product card, users can reliably open the full product detail view for that product."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "modify",
-          "description": "Wire the product image region to provide a zoom-lens style interaction (lightweight lens overlay on desktop and/or direct entry into the existing zoom-capable PDP overlay) while keeping the existing Quick View entry point reliable and preventing event conflicts."
-        },
-        {
-          "path": "frontend/src/components/product/ImageZoomGallery.tsx",
-          "operation": "modify",
-          "description": "Refine the existing zoom behavior to feel more like a 'zoom-lens' interaction (clear affordance, cursor/overlay cues, touch-friendly fallback) while respecting prefers-reduced-motion and maintaining current thumbnail/next-prev navigation."
-        }
-      ]
-    },
-    {
-      "id": "REQ-18",
-      "summary": "Polish the Banarasi showcase for an ultra-impressive dark luxury feel with pearl shimmer ambience, gold wave transitions, and cinematic scroll reveals while maintaining responsiveness and performance.",
-      "acceptanceCriteria": [
-        "The Banarasi collections browsing experience visually matches the requested dark luxury direction with pearl shimmer + gold transitions.",
-        "All animations respect prefers-reduced-motion and remain usable with keyboard navigation."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
-          "operation": "modify",
-          "description": "Integrate a cinematic Banarasi browsing presentation: add pearl shimmer ambience behind the collections and ensure each section uses cinematic scroll reveals and gold wave transitions while staying keyboard accessible."
-        },
-        {
-          "path": "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
-          "operation": "create",
-          "description": "Create a lightweight ambience wrapper for the Banarasi collections area that reuses the existing pearl shimmer particle effect styling/behavior patterns and safely disables/simplifies animation under prefers-reduced-motion."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add/adjust CSS to strengthen the dark black background treatment and cinematic reveal polish for the Banarasi collections region, ensuring performance best practices (transform/opacity animations, minimal paint)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "summary": "Improve performance and SPA metadata behavior for the expanded catalog with lazy-loaded responsive images and dynamic title/meta updates for overlay navigation.",
-      "acceptanceCriteria": [
-        "Product images load lazily and do not block initial render of collection sections.",
-        "Overlay navigation updates document title/meta description appropriately for product detail views and restores on close."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "modify",
-          "description": "Ensure product card images are lazy-loaded and configured for responsive behavior (appropriate attributes like decoding/size hints where applicable) without breaking existing visual effects; confirm no blocking of initial render for large catalogs."
-        },
-        {
-          "path": "frontend/src/components/banarasi/BanarasiCategoryShowcase.tsx",
-          "operation": "modify",
-          "description": "Ensure Banarasi collection sections/sliders render progressively (lazy images, scroll-reveal) so the expanded catalog does not block initial paint; keep any autoplay/scroll effects reduced-motion aware."
-        },
-        {
-          "path": "frontend/src/pages/ProductDetailView.tsx",
-          "operation": "modify",
-          "description": "Use the existing SPA metadata approach to update document title and meta description when opening a product detail overlay (and restore on close), aligning the metadata content with the active product."
-        },
-        {
-          "path": "frontend/src/hooks/useDynamicMetadata.ts",
-          "operation": "modify",
-          "description": "Harden metadata handling to robustly restore the original title/description when overlays close and to safely handle missing meta tags (without changing the overall SPA metadata approach)."
+          "description": "Append a brief internal QA checklist covering: auto-detection with India fallback, dropdown shows flags/names/codes + searchable manual selection, per-country validation, no UI/hover/animation regressions (including Send OTP gold pulse/glow), and OTP flow end-to-end still works."
         }
       ]
     }

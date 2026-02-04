@@ -1,194 +1,133 @@
 {
   "kind": "build_request",
-  "title": "Expand Banarasi catalog to ~150 products and enhance animated collections + product card interactions",
-  "priority": "normal",
+  "title": "Upgrade /login mobile number field to premium international phone input with auto-detect + per-country validation",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-10",
-      "text": "Expand the frontend Banarasi saree catalog to approximately 150 products using the existing static image approach, and ensure the expanded catalog is fully integrated everywhere products are rendered (Collections page sections/sliders, product grids, quick view, PDP overlay, wishlist, and cart flows).",
+      "id": "REQ-1",
+      "text": "Replace the existing plain phone number <Input> on the /login page with an advanced international phone input that has: (1) a left-side country selector showing flag + country name + dial code, and (2) a right-side phone number input. The dropdown must include at least 20 popular countries (including India +91, United States +1, United Kingdom +44, UAE +971) and support searching to manually change the country.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Modify my existing DoRaa Sangam House saree e-commerce website to showcase ~150 Banarasi saree products in a highly animated, impressive way."
+          "Replace current mobile number input with an advanced international phone input",
+          "Include at least 20 popular countries.",
+          "Manual selection: User dropdown se country change kar sake (searchable dropdown if possible)."
         ]
       },
       "acceptanceCriteria": [
-        "The app renders ~150 Banarasi products without layout breakage across desktop and mobile.",
-        "All existing product interactions (wishlist, add-to-cart, quick view, PDP overlay, zoom gallery) work for the newly added products."
+        "In both Sign In and Sign Up tabs on /login, the phone step shows a country dropdown (flag + country name + dial code) and a number input side-by-side, responsive to small screens.",
+        "The country dropdown is searchable and allows changing the country manually.",
+        "At least 20 countries are available in the dropdown, including India (+91), United States (+1), United Kingdom (+44), and UAE (+971)."
       ]
     },
     {
-      "id": "REQ-11",
-      "text": "Implement an automatic Banarasi product grouping mechanism that assigns each product to a creative collection based on observable attributes (e.g., color family, pattern name, occasion tags, or filename-derived hints), producing collection names aligned with: Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold; and render separate sections/sliders for each resulting category.",
+      "id": "REQ-2",
+      "text": "Auto-detect and pre-select the user's country on /login page load using a browser-based approach (e.g., Intl / locale hints). If detection fails or produces an unsupported/unknown country, default to India (+91). The selected flag + dial code must be shown immediately without user interaction.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Auto-group images into unique categories by observing patterns/colors (e.g., Zari Legacy, Silk Symphony, Royal Motif, Blooming Banarasi, Midnight Elegance, Celestial Threads, Eternal Gold). Create separate sections/sliders for each."
+          "Auto-detect user's country code on page load",
+          "default to India +91 if detection fails"
         ]
       },
       "acceptanceCriteria": [
-        "Every product is assigned to exactly one collection category (with a deterministic fallback category if insufficient metadata is present).",
-        "Each category section shows an accurate product count and renders a horizontal slider/carousel of products.",
-        "Category grouping does not require any backend calls and works fully client-side."
+        "On first load of /login, the country selector is pre-populated automatically without user input.",
+        "If auto-detection cannot determine a supported country, the selector defaults to India (+91).",
+        "The selected flag and dial code are visible immediately on render."
       ]
     },
     {
-      "id": "REQ-12",
-      "text": "Update the Collections/Products browsing experience so that category sections reveal on scroll with a gold wave transition between sections, and each category is presented as a horizontal slider/carousel supporting arrows and dot navigation and an optional auto-swipe/autoplay mode (with reduced-motion respecting system preferences).",
+      "id": "REQ-3",
+      "text": "Implement per-country phone validation triggered on blur of the phone field and on 'Send OTP' click. Validation must check that the number matches the selected country's expected length/format (e.g., India must validate as a 10-digit national number) and block OTP sending when invalid. Display an inline error message directly below the phone input group with exact text: \"Please enter a valid [country] mobile number\" (country name based on current selection).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Collections page: scroll-down pe categories reveal with wave transition; each category horizontal slider/carousel (auto-swipe optional, arrows/dots)."
+          "On blur or Send OTP click: check number length/format for selected country (e.g., India = 10 digits).",
+          "Error message below input (pearl blue text, gold border): \"Please enter a valid [country] mobile number\""
         ]
       },
       "acceptanceCriteria": [
-        "Scrolling down the Collections experience reveals categories with a visually distinct wave/wipe transition.",
-        "Each category carousel supports next/prev arrows and dot indicators on both desktop and mobile.",
-        "Autoplay/auto-swipe is disabled or simplified when prefers-reduced-motion is enabled."
+        "Invalid numbers show an inline error directly below the phone input group (not only as a top-of-card alert).",
+        "Inline error uses pearl-blue text styling and a gold border treatment as specified, and uses the exact required sentence with the country name substituted.",
+        "Clicking 'Send OTP' does not proceed to the OTP step when the phone number is invalid for the selected country.",
+        "India selection validates as a 10-digit national number (with +91 country code applied in the stored/sent value)."
       ]
     },
     {
-      "id": "REQ-13",
-      "text": "Enhance the Banarasi product card visual treatment to consistently present each saree image as a mannequin/on-model-style display (using the existing placeholder/assumed-on-model treatment), including subtle hover spin/zoom and a fabric ripple effect implemented via CSS (or an animation library already present in the project), without introducing new unsupported dependencies.",
+      "id": "REQ-4",
+      "text": "Update /login page styling for the new phone input so it matches the existing dark luxury theme: black/dark backgrounds, pearl-blue (#7FB3D5) accents, and gold (#D4AF37) hover/glow on the dropdown and Send OTP button. Ensure the Send OTP button retains the existing continuous gold pulse/glow behavior and the phone input group is fully responsive (full-width on mobile, no overflow).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Product cards: each saree image ko animated mannequin/model pe show karo (use placeholder or assume on-model images; subtle hover spin/zoom + fabric ripple effect via GSAP or CSS)."
+          "Dark luxury theme (black bg, pearl blue #7FB3D5 accents, gold #D4AF37 hover/glow on dropdown/button).",
+          "Golden continuous pulse/hover on \"Send OTP\" button.",
+          "Responsive: dropdown scales on mobile, input full-width."
         ]
       },
       "acceptanceCriteria": [
-        "Product cards display a consistent mannequin/on-model style presentation for all catalog images (even when source angles vary).",
-        "On hover/focus, the image exhibits subtle spin/zoom plus a fabric-ripple-like effect.",
-        "Animations degrade gracefully for reduced-motion users."
+        "Country dropdown and phone input visually match the app’s dark luxury theme and do not introduce mismatched light styles.",
+        "Dropdown and interactive states show gold hover/glow effects; pearl-blue is used for primary accents.",
+        "Send OTP button continues to use the continuous pulse/glow styling already used on the page.",
+        "Mobile layout stacks or compresses gracefully with no clipping/overlap; the overall control remains full-width."
       ]
     },
     {
-      "id": "REQ-14",
-      "text": "Update product card hover micro-interactions to include: lift, pearl-blue + gold glowing border, slight scale-up, and a micro-ripple animation under the saree image; ensure the effects are performant and do not cause layout shift.",
+      "id": "REQ-5",
+      "text": "Keep the existing OTP login flow behavior intact: Send OTP → simulated OTP alert/console → OTP input → verify → success navigates to /dashboard; lockout/attempt handling must continue to work. The stored phone number used by the OTP session must include the selected international dial code (E.164-style with leading '+').",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "On card hover: lift + pearl blue/gold glow border + scale + micro-ripple animation under saree."
+          "Keep existing OTP flow (Send OTP → simulated OTP alert → input → verify).",
+          "Login flow still works."
         ]
       },
       "acceptanceCriteria": [
-        "Hover/focus states show lift + glow + scale without reflow/layout shift.",
-        "The glow styling matches the dark luxury theme (pearl-blue and gold accents).",
-        "Effects remain smooth on mobile (tap/press feedback) and desktop (hover)."
+        "The OTP step UI and verification logic continue to function as before (including attempt counting and 10-minute lockout).",
+        "The OTP session stores the full international phone number including '+' and the selected country dial code.",
+        "Changing country + number and resending OTP still transitions correctly to the OTP step when valid."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Upgrade the product card action row so the wishlist and add-to-cart icons are visually glowing and pulse on hover (gold/pearl-blue), and on successful add-to-cart trigger a “saree flows to cart” success animation that is clearly visible and ties into the existing cart icon/badge area.",
+      "id": "REQ-6",
+      "text": "Add a brief internal QA checklist for this change (can be appended to frontend/RELEASE_NOTES.md for the next version) that confirms: auto-detection fallback to India works, dropdown shows flags/names/codes and manual selection works, validation is per-country, no UI/hover/animation regressions, and the OTP flow still works end-to-end.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Bottom of card: glowing icons (heart wishlist, cart add) — gold/pearl blue pulse hover, click pe success flow animation (saree \"flows\" to cart)."
+          "Confirm: Country code auto-detected (default +91 India). Dropdown shows flags/names/codes, manual select works. Input validates based on selected country. No bugs in UI/hovers/animations. Login flow still works."
         ]
       },
       "acceptanceCriteria": [
-        "Wishlist and add-to-cart buttons visibly pulse/glow on hover/focus and provide tap feedback on mobile.",
-        "Adding to cart triggers a clear “fly/flow to cart” success animation and updates the cart badge/count.",
-        "Animation is disabled or simplified under prefers-reduced-motion."
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "text": "Expand the Banarasi quick-details overlay on hover/click to include: color swatches, pattern name, fabric (English label: “Banarasi Silk”), price, a functional size chart dropdown/accordion, blouse pairing suggestions, gold star rating display, reviews count, share icon action, COD badge, and an express delivery tag (Myntra/Flipkart-style presentation) while keeping user-facing text in English.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Below icons: quick details hover/click overlay — color swatches, pattern name, fabric (Banarasi Silk), price, size chart dropdown, blouse pairing suggestions, gold ratings stars, reviews count, share icon, COD badge, express delivery tag (Myntra/Flipkart style)."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Quick-details overlay displays all requested fields using English labels.",
-        "Size chart dropdown/accordion expands/collapses and shows size information for the current product.",
-        "Share icon triggers a reasonable client-side share behavior (Web Share API when available; otherwise copy link/text feedback)."
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "text": "Ensure product image click supports a zoom-lens style interaction and provides a clear navigation path to the full product detail view (PDP overlay) from each product card, preserving existing quick view behavior where applicable.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Add zoom lens on image click, full details page link."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Clicking/tapping the product image provides a zoom-lens interaction and/or opens the existing zoom-capable gallery experience.",
-        "From the product card, users can reliably open the full product detail view for that product."
-      ]
-    },
-    {
-      "id": "REQ-18",
-      "text": "Polish the overall Banarasi showcase presentation to feel “ultra-impressive” with a consistently dark black background treatment, pearl shimmer particle ambience, gold wave transitions, and cinematic scroll reveals, while maintaining responsiveness and performance best practices.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Make everything ultra-impressive: dark black bg with pearl shimmer particles, gold wave transitions, cinematic scroll reveals."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Banarasi collections browsing experience visually matches the requested dark luxury direction with pearl shimmer + gold transitions.",
-        "All animations respect prefers-reduced-motion and remain usable with keyboard navigation."
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "text": "Improve performance and SEO behavior for the expanded catalog by ensuring images are lazy-loaded and responsive, and product cards provide SEO-friendly metadata updates for overlay navigation (title/description updates) consistent with the existing SPA metadata approach.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Responsive, lazy load images, SEO friendly product cards."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Product images load lazily and do not block initial render of collection sections.",
-        "Overlay navigation updates document title/meta description appropriately for product detail views and restores on close."
+        "Release notes include a short checklist covering the specified confirmations for manual verification."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui). Compose existing UI components instead of editing them.",
-    "Respect the single-actor backend architecture; do not introduce additional backend services.",
-    "Keep user-facing text in English."
+    "Do not modify files under frontend/src/components/ui (read-only shadcn components); compose new UI using existing components and custom wrappers instead.",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useActor.ts (immutable paths).",
+    "Maintain the single-page app routing behavior; changes must be confined to the /login experience and related supporting components/utilities."
   ],
   "nonGoals": [
-    "Do not add a real database, external APIs, or server-side product/catalog persistence.",
-    "Do not implement true computer-vision/ML-based image understanding; auto-grouping must be heuristic/metadata-driven on the client.",
-    "Do not introduce unsupported frameworks (e.g., Next.js) or prohibited backend languages."
+    "Do not implement real SMS delivery or server-side OTP verification.",
+    "Do not change the backend canister (Motoko) for this request.",
+    "Do not redesign other pages or alter cart/wishlist/checkout behavior."
   ],
   "imageRequirements": {
     "required": [],
