@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend changes not required for backend-only allowlisted OTP methods",
+  "title": "Frontend plan: no changes required for backend-only MSG91 OTP outcall update",
   "requirements": []
 }

@@ -1,60 +1,36 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T01:47:56.317Z",
-  "summary": "The provided diff summary does not show implementation of the requested new allowlisted OTP methods, upgrade-safe OTP storage, or the adminOnlyAction example method in backend/main.mo. The only visible backend/main.mo changes relate to RBAC-protected user profiles and order APIs, and project_state.json was updated (not requested).",
+  "generatedAt": "2026-02-05T01:56:53.285Z",
+  "summary": "Diff evidence is truncated and does not show `requestOtp` at all, so most REQ-25 behavior cannot be verified as implemented. The only clearly visible backend change is an added `Cycles` import; required `Http` import is not shown. Additionally, `project_state.json` was modified even though the BuildRequest only called for backend changes in `backend/main.mo`.",
   "missing_requirements": [
     {
       "id": "REQ-25",
-      "requirement": "Add new public canister methods `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` in `backend/main.mo` without renaming/removing/changing signatures of existing `requestAdminOtp`, `verifyAdminOtp`, `validateAdminSession`.",
-      "reason": "In the visible portion of `backend/main.mo`, there is no evidence of `requestOtp`/`verifyOtp` methods, nor any mention of the existing admin OTP endpoints to confirm they remain intact. The diff is truncated, so they may exist outside the shown section, but this cannot be verified from the provided evidence.",
+      "requirement": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to generate/store a 6-digit OTP with 10-minute expiry and (for allowlisted identifiers) send the OTP via an IC HTTPS outcall to MSG91 Flow API using the exact provided code pattern (placeholders, headers/body, cycles add, response.status switch), returning the specified success/failure strings.",
+      "reason": "The provided `backend/main.mo` diff excerpt is truncated before any OTP-related code; there is no visible change to `requestOtp`, no visible MSG91 URL/body/headers, no visible OTP generation/storage, and no visible response.status switch/return strings.",
       "evidence": [
-        "backend/main.mo (truncated)"
+        "backend/main.mo (truncated excerpt does not include requestOtp)"
       ]
     },
     {
       "id": "REQ-26",
-      "requirement": "Implement allowlist enforcement for `requestOtp`/`verifyOtp` with hardcoded authorized identifiers and reject non-allowlisted identifiers with English error messages.",
-      "reason": "No allowlist list/constants or allowlist checks for `requestOtp`/`verifyOtp` are visible in the provided `backend/main.mo` excerpt.",
+      "requirement": "Add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) in `backend/main.mo`.",
+      "reason": "`Cycles` is imported, and `Nat`/`Text` are already imported, but there is no visible `Http` import in the shown import list.",
       "evidence": [
-        "backend/main.mo (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "requirement": "Implement 6-digit OTP generation and per-identifier storage with 10-minute expiry using `Time.now() + 600_000_000_000`, remove OTP after success/expiration, return English success message including OTP for testing.",
-      "reason": "No OTP generation, OTP storage keyed by identifier, expiry computation, or verification/removal logic is visible in the provided `backend/main.mo` excerpt.",
-      "evidence": [
-        "backend/main.mo (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "requirement": "Make new OTP storage upgrade-safe via stable representation and rebuild in-memory structure in `preupgrade`/`postupgrade` hooks (do not store Map/HashMap directly in stable vars).",
-      "reason": "No stable OTP storage representation and no `system func preupgrade()` / `system func postupgrade()` logic related to OTP persistence is visible in the provided `backend/main.mo` excerpt.",
-      "evidence": [
-        "backend/main.mo (truncated)"
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "requirement": "Add `adminOnlyAction()` method enforcing a clear authorization policy and returning/trapping only English text.",
-      "reason": "No `adminOnlyAction()` method is visible in the provided `backend/main.mo` excerpt.",
-      "evidence": [
-        "backend/main.mo (truncated)"
+        "backend/main.mo (imports show `Cycles` but no `Http`)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated `project_state.json` (schema/project state version and summary/existing_features metadata).",
-      "reason": "The BuildRequest focuses on adding allowlisted OTP request/verify methods and upgrade-safe storage in `backend/main.mo`, plus an `adminOnlyAction()` example method. It does not request changes to `project_state.json`.",
+      "description": "Modified `project_state.json` (project state/version/feature summary metadata).",
+      "reason": "BuildRequest constraints focus on changing only backend `requestOtp` behavior in `backend/main.mo` and required imports; no requirement mentions updating `project_state.json`.",
       "evidence": [
-        "project_state.json (truncated)"
+        "project_state.json"
       ]
     }
   ],
-  "confidence": 0.56,
+  "confidence": 0.66,
   "changed_files": [
     "backend/main.mo",
     "project_state.json"

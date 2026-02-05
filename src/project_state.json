@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 17,
+  "projectStateVersion": 20,
   "summary": "DoRaa Sangam House is a luxury-themed React single-page e-commerce storefront backed by an Internet Computer (Motoko) canister. The storefront supports product browsing (collections + category overlays), product detail deep-links, wishlist and cart persistence, Razorpay (test mode) checkout that creates orders on the canister, and a user dashboard for profile + order history. The project also includes two admin experiences: (1) an Internet Identity–gated admin panel under /admin/* for managing the product catalog (CRUD + bulk CSV/ZIP import) and (2) a hidden OTP-based admin flow at /admin-login that sets a cookie session flag and protects an exact /admin route via a backend session validation call.",
   "existing_features": [
     {
@@ -624,13 +624,13 @@
     },
     {
       "id": "AR-19",
-      "summary": "Integrate the user-provided Motoko OTP snippet into backend/main.mo: add stable otpStorage HashMap keyed by identifier (phone/email), authorizedAdmins allowlist, requestOtp() to generate/store 6-digit OTP with 10-min expiry, verifyOtp() to validate+delete OTP, and an example adminOnlyAction guard (ensure no collision with existing requestAdminOtp/verifyAdminOtp endpoints).",
+      "summary": "Update Motoko backend `requestOtp(identifier)` to generate/store a 6-digit OTP with 10-minute expiry and send it via an IC HTTPS outcall to MSG91 Flow API (placeholders for authkey/flow_id/sender; cycles budget + status handling), keeping other OTP logic unchanged.",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-20",
-      "summary": "In `backend/main.mo`, add new public canister methods equivalent to the user-provided snippet: `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` that implement an allowlisted admin identifier OTP flow (identifier can be phone or email). These new methods must not rename/remove or change the signatures of the existing endpoints `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession`.",
+      "summary": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
       "reqIds": [
         "REQ-25"
       ],
@@ -638,33 +638,9 @@
     },
     {
       "id": "AR-21",
-      "summary": "Implement allowlist enforcement for the newly added `requestOtp`/`verifyOtp` methods using a hardcoded list of authorized admin identifiers (phone/email) as shown in the snippet. If an identifier is not allowlisted, the methods must reject with English error messages (do not return Hindi user-facing strings).",
+      "summary": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
       "reqIds": [
         "REQ-26"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "For the new OTP flow (`requestOtp`/`verifyOtp`), generate and store a 6-digit OTP per identifier with a 10-minute expiry using `Time.now()` and delete the OTP entry after successful verification or after detecting expiration. Return a success result from `requestOtp` that includes the OTP for testing (as in the snippet), but ensure the returned message is in English.",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Make the storage for the newly added OTP flow upgrade-safe. Because Motoko stable variables cannot directly hold `Map`/`HashMap` structures used at runtime, store OTP entries in a stable representation (e.g., a stable array/list of (identifier, otp, expiry) tuples) and rebuild the in-memory structure in upgrade hooks (e.g., `system func preupgrade()` / `system func postupgrade()`).",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Add an admin-protected example method in `backend/main.mo` equivalent to the snippet’s `adminOnlyAction()`, with all returned/trap strings in English. The authorization rule must be clear and must not rely on the snippet’s placeholder principal; it should use an explicit rule such as rejecting anonymous callers or reusing existing admin checks already present in the canister.",
-      "reqIds": [
-        "REQ-29"
       ],
       "status": "pending"
     }
@@ -693,7 +669,7 @@
     "ZIP→CSV extraction is a simplified ZIP parser that assumes uncompressed entries; many real ZIP archives will fail without a proper ZIP library.",
     "There are duplicate/legacy theme CSS files (frontend/index.css vs frontend/src/index.css), increasing confusion about which theme/tokens are active."
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "gameProjectType": "none",
   "projectName": "DoRaa Sangam House",
   "clarification_mode": "instant",

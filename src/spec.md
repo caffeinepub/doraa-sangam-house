@@ -1,13 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Add a new allowlisted admin OTP request/verify flow and an admin-protected example method in `backend/main.mo`, while keeping existing admin OTP/session endpoints unchanged and ensuring upgrade-safe OTP storage.
+**Goal:** Update the backend `requestOtp(identifier : Text)` to generate and store a real 6-digit OTP with a 10-minute expiry and send it via an IC HTTPS outcall to the MSG91 Flow API (using the exact provided outcall code pattern) instead of returning a fake response.
 
 **Planned changes:**
-- Add new public methods `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` to `backend/main.mo` without changing the existing `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession` method names/signatures.
-- Enforce an identifier allowlist (hardcoded phone/email) for the new `requestOtp`/`verifyOtp` methods, returning English error messages when the identifier is not allowed.
-- Implement 6-digit OTP generation, per-identifier storage, and 10-minute expiry using `Time.now()`, including deletion on success or expiry; return a testing success message in English that includes the OTP.
-- Make the new OTP storage upgrade-safe by persisting OTP entries in a stable-compatible representation and reconstructing any in-memory structures via upgrade hooks.
-- Add an `adminOnlyAction()` example method with a clear authorization rule (not relying on a placeholder principal) and English user-facing text.
+- Modify `backend/main.mo` `requestOtp(identifier : Text)` to generate a random 6-digit OTP, store it in the existing OTP HashMap with an expiry timestamp exactly 10 minutes after `Time.now()`, and (for allowlisted identifiers only) send the OTP via an IC HTTPS outcall to MSG91 using the exact user-provided snippet pattern (URL, placeholder `authkey`/`flow_id`, sender `DORAAH`, request body structure, `Cycles.add`, and `response.status` switch).
+- Add any missing imports in `backend/main.mo` required by the new outcall snippet (specifically `Http` and `Cycles`, ensuring `Nat` and `Text` are available) without changing unrelated code.
 
-**User-visible outcome:** Authorized admin identifiers can request and verify OTPs via the new `requestOtp`/`verifyOtp` methods (with OTP shown in the response for testing), and an admin-protected `adminOnlyAction()` endpoint is available; existing admin OTP/session endpoints continue to work as before.
+**User-visible outcome:** When an allowlisted phone number requests an OTP, the backend sends a real SMS OTP via MSG91 and returns “OTP sent successfully” on success (or “SMS send failed: status {code}” on failure); non-allowlisted identifiers are rejected exactly as before.

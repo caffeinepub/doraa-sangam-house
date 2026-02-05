@@ -1,46 +1,25 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T01:47:56.321Z",
+  "generatedAt": "2026-02-05T01:56:53.288Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
+    "total": 2,
     "implemented": 0,
     "items": [
       {
         "id": "REQ-25",
-        "summary": "In `backend/main.mo`, add new public canister methods equivalent to the user-provided snippet: `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` that implement an allowlisted admin identifier OTP flow (identifier can be phone or email). These new methods must not rename/remove or change the signatures of the existing endpoints `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession`.",
+        "summary": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
         "id": "REQ-26",
-        "summary": "Implement allowlist enforcement for the newly added `requestOtp`/`verifyOtp` methods using a hardcoded list of authorized admin identifiers (phone/email) as shown in the snippet. If an identifier is not allowlisted, the methods must reject with English error messages (do not return Hindi user-facing strings).",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-27",
-        "summary": "For the new OTP flow (`requestOtp`/`verifyOtp`), generate and store a 6-digit OTP per identifier with a 10-minute expiry using `Time.now()` and delete the OTP entry after successful verification or after detecting expiration. Return a success result from `requestOtp` that includes the OTP for testing (as in the snippet), but ensure the returned message is in English.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-28",
-        "summary": "Make the storage for the newly added OTP flow upgrade-safe. Because Motoko stable variables cannot directly hold `Map`/`HashMap` structures used at runtime, store OTP entries in a stable representation (e.g., a stable array/list of (identifier, otp, expiry) tuples) and rebuild the in-memory structure in upgrade hooks (e.g., `system func preupgrade()` / `system func postupgrade()`).",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-29",
-        "summary": "Add an admin-protected example method in `backend/main.mo` equivalent to the snippet’s `adminOnlyAction()`, with all returned/trap strings in English. The authorization rule must be clear and must not rely on the snippet’s placeholder principal; it should use an explicit rule such as rejecting anonymous callers or reusing existing admin checks already present in the canister.",
+        "summary": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []

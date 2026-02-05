@@ -10,6 +10,7 @@ import Nat "mo:core/Nat";
 import Text "mo:core/Text";
 import Outcall "http-outcalls/outcall";
 import MixinAuthorization "authorization/MixinAuthorization";
+import Cycles "mo:core/Cycles";
 
 actor {
   let accessControlState = AccessControl.initState();
@@ -291,19 +292,16 @@ actor {
   };
 
   public shared func requestOtp(identifier : Text) : async Text {
-    let adminIdentifiers = ["+919876543210", "admin@example.com"];
-
-    let isAdminIdentifier = adminIdentifiers.find(
-      func(allowedIdentifier) {
-        allowedIdentifier == identifier;
-      }
-    );
-
-    switch (isAdminIdentifier) {
-      case (null) {
-        Runtime.trap("Unauthorized: Identifier is not recognized as an admin");
+    let allowlist = ["+919876543210", "admin@example.com"];
+    var isAllowed = false;
+    for (allowedIdentifier in allowlist.values()) {
+      if (identifier == allowedIdentifier) {
+        isAllowed := true;
       };
-      case (_) {};
+    };
+
+    if (not isAllowed) {
+      Runtime.trap("Not authorized");
     };
 
     let otp = generateRandomOtp();
@@ -311,7 +309,13 @@ actor {
 
     adminOtps.add(identifier, { otp; expiryTimestamp });
 
-    "OTP sent successfully (for testing: " # otp # ")";
+    let response = await sendSmsViaMsg91(identifier, otp);
+
+    if (response == "success") {
+      "OTP sent successfully (for testing: " # otp # ")";
+    } else {
+      Runtime.trap("Failed to send OTP");
+    };
   };
 
   type Session = {

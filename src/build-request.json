@@ -1,115 +1,60 @@
 {
   "kind": "build_request",
-  "title": "Integrate allowlisted OTP request/verify snippet into backend/main.mo (upgrade-safe) without breaking existing admin OTP endpoints",
+  "title": "Update backend requestOtp to send real SMS OTP via MSG91 HTTPS outcall",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-25",
-      "text": "In `backend/main.mo`, add new public canister methods equivalent to the user-provided snippet: `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` that implement an allowlisted admin identifier OTP flow (identifier can be phone or email). These new methods must not rename/remove or change the signatures of the existing endpoints `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession`.",
+      "text": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-10"
+          "msg-2"
         ],
         "quotes": [
-          "Isko main.mo me daal do ---import Principal \"mo:base/Principal\"; ... public shared func requestOtp(identifier: Text) ... public shared func verifyOtp(identifier: Text, enteredOtp: Text) ...",
-          "Yes"
+          "Update requestOtp function in Motoko backend.",
+          "Add real SMS sending using HTTPS outcall to MSG91 API.",
+          "Use this exact code pattern for the outcall part (copy this):\n\nlet url = \"https://control.msg91.com/api/v5/flow/\";\n\nlet authkey = \"YOUR_MSG91_AUTHKEY_HERE\";  // placeholder, main baad mein replace karunga\n\nlet flow_id = \"YOUR_FLOW_ID_HERE\";  // yeh dashboard se milega\n\nlet sender = \"DORAAH\";  // your sender ID\n\nlet mobiles = identifier;  // phone number with +91\n\nlet variables = \"OTP:\" # otp;  // adjust as per your template variables\n\nlet body_text = \"{\\\"flow_id\\\":\\\"\" # flow_id # \"\\\", \\\"sender\\\":\\\"\" # sender # \"\\\", \\\"mobiles\\\":\\\"\" # mobiles # \"\\\", \\\"VAR1\\\":\\\"\" # otp # \"\\\"}\";  // simple payload for OTP\n\nlet request : Http.Request = {\n  url = url;\n  max_response_bytes = ?2000000;\n  headers = [\n    (\"authkey\", authkey),\n    (\"Content-Type\", \"application/json\")\n  ];\n  body = ?Text.encodeUtf8(body_text);\n  method = #post;\n  transform = null;\n};\n\nCycles.add<system>(1000000000000);  // 1T cycles, adjust if needed\n\nlet response = await Http.http_request(request);\n\nswitch(response.status) {\n  case (200) { \"OTP sent successfully\" };\n  case (_) { \"SMS send failed: status \" # Nat.toText(response.status) };\n};",
+          "Add proper import for Http, Cycles, Nat, Text at top if missing.",
+          "Only add this to requestOtp, keep other logic same."
         ]
       },
       "acceptanceCriteria": [
-        "`backend/main.mo` still compiles with the existing `requestAdminOtp`, `verifyAdminOtp`, and `validateAdminSession` functions intact (same names and parameter lists).",
-        "A new `requestOtp(identifier : Text)` method exists and is callable.",
-        "A new `verifyOtp(identifier : Text, enteredOtp : Text)` method exists and is callable."
+        "`backend/main.mo` compiles successfully after the change.",
+        "`requestOtp(identifier)` still rejects non-allowlisted identifiers exactly as it does today (same authorization behavior), and only proceeds to send/store OTP for authorized identifiers.",
+        "`requestOtp(identifier)` generates a 6-digit OTP and stores it in the existing OTP map along with an expiry timestamp exactly 10 minutes after `Time.now()`.",
+        "The MSG91 HTTPS outcall code inside `requestOtp` matches the user-provided pattern (same URL, placeholder strings, headers, body_text structure, cycles add, and response.status switch).",
+        "`requestOtp(identifier)` returns `\"OTP sent successfully\"` when `response.status` is `200`, otherwise returns `\"SMS send failed: status {code}\"` using `Nat.toText(response.status)`."
       ]
     },
     {
       "id": "REQ-26",
-      "text": "Implement allowlist enforcement for the newly added `requestOtp`/`verifyOtp` methods using a hardcoded list of authorized admin identifiers (phone/email) as shown in the snippet. If an identifier is not allowlisted, the methods must reject with English error messages (do not return Hindi user-facing strings).",
+      "text": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-2"
         ],
         "quotes": [
-          "let authorizedAdmins : [Text] = [\"+919876543210\", \"shraddhanshu@example.com\"];",
-          "return #err(\"Yeh number/email admin ke liye allowed nahi hai\");"
+          "Add proper import for Http, Cycles, Nat, Text at top if missing."
         ]
       },
       "acceptanceCriteria": [
-        "Calling `requestOtp` with a non-allowlisted identifier returns an error with an English message indicating the identifier is not allowed.",
-        "Calling `verifyOtp` with a non-allowlisted identifier returns an error with an English message indicating the identifier is not allowed."
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "text": "For the new OTP flow (`requestOtp`/`verifyOtp`), generate and store a 6-digit OTP per identifier with a 10-minute expiry using `Time.now()` and delete the OTP entry after successful verification or after detecting expiration. Return a success result from `requestOtp` that includes the OTP for testing (as in the snippet), but ensure the returned message is in English.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "// Generate 6-digit OTP",
-          "// Store with 10 min expiry",
-          "#ok(\"OTP bhej diya gaya: \" # otp # \" (testing ke liye screen par dikhega)\")",
-          "if (now > expiry) { otpStorage.delete(identifier); #err(\"OTP expire ho gaya\"); } else if (storedOtp == enteredOtp) { otpStorage.delete(identifier); ... }"
-        ]
-      },
-      "acceptanceCriteria": [
-        "`requestOtp` stores an OTP tied to the identifier and sets expiry to `Time.now() + 600_000_000_000` (10 minutes in nanoseconds).",
-        "`verifyOtp` returns an error if no OTP exists for that identifier.",
-        "`verifyOtp` returns an error if the OTP is expired and removes the stored entry.",
-        "`verifyOtp` returns success only when the OTP matches and removes the stored entry.",
-        "`requestOtp` returns a success message in English that includes the generated OTP for testing."
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "text": "Make the storage for the newly added OTP flow upgrade-safe. Because Motoko stable variables cannot directly hold `Map`/`HashMap` structures used at runtime, store OTP entries in a stable representation (e.g., a stable array/list of (identifier, otp, expiry) tuples) and rebuild the in-memory structure in upgrade hooks (e.g., `system func preupgrade()` / `system func postupgrade()`).",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "stable var otpStorage = HashMap.HashMap<Text, (Text, Int)>(0, Text.equal, Text.hash);"
-        ]
-      },
-      "acceptanceCriteria": [
-        "OTP entries created via `requestOtp` persist across a canister upgrade (they remain available to `verifyOtp` after upgrade) until they expire or are verified.",
-        "The chosen stable representation uses stable-compatible types only (e.g., `Text`, `Int`/`Nat`, `Time.Time`) and does not attempt to store `Map`/`HashMap` directly as `stable`."
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "text": "Add an admin-protected example method in `backend/main.mo` equivalent to the snippet’s `adminOnlyAction()`, with all returned/trap strings in English. The authorization rule must be clear and must not rely on the snippet’s placeholder principal; it should use an explicit rule such as rejecting anonymous callers or reusing existing admin checks already present in the canister.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "// Admin protected function example",
-          "public shared ({ caller }) func adminOnlyAction() : async Text {",
-          "if (Principal.isAnonymous(caller)) { \"Admin nahi ho\" } else { \"Admin dashboard access granted!\" }"
-        ]
-      },
-      "acceptanceCriteria": [
-        "`adminOnlyAction()` exists and returns English user-facing text.",
-        "`adminOnlyAction()` enforces a clear authorization policy (e.g., anonymous callers are rejected/denied, or admin role is required)."
+        "`backend/main.mo` includes the required imports for `Http` and `Cycles` used by the new outcall snippet in `requestOtp`.",
+        "No other backend methods’ behavior is changed as part of adding these imports."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko canister; keep all logic in `backend/main.mo`.",
-    "Do not break compilation of existing admin OTP/session endpoints already present in `backend/main.mo` (`requestAdminOtp`, `verifyAdminOtp`, `validateAdminSession`).",
-    "Use English for any user-facing text (success/error messages) added by this change."
+    "Backend must remain single-actor; keep all Motoko logic in `backend/main.mo`.",
+    "Only change `requestOtp` behavior to add the MSG91 HTTPS outcall using the exact provided code pattern; do not refactor or modify other OTP/admin/session/product/order logic.",
+    "Keep placeholder values exactly as provided for MSG91 credentials/IDs (e.g., `YOUR_MSG91_AUTHKEY_HERE`, `YOUR_FLOW_ID_HERE`).",
+    "Use English for any user-facing strings returned/trapped by the updated logic."
   ],
   "nonGoals": [
-    "Do not modify the frontend OTP flows as part of this change.",
-    "Do not replace or refactor the existing `requestAdminOtp`/`verifyAdminOtp` implementation unless required to resolve naming/type collisions introduced by adding `requestOtp`/`verifyOtp`.",
-    "Do not introduce third-party authentication beyond existing Internet Identity usage."
+    "Do not modify `requestAdminOtp`, `verifyAdminOtp`, `verifyOtp`, or `validateAdminSession` behavior.",
+    "Do not replace or refactor the existing `Outcall` helper module usage outside of `requestOtp`.",
+    "Do not add new frontend UI or change the login flow UI as part of this request."
   ],
   "imageRequirements": {
     "required": [],
