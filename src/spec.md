@@ -1,10 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Update the backend `requestOtp(identifier : Text)` to generate and store a real 6-digit OTP with a 10-minute expiry and send it via an IC HTTPS outcall to the MSG91 Flow API (using the exact provided outcall code pattern) instead of returning a fake response.
+**Goal:** Add the mobile number "+9179056555971" to the backend admin OTP authorization allowlist so it is recognized as an authorized admin identifier.
 
 **Planned changes:**
-- Modify `backend/main.mo` `requestOtp(identifier : Text)` to generate a random 6-digit OTP, store it in the existing OTP HashMap with an expiry timestamp exactly 10 minutes after `Time.now()`, and (for allowlisted identifiers only) send the OTP via an IC HTTPS outcall to MSG91 using the exact user-provided snippet pattern (URL, placeholder `authkey`/`flow_id`, sender `DORAAH`, request body structure, `Cycles.add`, and `response.status` switch).
-- Add any missing imports in `backend/main.mo` required by the new outcall snippet (specifically `Http` and `Cycles`, ensuring `Nat` and `Text` are available) without changing unrelated code.
+- Update the admin identifier allowlist in `backend/main.mo` to include the exact string "+9179056555971".
+- Ensure `requestAdminOtp("+9179056555971")` and `verifyAdminOtp("+9179056555971", ...)` do not fail due to allowlist rejection.
 
-**User-visible outcome:** When an allowlisted phone number requests an OTP, the backend sends a real SMS OTP via MSG91 and returns “OTP sent successfully” on success (or “SMS send failed: status {code}” on failure); non-allowlisted identifiers are rejected exactly as before.
+**User-visible outcome:** Admin OTP requests and verification using "+9179056555971" will no longer be blocked as "not authorized" (OTP may still fail for other reasons, e.g., incorrect code).

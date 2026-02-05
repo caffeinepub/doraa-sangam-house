@@ -46,24 +46,6 @@ export const OrderRecord = IDL.Record({
   'timestamp' : IDL.Nat,
   'shippingAddress' : ShippingAddress,
 });
-export const http_header = IDL.Record({
-  'value' : IDL.Text,
-  'name' : IDL.Text,
-});
-export const http_request_result = IDL.Record({
-  'status' : IDL.Nat,
-  'body' : IDL.Vec(IDL.Nat8),
-  'headers' : IDL.Vec(http_header),
-});
-export const TransformationInput = IDL.Record({
-  'context' : IDL.Vec(IDL.Nat8),
-  'response' : http_request_result,
-});
-export const TransformationOutput = IDL.Record({
-  'status' : IDL.Nat,
-  'body' : IDL.Vec(IDL.Nat8),
-  'headers' : IDL.Vec(http_header),
-});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -120,20 +102,13 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'publicListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'requestAdminOtp' : IDL.Func([IDL.Text], [IDL.Text], []),
-  'requestOtp' : IDL.Func([IDL.Text], [IDL.Text], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'transform' : IDL.Func(
-      [TransformationInput],
-      [TransformationOutput],
-      ['query'],
-    ),
   'validateAdminSession' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
   'verifyAdminOtp' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [IDL.Text],
       [],
     ),
-  'verifyOtp' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
 });
 
 export const idlInitArgs = [];
@@ -176,21 +151,6 @@ export const idlFactory = ({ IDL }) => {
     'paymentId' : IDL.Text,
     'timestamp' : IDL.Nat,
     'shippingAddress' : ShippingAddress,
-  });
-  const http_header = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
-  const http_request_result = IDL.Record({
-    'status' : IDL.Nat,
-    'body' : IDL.Vec(IDL.Nat8),
-    'headers' : IDL.Vec(http_header),
-  });
-  const TransformationInput = IDL.Record({
-    'context' : IDL.Vec(IDL.Nat8),
-    'response' : http_request_result,
-  });
-  const TransformationOutput = IDL.Record({
-    'status' : IDL.Nat,
-    'body' : IDL.Vec(IDL.Nat8),
-    'headers' : IDL.Vec(http_header),
   });
   
   return IDL.Service({
@@ -248,20 +208,13 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'publicListProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'requestAdminOtp' : IDL.Func([IDL.Text], [IDL.Text], []),
-    'requestOtp' : IDL.Func([IDL.Text], [IDL.Text], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'transform' : IDL.Func(
-        [TransformationInput],
-        [TransformationOutput],
-        ['query'],
-      ),
     'validateAdminSession' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'verifyAdminOtp' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [IDL.Text],
         [],
       ),
-    'verifyOtp' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
   });
 };
 

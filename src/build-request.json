@@ -1,60 +1,33 @@
 {
   "kind": "build_request",
-  "title": "Update backend requestOtp to send real SMS OTP via MSG91 HTTPS outcall",
-  "priority": "normal",
+  "title": "Add +9179056555971 to backend admin OTP allowlist",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-25",
-      "text": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
+      "id": "REQ-28",
+      "text": "Update the backend admin OTP authorization allowlist to include the mobile number \"+9179056555971\" as an authorized admin identifier so that calling `requestAdminOtp` and `verifyAdminOtp` with this identifier does not trigger any \"not authorized\" trap.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-5"
         ],
         "quotes": [
-          "Update requestOtp function in Motoko backend.",
-          "Add real SMS sending using HTTPS outcall to MSG91 API.",
-          "Use this exact code pattern for the outcall part (copy this):\n\nlet url = \"https://control.msg91.com/api/v5/flow/\";\n\nlet authkey = \"YOUR_MSG91_AUTHKEY_HERE\";  // placeholder, main baad mein replace karunga\n\nlet flow_id = \"YOUR_FLOW_ID_HERE\";  // yeh dashboard se milega\n\nlet sender = \"DORAAH\";  // your sender ID\n\nlet mobiles = identifier;  // phone number with +91\n\nlet variables = \"OTP:\" # otp;  // adjust as per your template variables\n\nlet body_text = \"{\\\"flow_id\\\":\\\"\" # flow_id # \"\\\", \\\"sender\\\":\\\"\" # sender # \"\\\", \\\"mobiles\\\":\\\"\" # mobiles # \"\\\", \\\"VAR1\\\":\\\"\" # otp # \"\\\"}\";  // simple payload for OTP\n\nlet request : Http.Request = {\n  url = url;\n  max_response_bytes = ?2000000;\n  headers = [\n    (\"authkey\", authkey),\n    (\"Content-Type\", \"application/json\")\n  ];\n  body = ?Text.encodeUtf8(body_text);\n  method = #post;\n  transform = null;\n};\n\nCycles.add<system>(1000000000000);  // 1T cycles, adjust if needed\n\nlet response = await Http.http_request(request);\n\nswitch(response.status) {\n  case (200) { \"OTP sent successfully\" };\n  case (_) { \"SMS send failed: status \" # Nat.toText(response.status) };\n};",
-          "Add proper import for Http, Cycles, Nat, Text at top if missing.",
-          "Only add this to requestOtp, keep other logic same."
+          "Add mobile number \"+9179056555971\" to admin authorized list in backend. Build now."
         ]
       },
       "acceptanceCriteria": [
-        "`backend/main.mo` compiles successfully after the change.",
-        "`requestOtp(identifier)` still rejects non-allowlisted identifiers exactly as it does today (same authorization behavior), and only proceeds to send/store OTP for authorized identifiers.",
-        "`requestOtp(identifier)` generates a 6-digit OTP and stores it in the existing OTP map along with an expiry timestamp exactly 10 minutes after `Time.now()`.",
-        "The MSG91 HTTPS outcall code inside `requestOtp` matches the user-provided pattern (same URL, placeholder strings, headers, body_text structure, cycles add, and response.status switch).",
-        "`requestOtp(identifier)` returns `\"OTP sent successfully\"` when `response.status` is `200`, otherwise returns `\"SMS send failed: status {code}\"` using `Nat.toText(response.status)`."
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Add proper import for Http, Cycles, Nat, Text at top if missing."
-        ]
-      },
-      "acceptanceCriteria": [
-        "`backend/main.mo` includes the required imports for `Http` and `Cycles` used by the new outcall snippet in `requestOtp`.",
-        "No other backend methods’ behavior is changed as part of adding these imports."
+        "In `backend/main.mo`, the admin identifier allowlist contains the exact string \"+9179056555971\".",
+        "Calling `requestAdminOtp(\"+9179056555971\")` succeeds (returns the OTP message) rather than trapping with a not-authorized error.",
+        "Calling `verifyAdminOtp(\"+9179056555971\", <correct otp>, <clientIp>, <userAgent>)` does not fail due to allowlist rejection (it may still fail for other reasons like wrong OTP)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain single-actor; keep all Motoko logic in `backend/main.mo`.",
-    "Only change `requestOtp` behavior to add the MSG91 HTTPS outcall using the exact provided code pattern; do not refactor or modify other OTP/admin/session/product/order logic.",
-    "Keep placeholder values exactly as provided for MSG91 credentials/IDs (e.g., `YOUR_MSG91_AUTHKEY_HERE`, `YOUR_FLOW_ID_HERE`).",
-    "Use English for any user-facing strings returned/trapped by the updated logic."
+    "Backend must remain a single-actor Motoko canister (all logic in `backend/main.mo`)."
   ],
   "nonGoals": [
-    "Do not modify `requestAdminOtp`, `verifyAdminOtp`, `verifyOtp`, or `validateAdminSession` behavior.",
-    "Do not replace or refactor the existing `Outcall` helper module usage outside of `requestOtp`.",
-    "Do not add new frontend UI or change the login flow UI as part of this request."
+    "Do not redesign the admin OTP flow (e.g., switching fully from email identifiers to phone-only identifiers) beyond adding this number to the existing backend allowlist.",
+    "No frontend changes are required unless the build fails without them."
   ],
   "imageRequirements": {
     "required": [],

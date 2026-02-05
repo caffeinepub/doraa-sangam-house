@@ -1,7 +1,7 @@
 import { useAdminSessionValidation } from '@/hooks/useAdminSessionValidation';
 import { clearAdminSessionFlag } from '@/utils/adminSessionFlag';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, ShieldX } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 interface AdminOtpProtectedPageProps {
   navigate: (path: string) => void;
@@ -27,24 +27,14 @@ export default function AdminOtpProtectedPage({ navigate }: AdminOtpProtectedPag
     );
   }
 
-  // Denied state
+  // Denied state - exact message, no buttons
   if (isDenied) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-6">
-          <ShieldX className="w-16 h-16 text-red-400 mx-auto" />
-          <h1 className="text-3xl font-serif text-pearl-off-white">
-            Access denied
-          </h1>
-          <p className="text-pearl-off-white/60">
-            You do not have permission to access this page.
+        <div className="max-w-md w-full text-center">
+          <p className="text-xl text-pearl-off-white">
+            Admin access denied - use /admin-login
           </p>
-          <Button
-            onClick={() => navigate('/')}
-            className="bg-pearl-blue hover:bg-pearl-blue/80 text-black font-medium"
-          >
-            Return Home
-          </Button>
         </div>
       </div>
     );

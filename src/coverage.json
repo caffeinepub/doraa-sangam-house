@@ -1,25 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T01:56:53.288Z",
+  "generatedAt": "2026-02-05T12:03:59.800Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
+    "total": 1,
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-25",
-        "summary": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-26",
-        "summary": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
+        "id": "REQ-28",
+        "summary": "Update the backend admin OTP authorization allowlist to include the mobile number \"+9179056555971\" as an authorized admin identifier so that calling `requestAdminOtp` and `verifyAdminOtp` with this identifier does not trigger any \"not authorized\" trap.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -28,13 +21,16 @@
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
+    "backend/order.mo",
+    "backend/otp-entry.mo",
     "build-request.json",
     "feature_evidence.json",
+    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
+    "frontend/src/pages/AdminLoginHiddenPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

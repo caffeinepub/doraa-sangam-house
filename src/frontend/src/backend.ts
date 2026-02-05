@@ -89,10 +89,9 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface http_request_result {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
+export interface Variant {
+    color: string;
+    size: string;
 }
 export interface Product {
     id: string;
@@ -105,11 +104,6 @@ export interface Product {
     fabric: string;
     images: Array<string>;
 }
-export interface TransformationOutput {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
-}
 export interface OrderRecord {
     status: string;
     orderId: string;
@@ -117,9 +111,10 @@ export interface OrderRecord {
     timestamp: bigint;
     shippingAddress: ShippingAddress;
 }
-export interface TransformationInput {
-    context: Uint8Array;
-    response: http_request_result;
+export interface UserProfile {
+    name: string;
+    email: string;
+    phone: string;
 }
 export interface ShippingAddress {
     street: string;
@@ -129,19 +124,6 @@ export interface ShippingAddress {
     name: string;
     state: string;
     phone: string;
-}
-export interface Variant {
-    color: string;
-    size: string;
-}
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone: string;
-}
-export interface http_header {
-    value: string;
-    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -167,13 +149,10 @@ export interface backendInterface {
     healthCheck(): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
     publicListProducts(): Promise<Array<Product>>;
-    requestAdminOtp(phone: string): Promise<string>;
-    requestOtp(identifier: string): Promise<string>;
+    requestAdminOtp(identifier: string): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    transform(input: TransformationInput): Promise<TransformationOutput>;
     validateAdminSession(clientIp: string, userAgent: string): Promise<boolean>;
-    verifyAdminOtp(phone: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
-    verifyOtp(identifier: string, enteredOtp: string): Promise<string>;
+    verifyAdminOtp(identifier: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
 }
 import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -444,20 +423,6 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async requestOtp(arg0: string): Promise<string> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.requestOtp(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.requestOtp(arg0);
-            return result;
-        }
-    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -469,20 +434,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
-            return result;
-        }
-    }
-    async transform(arg0: TransformationInput): Promise<TransformationOutput> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.transform(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.transform(arg0);
             return result;
         }
     }
@@ -511,20 +462,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.verifyAdminOtp(arg0, arg1, arg2, arg3);
-            return result;
-        }
-    }
-    async verifyOtp(arg0: string, arg1: string): Promise<string> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.verifyOtp(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.verifyOtp(arg0, arg1);
             return result;
         }
     }

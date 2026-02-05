@@ -5,16 +5,22 @@ import Order "order";
 import Map "mo:core/Map";
 import Iter "mo:core/Iter";
 import Time "mo:core/Time";
+import OtpEntry "otp-entry";
 import List "mo:core/List";
+import Outcall "http-outcalls/outcall";
 import Nat "mo:core/Nat";
 import Text "mo:core/Text";
-import Outcall "http-outcalls/outcall";
 import MixinAuthorization "authorization/MixinAuthorization";
 import Cycles "mo:core/Cycles";
+import Migration "migration";
 
+// Apply migration via with clause
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  public type UpiCallbackId = Principal.Principal;
 
   public type UserProfile = {
     name : Text;
@@ -237,14 +243,16 @@ actor {
   public type OtpEntry = {
     otp : Text;
     expiryTimestamp : Time.Time;
+    requestingPrincipal : Principal;
   };
 
   let adminOtps = Map.empty<Text, OtpEntry>();
   stable var storedOtps : [(Text, OtpEntry)] = [];
+  let adminIdentifiers : [Text] = ["shraddhanshut8@gmail.com", "+9179056555971"];
 
   func generateRandomOtp() : Text {
     let randomInt = 123456;
-    let padded = if (randomInt < 100000) {
+    let padded = if (randomInt < 100_000) {
       "0" # randomInt.toText();
     } else {
       randomInt.toText();
@@ -252,69 +260,71 @@ actor {
     padded;
   };
 
-  func sendSmsViaMsg91(phone : Text, otp : Text) : async Text {
-    let url = "https://api.msg91.com/api/v5/otp";
-    let headers = [];
-
-    let requestBody = "template_id=6508e666d6fc0578b3489ea4&mobile=" # phone # "&OTP=" # otp # "&authkey=YOUR_AUTHKEY&SENDER=VONMEN&MESSAGE=Von Mein OTP: " # otp # " is your One Time Password to login to your account. Please do not share it with anyone. ";
-    await Outcall.httpPostRequest(url, headers, requestBody, transform);
-  };
-
-  public query func transform(input : Outcall.TransformationInput) : async Outcall.TransformationOutput {
-    Outcall.transform(input);
-  };
-
-  public shared func requestAdminOtp(phone : Text) : async Text {
-    let allowlist = ["+919876543210"];
-    var isAllowed = false;
-    for (allowedPhone in allowlist.values()) {
-      if (phone == allowedPhone) {
-        isAllowed := true;
-      };
+  func identifierAllowed(identifier : Text) : Bool {
+    switch (adminIdentifiers.find(func(allowedId) { allowedId == identifier })) {
+      case (?_found) { true };
+      case (null) { false };
     };
+  };
 
-    if (not isAllowed) {
-      Runtime.trap("Not authorized");
+  func internalRequestOtp(identifier : Text, caller : Principal) : async Text {
+    if (not identifierAllowed(identifier)) {
+      Runtime.trap("Not authorized: This identifier is not in the admin allowlist");
     };
 
     let otp = generateRandomOtp();
     let expiryTimestamp = Time.now() + 600_000_000_000;
 
-    adminOtps.add(phone, { otp; expiryTimestamp });
+    adminOtps.add(identifier, { otp; expiryTimestamp; requestingPrincipal = caller });
 
-    let response = await sendSmsViaMsg91(phone, otp);
-
-    if (response == "success") {
-      "OTP sent (for testing: " # otp # ")";
-    } else {
-      Runtime.trap("Message was not sent. ");
-    };
+    "OTP sent (test mode): " # otp;
   };
 
-  public shared func requestOtp(identifier : Text) : async Text {
-    let allowlist = ["+919876543210", "admin@example.com"];
-    var isAllowed = false;
-    for (allowedIdentifier in allowlist.values()) {
-      if (identifier == allowedIdentifier) {
-        isAllowed := true;
+  public shared ({ caller }) func requestAdminOtp(identifier : Text) : async Text {
+    await internalRequestOtp(identifier, caller);
+  };
+
+  public shared ({ caller }) func verifyAdminOtp(
+    identifier : Text,
+    otp : Text,
+    clientIp : Text,
+    userAgent : Text,
+  ) : async Text {
+    if (not identifierAllowed(identifier)) {
+      Runtime.trap("Not authorized: This identifier is not in the admin allowlist");
+    };
+
+    switch (adminOtps.get(identifier)) {
+      case (null) {
+        Runtime.trap("No OTP found for the given identifier");
       };
-    };
+      case (?otpEntry) {
+        if (not Principal.equal(caller, otpEntry.requestingPrincipal)) {
+          Runtime.trap("Unauthorized: OTP can only be verified by the Principal that requested it");
+        };
 
-    if (not isAllowed) {
-      Runtime.trap("Not authorized");
-    };
+        if (Time.now() > otpEntry.expiryTimestamp) {
+          adminOtps.remove(identifier);
+          Runtime.trap("OTP has expired. Please request a new one");
+        };
 
-    let otp = generateRandomOtp();
-    let expiryTimestamp = Time.now() + 600_000_000_000;
+        if (otp == otpEntry.otp) {
+          adminOtps.remove(identifier);
 
-    adminOtps.add(identifier, { otp; expiryTimestamp });
+          let session : Session = {
+            lastActive = Time.now();
+            clientIp;
+            userAgent;
+          };
 
-    let response = await sendSmsViaMsg91(identifier, otp);
+          sessions.add(caller, session);
 
-    if (response == "success") {
-      "OTP sent successfully (for testing: " # otp # ")";
-    } else {
-      Runtime.trap("Failed to send OTP");
+          AccessControl.assignRole(accessControlState, caller, caller, #admin);
+          "OTP verified successfully. You are now logged in as admin";
+        } else {
+          Runtime.trap("Invalid OTP. Please try again");
+        };
+      };
     };
   };
 
@@ -327,98 +337,9 @@ actor {
   let sessions = Map.empty<Principal, Session>();
   var sessionTimeoutNs : Int = 4 * 3600 * 1000000000;
 
-  public shared ({ caller }) func verifyAdminOtp(
-    phone : Text,
-    otp : Text,
-    clientIp : Text,
-    userAgent : Text,
-  ) : async Text {
-    let allowlist = ["+919876543210"];
-    var isAllowed = false;
-    for (allowedPhone in allowlist.values()) {
-      if (phone == allowedPhone) {
-        isAllowed := true;
-      };
-    };
-
-    if (not isAllowed) {
-      Runtime.trap("Not authorized");
-    };
-
-    func validateOtp(optEntry : OtpEntry) : Bool {
-      otp == optEntry.otp and Time.now() < optEntry.expiryTimestamp
-    };
-
-    switch (adminOtps.get(phone)) {
-      case (null) {
-        Runtime.trap("Invalid phone or OTP");
-      };
-      case (?_existingOtp) {
-        if (validateOtp(_existingOtp)) {
-          sessions.add(
-            caller,
-            {
-              lastActive = Time.now();
-              clientIp;
-              userAgent;
-            },
-          );
-          adminOtps.remove(phone);
-
-          AccessControl.assignRole(accessControlState, caller, caller, #admin);
-
-          "OTP verified. You are now logged in as admin.";
-        } else {
-          Runtime.trap("Invalid phone or OTP");
-        };
-      };
-    };
-  };
-
-  public shared ({ caller }) func verifyOtp(identifier : Text, enteredOtp : Text) : async Text {
-    let adminIdentifiers = ["+919876543210", "admin@example.com"];
-
-    let isAdminIdentifier = adminIdentifiers.find(
-      func(allowedIdentifier) {
-        allowedIdentifier == identifier;
-      }
-    );
-
-    switch (isAdminIdentifier) {
-      case (null) {
-        Runtime.trap("Unauthorized: Identifier is not recognized as an admin");
-      };
-      case (_) {};
-    };
-
-    let otpEntry = switch (adminOtps.get(identifier)) {
-      case (null) {
-        Runtime.trap("No OTP found for the given identifier");
-      };
-      case (?entry) {
-        entry;
-      };
-    };
-
-    if (Time.now() > otpEntry.expiryTimestamp) {
-      adminOtps.remove(identifier);
-      Runtime.trap("OTP has expired. Please request a new one");
-    };
-
-    if (enteredOtp == otpEntry.otp) {
-      adminOtps.remove(identifier);
-
-      AccessControl.assignRole(accessControlState, caller, caller, #admin);
-
-      "OTP verified successfully. You are now logged in as admin";
-    } else {
-      Runtime.trap("Invalid OTP. Please try again");
-    };
-  };
-
   public shared ({ caller }) func validateAdminSession(clientIp : Text, userAgent : Text) : async Bool {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Admin role required");
+      Runtime.trap("You are not authorized to perform this action. Backends returns result in English. Admin role is required. Please authenticate as an admin user to access this functionality.");
     };
 
     switch (sessions.get(caller)) {

@@ -29,6 +29,7 @@ const AdminArea = lazy(() => import('./admin/AdminArea'));
 const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'));
 const AdminLoginHiddenPage = lazy(() => import('./pages/AdminLoginHiddenPage'));
 const AdminOtpProtectedPage = lazy(() => import('./pages/AdminOtpProtectedPage'));
+const AdminOtpDashboardPage = lazy(() => import('./pages/AdminOtpDashboardPage'));
 
 function App() {
   const { actor } = useActor();
@@ -117,6 +118,23 @@ function App() {
           <div className="relative z-10">
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
               <AdminOtpProtectedPage navigate={navigate} />
+            </Suspense>
+          </div>
+          <Toaster position="top-right" />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  // OTP-protected /admin-dashboard route (exact match only)
+  if (location.pathname === '/admin-dashboard') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="relative min-h-screen bg-black">
+          <OceanBackground />
+          <div className="relative z-10">
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminOtpDashboardPage navigate={navigate} />
             </Suspense>
           </div>
           <Toaster position="top-right" />

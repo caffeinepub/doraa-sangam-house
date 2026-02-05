@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 20,
+  "projectStateVersion": 46,
   "summary": "DoRaa Sangam House is a luxury-themed React single-page e-commerce storefront backed by an Internet Computer (Motoko) canister. The storefront supports product browsing (collections + category overlays), product detail deep-links, wishlist and cart persistence, Razorpay (test mode) checkout that creates orders on the canister, and a user dashboard for profile + order history. The project also includes two admin experiences: (1) an Internet Identity–gated admin panel under /admin/* for managing the product catalog (CRUD + bulk CSV/ZIP import) and (2) a hidden OTP-based admin flow at /admin-login that sets a cookie session flag and protects an exact /admin route via a backend session validation call.",
   "existing_features": [
     {
@@ -481,166 +481,96 @@
       "description": "Adds a reusable build-template scaffold including Dockerfile, deployment scripts/config (icp.yaml/canister.yaml), pnpm workspace setup, and frontend tooling/scripts (lint rules, image prune/resize) to standardize build and deployment of the React + Internet Computer canister app.",
       "reqIds": [],
       "version": 1
+    },
+    {
+      "id": "IF-40",
+      "title": "Enhanced backend admin OTP flow (random OTP + stable storage + expiry validation)",
+      "synonyms": [
+        "random 6-digit OTP",
+        "upgrade-safe OTP storage",
+        "10-minute OTP expiry"
+      ],
+      "description": "Updates the Motoko admin OTP endpoints to generate a random 6-digit OTP for allowlisted identifiers, store OTP+expiry in an upgrade-safe stable representation, return a fake testing success message (with an inline comment placeholder to later add MSG91/Twilio HTTPS outcall), and validate/reject/clear OTPs on verify based on missing/mismatch/expiry using Time.now().",
+      "reqIds": [
+        "REQ-10",
+        "REQ-12",
+        "REQ-13",
+        "REQ-14",
+        "REQ-15",
+        "REQ-16",
+        "REQ-17",
+        "REQ-18",
+        "REQ-19",
+        "REQ-20",
+        "REQ-22",
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-41",
+      "title": "Admin OTP SMS sending via HTTPS outcall (provider-style placeholder)",
+      "synonyms": [
+        "sendOtpSms",
+        "Twilio/MSG91-style request",
+        "backend http-outcalls integration"
+      ],
+      "description": "Adds backend logic to send the generated admin OTP via an IC HTTPS outcall using the shared http-outcalls helper module, with placeholder configuration/comments for provider URL, API key/auth token, and sender ID.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-42",
+      "title": "Backend admin-protected example action endpoint",
+      "synonyms": [
+        "adminOnlyAction",
+        "admin-only example method"
+      ],
+      "description": "Adds an explicit admin-protected example canister method (adminOnlyAction-style) that enforces a clear authorization rule (e.g., RBAC admin check / non-anonymous caller) and returns/traps with English-only messages for easier verification and future extension.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Enhance hidden /admin-login OTP flow: requestAdminOtp generates random 6-digit OTP, stores per-phone with 10-min expiry, and sends real SMS via Motoko HTTPS outcall (Twilio/MSG91-style) with placeholders for API keys/sender/auth token.",
+      "summary": "Update admin OTP backend to allowlist India mobile numbers only (no email), normalize input (+91, strip spaces/dashes), and return 'Number not allowed for admin' for unauthorized identifiers while keeping Send OTP UI available.",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Update the backend `requestAdminOtp(phone : Text)` in `backend/main.mo` to generate a random 6-digit OTP, store it per phone number with a 10-minute expiry, and return a success response only for allowlisted phone numbers.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Implement an HTTPS outcall in `backend/main.mo` (using the existing HTTP outcall helper/module available in the project) to send the generated OTP via a real SMS provider API in a \"MSG91 or Twilio style\" request, using placeholder configuration values and explicit comments for where to insert the API key, sender ID, and auth token.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Update the backend `verifyAdminOtp(phone, otp, clientIp, userAgent)` in `backend/main.mo` to validate the submitted OTP against the stored OTP for that phone number, enforce the 10-minute expiry, and reject wrong/expired/missing OTPs with English error messages.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Update Motoko admin OTP flow: requestAdminOtp generates random 6-digit OTP, stores per-phone in stable HashMap with 10-minute expiry, returns a fake test response including OTP (with comment placeholder to later replace with HTTPS outcall to MSG91/Twilio); verifyAdminOtp validates OTP against stored value and expiry.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Update `requestAdminOtp(phone : Text)` in `backend/main.mo` to generate a random 6-digit OTP, store it per phone number with a 10-minute expiry, and return the exact English success message: `OTP sent to {phone}: {otp} (fake for testing - no real SMS yet)` for allowlisted phone numbers only.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Add a stable OTP store in `backend/main.mo` implemented as `HashMap<Text, (Text, Nat)>` (key = phone, value = (otp, expiry timestamp)) so OTPs survive canister upgrades.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "Update `verifyAdminOtp(phone, otp, clientIp, userAgent)` in `backend/main.mo` to validate the provided OTP against the stored value for that phone number and reject if missing, mismatched, or expired (expiry timestamp < current `Time.now()`).",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Add an inline code comment near the OTP 'send' logic in `requestAdminOtp` stating exactly: `Later replace with HTTPS outcall to MSG91/Twilio API` and do not implement any real HTTPS outcall code in this change.",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Update the backend `requestAdminOtp(phone : Text)` method in `backend/main.mo` to generate a random 6-digit OTP, store it per phone number with a 10-minute expiry, and for allowlisted phone numbers return the exact English success message: `OTP sent to {phone}: {otp} (fake for testing - no real SMS yet)`.",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-11",
-      "summary": "Add a stable OTP storage structure in `backend/main.mo` implemented as `HashMap<Text, (Text, Nat)>` (key = phone, value = (otp, expiry timestamp)) so OTPs survive canister upgrades.",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-12",
-      "summary": "Update the backend `verifyAdminOtp(phone, otp, clientIp, userAgent)` method in `backend/main.mo` to validate the submitted OTP against the stored OTP for that phone number and reject if missing, mismatched, or expired (expiry timestamp < `Time.now()`).",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Add an inline code comment near the OTP 'send' logic in `requestAdminOtp` stating exactly: `Later replace with HTTPS outcall to MSG91/Twilio API`, and do not implement any real HTTPS outcall code as part of this change.",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Integrate provided Motoko OTP admin-auth snippet into backend/main.mo: stable HashMap otpStorage keyed by phone/email, authorizedAdmins allowlist, requestOtp() generates/stores 6-digit OTP with 10-min expiry and returns fake testing message, verifyOtp() validates/clears OTP, plus example adminOnlyAction guarded by caller/session (to be refined).",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Integrate the provided Motoko OTP snippet into `backend/main.mo` by adding OTP storage and public canister methods equivalent to `requestOtp(identifier: Text)` and `verifyOtp(identifier: Text, enteredOtp: Text)` that (1) enforce an allowlist for admin identifiers (phone/email), (2) generate and store a 6-digit OTP per identifier with a 10-minute expiry, and (3) verify and delete the OTP on success or expiry.",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Ensure OTP storage used by the newly added OTP flow is upgrade-safe: OTP entries must survive canister upgrades without violating Motoko stable-type rules (e.g., use a stable representation and rebuild any in-memory map/hash structure in upgrade hooks).",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Do not break the existing admin OTP endpoints already present in `backend/main.mo` (`requestAdminOtp`, `verifyAdminOtp`, `validateAdminSession`): keep them compiling and behaviorally intact unless changes are required to avoid naming/type collisions with the newly added `requestOtp`/`verifyOtp` methods.",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Add an admin-protected example method equivalent to the snippet’s `adminOnlyAction()` in `backend/main.mo`, but ensure any returned/trapped strings are in English and that the method uses a clear authorization rule (e.g., reject anonymous callers or reuse existing admin checks).",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-19",
-      "summary": "Update Motoko backend `requestOtp(identifier)` to generate/store a 6-digit OTP with 10-minute expiry and send it via an IC HTTPS outcall to MSG91 Flow API (placeholders for authkey/flow_id/sender; cycles budget + status handling), keeping other OTP logic unchanged.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Update `requestOtp(identifier : Text)` in `backend/main.mo` to (1) generate a random 6-digit OTP, (2) store the OTP and a 10-minute expiry timestamp in the existing OTP HashMap for the given identifier (phone or email), and (3) if the identifier is authorized by the existing allowlist check, send the OTP via an IC HTTPS outcall to the MSG91 Flow API using the exact outcall code pattern provided by the user (including placeholders for `authkey` and `flow_id`, sender `DORAAH`, cycles add, request shape, and response status switch). Keep all other logic in `requestOtp` the same (including current authorization behavior and data structure usage) except replacing the current fake response with the outcall-driven response.",
+      "summary": "Update the backend admin OTP allowlist to authorize the mobile number \"+9179056555971\" (India) and ensure this number can request an admin OTP without triggering any \"not authorized\" error.",
       "reqIds": [
         "REQ-25"
       ],
       "status": "pending"
     },
     {
-      "id": "AR-21",
-      "summary": "In `backend/main.mo`, add any missing imports required by the new `requestOtp` outcall code pattern (specifically `Http` and `Cycles`; ensure `Nat` and `Text` are available) without changing unrelated imports or refactoring existing outcall helper usage elsewhere.",
+      "id": "AR-3",
+      "summary": "Change backend admin OTP authorization to be phone-number-only (no email checks) using a hardcoded allowlist that includes exactly: [\"+9179056555971\", \"+918574224040\"]. Implement identifier normalization in the backend authorization and OTP request/verify flow: remove spaces and dashes, and if the identifier does not start with '+', ensure it is normalized to start with '+91'.",
       "reqIds": [
         "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Update the hidden admin OTP login UI at route /admin-login (frontend/src/pages/AdminLoginHiddenPage.tsx) to use mobile number as the identifier (not email), removing email-specific labels/placeholders, and ensure unauthorized identifiers show a simple red error message \"Number not allowed for admin\" while keeping the \"Send OTP\" button visible and usable.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Update the backend admin OTP authorization allowlist to include the mobile number \"+9179056555971\" as an authorized admin identifier so that calling `requestAdminOtp` and `verifyAdminOtp` with this identifier does not trigger any \"not authorized\" trap.",
+      "reqIds": [
+        "REQ-28"
       ],
       "status": "pending"
     }
@@ -658,14 +588,6 @@
     "Admin functionality is modularized under /admin/* with an AdminGate, AdminLayout shell, and an AdminProductsProvider managing canister-backed catalog operations."
   ],
   "known_issues": [
-    "Internet Identity admin gating is effectively misconfigured: ADMIN_PRINCIPAL is hardcoded to the anonymous principal (\"2vxsx-fae\"), so real principals will be denied admin access.",
-    "Backend order timestamps are hard-coded (Order.createOrderRecord sets a constant timestamp), making displayed order dates incorrect.",
-    "getUserOrdersByYearMonth filters using a YYYYMMDD-style range (year*10000+month*100+day) against timestamps, which is incompatible with epoch-millisecond timestamps even if timestamps were correct.",
-    "Cart total calculation relies on localStorage key \"doraa-admin-products\" rather than the canister-fetched product list, so totals/checkout amounts can be wrong or zero.",
-    "Storefront product mapping (backendToStorefrontProduct/adminToStorefrontProduct) assigns random rating/reviewCount values per fetch, creating non-deterministic UI metrics.",
-    "AdminProductsProvider.createProduct refreshes then searches for the new product in a potentially stale products state closure, which can throw \"Product created but not found in list\".",
-    "OTP-admin session implementation is inconsistent: the cookie token is not passed to the backend (validateAdminSession ignores token), and validateAdminSession additionally requires admin role, making the OTP-only path likely to deny/ trap in practice.",
-    "verifyAdminOtp attempts to assign admin role via AccessControl.assignRole, which itself requires the caller to already be admin; this likely prevents OTP-based self-promotion without prior RBAC initialization.",
     "ZIP→CSV extraction is a simplified ZIP parser that assumes uncompressed entries; many real ZIP archives will fail without a proper ZIP library.",
     "There are duplicate/legacy theme CSS files (frontend/index.css vs frontend/src/index.css), increasing confusion about which theme/tokens are active."
   ],

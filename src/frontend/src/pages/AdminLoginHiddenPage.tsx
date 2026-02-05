@@ -8,15 +8,15 @@ import { useOtpCountdown } from '@/hooks/useOtpCountdown';
 import { useActor } from '@/hooks/useActor';
 import { setAdminSessionFlag } from '@/utils/adminSessionFlag';
 
-type Step = 'phone' | 'otp';
+type Step = 'identifier' | 'otp';
 
 interface AdminLoginHiddenPageProps {
   navigate: (path: string) => void;
 }
 
 export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageProps) {
-  const [step, setStep] = useState<Step>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [step, setStep] = useState<Step>('identifier');
+  const [identifier, setIdentifier] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [isError, setIsError] = useState(false);
@@ -38,19 +38,18 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     setIsError(false);
 
     try {
-      const response = await actor.requestAdminOtp(phoneNumber);
-      setStatusMessage(response);
+      const response = await actor.requestAdminOtp(identifier);
+      // Display the backend response with explicit test mode wording
+      setStatusMessage(`Test mode: ${response}`);
       setIsError(false);
       setStep('otp');
       setResendExpiry(Date.now() + 60000); // 60 seconds from now
-      
-      // Clear status message after 3 seconds
-      setTimeout(() => setStatusMessage(''), 3000);
+      // Do NOT auto-clear the message - it persists until next user action
     } catch (error: any) {
       const errorMessage = error?.message || 'Failed to send OTP';
       setStatusMessage(errorMessage);
       setIsError(true);
-      // Stay on phone step on error
+      // Stay on identifier step on error
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +71,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const clientIp = 'browser'; // Browser cannot reliably get real IP
       const userAgent = navigator.userAgent;
 
-      const response = await actor.verifyAdminOtp(phoneNumber, otpCode, clientIp, userAgent);
+      const response = await actor.verifyAdminOtp(identifier, otpCode, clientIp, userAgent);
       
       // Success - store session flag and redirect
       setAdminSessionFlag(response);
@@ -101,14 +100,13 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     setIsError(false);
 
     try {
-      const response = await actor.requestAdminOtp(phoneNumber);
-      setStatusMessage('OTP resent!');
+      const response = await actor.requestAdminOtp(identifier);
+      // Display the backend response with explicit test mode wording
+      setStatusMessage(`Test mode: ${response}`);
       setIsError(false);
       setResendExpiry(Date.now() + 60000); // Reset to 60 seconds
       setOtpCode(''); // Clear OTP input
-      
-      // Clear status message after 3 seconds
-      setTimeout(() => setStatusMessage(''), 3000);
+      // Do NOT auto-clear the message - it persists until next user action
     } catch (error: any) {
       const errorMessage = error?.message || 'Failed to resend OTP';
       setStatusMessage(errorMessage);
@@ -116,6 +114,24 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleIdentifierChange = (value: string) => {
+    setIdentifier(value);
+    // Clear status message when user edits identifier
+    if (statusMessage) {
+      setStatusMessage('');
+      setIsError(false);
+    }
+  };
+
+  const handleBackToIdentifier = () => {
+    setStep('identifier');
+    setOtpCode('');
+    setResendExpiry(null);
+    // Clear status message when switching back to identifier step
+    setStatusMessage('');
+    setIsError(false);
   };
 
   return (
@@ -140,19 +156,19 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
             </div>
           )}
 
-          {/* Phone Entry Step */}
-          {step === 'phone' && (
+          {/* Identifier Entry Step */}
+          {step === 'identifier' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-pearl-off-white/80">
-                  Mobile Number
+                <Label htmlFor="identifier" className="text-pearl-off-white/80">
+                  Email or Mobile Number
                 </Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+91xxxxxxxxxx"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  id="identifier"
+                  type="text"
+                  placeholder="admin@example.com or +919876543210"
+                  value={identifier}
+                  onChange={(e) => handleIdentifierChange(e.target.value)}
                   className="bg-black/30 border-pearl-blue/30 text-pearl-off-white placeholder:text-pearl-off-white/40 focus:border-pearl-blue/60"
                   disabled={isLoading}
                 />
@@ -160,7 +176,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
               
               <Button
                 onClick={handleSendOtp}
-                disabled={isLoading || !phoneNumber.trim()}
+                disabled={isLoading || !identifier.trim()}
                 className="w-full bg-pearl-blue hover:bg-pearl-blue/80 text-black font-medium transition-all duration-300 disabled:opacity-50"
               >
                 {isLoading ? 'Sending...' : 'Send OTP'}
@@ -203,7 +219,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
               </Button>
 
               {/* Resend OTP Link */}
-              <div className="text-center">
+              <div className="text-center space-y-2">
                 {isExpired ? (
                   <button
                     onClick={handleResendOtp}
@@ -217,6 +233,16 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
                     Resend OTP in {remainingSeconds}s
                   </span>
                 )}
+                
+                <div>
+                  <button
+                    onClick={handleBackToIdentifier}
+                    disabled={isLoading}
+                    className="text-pearl-off-white/60 hover:text-pearl-off-white/80 text-sm transition-colors disabled:opacity-50"
+                  >
+                    Change identifier
+                  </button>
+                </div>
               </div>
             </>
           )}
