@@ -1,79 +1,61 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T23:02:02.430Z",
+  "generatedAt": "2026-02-05T01:47:56.321Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 5,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-11",
-        "summary": "Implement a minimal, reusable error-toast helper that shows a top-right toast for errors with: (1) gold border, (2) pearl off-white text color #F5F5F0, and (3) automatic fade-out after 4 seconds. Use English text and a default message format like \"Error: Please try again\".",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/utils/errorToasts.ts",
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/errorToasts.ts",
-          "frontend/src/index.css"
-        ]
+        "id": "REQ-25",
+        "summary": "In `backend/main.mo`, add new public canister methods equivalent to the user-provided snippet: `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` that implement an allowlisted admin identifier OTP flow (identifier can be phone or email). These new methods must not rename/remove or change the signatures of the existing endpoints `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession`.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-12",
-        "summary": "Wire the new basic error toast into existing error paths without changing routing/auth flow/UI layout: show the toast on invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ]
+        "id": "REQ-26",
+        "summary": "Implement allowlist enforcement for the newly added `requestOtp`/`verifyOtp` methods using a hardcoded list of authorized admin identifiers (phone/email) as shown in the snippet. If an identifier is not allowlisted, the methods must reject with English error messages (do not return Hindi user-facing strings).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-13",
-        "summary": "Keep the change minimal: do not add a notification bell, do not implement rate limiting, and do not add heavy logic. Preserve the existing theme, hover effects, and dashboard layout; do not change SPA routing or authentication flow.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/utils/errorToasts.ts",
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/errorToasts.ts",
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ]
+        "id": "REQ-27",
+        "summary": "For the new OTP flow (`requestOtp`/`verifyOtp`), generate and store a 6-digit OTP per identifier with a 10-minute expiry using `Time.now()` and delete the OTP entry after successful verification or after detecting expiration. Return a success result from `requestOtp` that includes the OTP for testing (as in the snippet), but ensure the returned message is in English.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-14",
-        "summary": "After implementing and deploying the update, provide the draft URL and confirm via a short checklist: (1) no blank screen on login, (2) error toast is visible when triggered (wrong OTP or failed save), and (3) UI is stable.",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/RELEASE_NOTES.md",
-          "frontend/STOREFRONT_LOGIN_VERIFICATION.md"
-        ],
+        "id": "REQ-28",
+        "summary": "Make the storage for the newly added OTP flow upgrade-safe. Because Motoko stable variables cannot directly hold `Map`/`HashMap` structures used at runtime, store OTP entries in a stable representation (e.g., a stable array/list of (identifier, otp, expiry) tuples) and rebuild the in-memory structure in upgrade hooks (e.g., `system func preupgrade()` / `system func postupgrade()`).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-29",
+        "summary": "Add an admin-protected example method in `backend/main.mo` equivalent to the snippet’s `adminOnlyAction()`, with all returned/trap strings in English. The authorization rule must be clear and must not rely on the snippet’s placeholder principal; it should use an explicit rule such as rejecting anonymous callers or reusing existing admin checks already present in the canister.",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/order.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/index.css",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/utils/errorToasts.ts",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

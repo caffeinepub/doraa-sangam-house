@@ -2,11 +2,14 @@ import { useCallback, useState } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AdminProductImage } from '../types';
+import { toast } from 'sonner';
 
 interface ImageDropzoneProps {
   images: AdminProductImage[];
   onChange: (images: AdminProductImage[]) => void;
 }
+
+const MAX_IMAGES = 10;
 
 export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -15,13 +18,22 @@ export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) 
     (files: FileList | null) => {
       if (!files) return;
 
+      const remainingSlots = MAX_IMAGES - images.length;
+      
+      if (files.length > remainingSlots) {
+        toast.error(`You can only upload ${remainingSlots} more image${remainingSlots !== 1 ? 's' : ''}. Maximum ${MAX_IMAGES} images allowed.`);
+        return;
+      }
+
       const validFiles = Array.from(files).filter((file) => {
         if (!file.type.startsWith('image/')) {
-          alert(`${file.name} is not an image file. Please select only images.`);
+          toast.error(`${file.name} is not an image file. Please select only images.`);
           return false;
         }
         return true;
       });
+
+      if (validFiles.length === 0) return;
 
       const newImages: AdminProductImage[] = validFiles.map((file) => ({
         id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -70,6 +82,8 @@ export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) 
     [images, onChange]
   );
 
+  const isMaxReached = images.length >= MAX_IMAGES;
+
   return (
     <div className="space-y-4">
       <div
@@ -79,7 +93,9 @@ export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) 
         className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
           isDragging
             ? 'border-primary bg-primary/5'
-            : 'border-border/40 hover:border-primary/50 bg-card/30'
+            : isMaxReached
+            ? 'border-border/20 bg-muted/20 opacity-50 cursor-not-allowed'
+            : 'border-border/40 hover:border-primary/50 bg-card/30 admin-interactive-glow'
         }`}
       >
         <input
@@ -87,7 +103,8 @@ export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) 
           multiple
           accept="image/*"
           onChange={handleFileInput}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          disabled={isMaxReached}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
         />
         <div className="flex flex-col items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -95,10 +112,12 @@ export default function ImageDropzone({ images, onChange }: ImageDropzoneProps) 
           </div>
           <div>
             <p className="text-sm font-medium text-foreground">
-              Drop images here or click to select
+              {isMaxReached ? 'Maximum images reached' : 'Drop images here or click to select'}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Supports multiple image files
+              {isMaxReached
+                ? `Remove some images to upload more (max ${MAX_IMAGES})`
+                : `Upload 5-${MAX_IMAGES} images (${images.length}/${MAX_IMAGES})`}
             </p>
           </div>
         </div>

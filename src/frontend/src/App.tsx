@@ -27,6 +27,8 @@ import ProductDetailView from './pages/ProductDetailView';
 const AdminGate = lazy(() => import('./admin/components/AdminGate'));
 const AdminArea = lazy(() => import('./admin/AdminArea'));
 const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'));
+const AdminLoginHiddenPage = lazy(() => import('./pages/AdminLoginHiddenPage'));
+const AdminOtpProtectedPage = lazy(() => import('./pages/AdminOtpProtectedPage'));
 
 function App() {
   const { actor } = useActor();
@@ -89,7 +91,41 @@ function App() {
     );
   }
 
-  // Admin routes with lazy loading
+  // Hidden admin login route (no links to this anywhere)
+  if (location.pathname === '/admin-login') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="relative min-h-screen bg-black">
+          <OceanBackground />
+          <div className="relative z-10">
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminLoginHiddenPage navigate={navigate} />
+            </Suspense>
+          </div>
+          <Toaster position="top-right" />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  // OTP-protected /admin route (exact match only)
+  if (location.pathname === '/admin') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="relative min-h-screen bg-black">
+          <OceanBackground />
+          <div className="relative z-10">
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminOtpProtectedPage navigate={navigate} />
+            </Suspense>
+          </div>
+          <Toaster position="top-right" />
+        </div>
+      </ThemeProvider>
+    );
+  }
+
+  // Internet Identity admin login route
   if (location.pathname === ADMIN_ROUTES.LOGIN) {
     return (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
@@ -106,7 +142,8 @@ function App() {
     );
   }
 
-  if (location.pathname.startsWith('/admin')) {
+  // Internet Identity admin panel routes (starts with /admin/ but not exact /admin)
+  if (location.pathname.startsWith('/admin/')) {
     return (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <div className="relative min-h-screen bg-black">

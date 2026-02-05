@@ -89,9 +89,59 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    variants: Array<Variant>;
+    category: string;
+    blousePair: string;
+    price: bigint;
+    fabric: string;
+    images: Array<string>;
+}
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
+export interface OrderRecord {
+    status: string;
+    orderId: string;
+    paymentId: string;
+    timestamp: bigint;
+    shippingAddress: ShippingAddress;
+}
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export interface ShippingAddress {
+    street: string;
+    country: string;
+    city: string;
+    postalCode: string;
+    name: string;
+    state: string;
+    phone: string;
+}
+export interface Variant {
+    color: string;
+    size: string;
+}
 export interface UserProfile {
     name: string;
     email: string;
+    phone: string;
+}
+export interface http_header {
+    value: string;
+    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -100,14 +150,30 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    adminAddProduct(name: string, price: bigint, description: string, images: Array<string>, fabric: string, variants: Array<Variant>, blousePair: string, category: string): Promise<string>;
+    adminBulkImportProducts(productForms: Array<Product>): Promise<bigint>;
+    adminDeleteProduct(productId: string): Promise<void>;
+    adminListProducts(): Promise<Array<Product>>;
+    adminOnlyAction(): Promise<string>;
+    adminUpdateProduct(productId: string, name: string, price: bigint, description: string, images: Array<string>, fabric: string, variants: Array<Variant>, blousePair: string, category: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
+    createOrder(orderId: string, paymentId: string, shippingAddress: ShippingAddress): Promise<void>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getUserOrders(): Promise<Array<OrderRecord>>;
+    getUserOrdersByYearMonth(year: bigint, month: bigint): Promise<Array<OrderRecord>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     healthCheck(): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
+    publicListProducts(): Promise<Array<Product>>;
+    requestAdminOtp(phone: string): Promise<string>;
+    requestOtp(identifier: string): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
+    validateAdminSession(clientIp: string, userAgent: string): Promise<boolean>;
+    verifyAdminOtp(phone: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
+    verifyOtp(identifier: string, enteredOtp: string): Promise<string>;
 }
 import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -123,6 +189,90 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async adminAddProduct(arg0: string, arg1: bigint, arg2: string, arg3: Array<string>, arg4: string, arg5: Array<Variant>, arg6: string, arg7: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminAddProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminAddProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            return result;
+        }
+    }
+    async adminBulkImportProducts(arg0: Array<Product>): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminBulkImportProducts(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminBulkImportProducts(arg0);
+            return result;
+        }
+    }
+    async adminDeleteProduct(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminDeleteProduct(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminDeleteProduct(arg0);
+            return result;
+        }
+    }
+    async adminListProducts(): Promise<Array<Product>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminListProducts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminListProducts();
+            return result;
+        }
+    }
+    async adminOnlyAction(): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminOnlyAction();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminOnlyAction();
+            return result;
+        }
+    }
+    async adminUpdateProduct(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: Array<string>, arg5: string, arg6: Array<Variant>, arg7: string, arg8: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminUpdateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminUpdateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             return result;
         }
     }
@@ -154,6 +304,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async createOrder(arg0: string, arg1: string, arg2: ShippingAddress): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createOrder(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createOrder(arg0, arg1, arg2);
+            return result;
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -180,6 +344,34 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getUserOrders(): Promise<Array<OrderRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserOrders();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserOrders();
+            return result;
+        }
+    }
+    async getUserOrdersByYearMonth(arg0: bigint, arg1: bigint): Promise<Array<OrderRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserOrdersByYearMonth(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserOrdersByYearMonth(arg0, arg1);
+            return result;
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
@@ -224,6 +416,48 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async publicListProducts(): Promise<Array<Product>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.publicListProducts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.publicListProducts();
+            return result;
+        }
+    }
+    async requestAdminOtp(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.requestAdminOtp(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.requestAdminOtp(arg0);
+            return result;
+        }
+    }
+    async requestOtp(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.requestOtp(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.requestOtp(arg0);
+            return result;
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -235,6 +469,62 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async transform(arg0: TransformationInput): Promise<TransformationOutput> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.transform(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.transform(arg0);
+            return result;
+        }
+    }
+    async validateAdminSession(arg0: string, arg1: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.validateAdminSession(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.validateAdminSession(arg0, arg1);
+            return result;
+        }
+    }
+    async verifyAdminOtp(arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.verifyAdminOtp(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.verifyAdminOtp(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
+    async verifyOtp(arg0: string, arg1: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.verifyOtp(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.verifyOtp(arg0, arg1);
             return result;
         }
     }

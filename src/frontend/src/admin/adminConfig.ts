@@ -6,4 +6,6 @@ export const ADMIN_ROUTES = {
   LOGIN: '/admin/login',
   DASHBOARD: '/admin',
   PRODUCTS: '/admin/products',
+  PRODUCTS_CREATE: '/admin/products/create',
+  PRODUCTS_EDIT: '/admin/products/edit',
 } as const;

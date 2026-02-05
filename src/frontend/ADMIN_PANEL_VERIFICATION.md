@@ -1,69 +1,99 @@
-# Admin Panel Verification Guide
+# Admin Panel Verification Checklist
 
-## Manual Testing Checklist
+This document provides a comprehensive checklist to verify the admin panel functionality after implementation.
 
-### Routes to Test
-- `/admin/login` - Admin login page with Internet Identity
-- `/admin` - Admin dashboard (redirects to `/admin/dashboard`)
-- `/admin/dashboard` - Dashboard with metric cards
-- `/admin/products` - Products management page
+## Core Admin Access Control
 
-### Authentication Flow
-1. **Admin Login Page (`/admin/login`)**
-   - [ ] OceanBackground visible behind login card
-   - [ ] Internet Identity login button works
-   - [ ] Successful login redirects to `/admin/dashboard`
-   - [ ] Non-admin principals show "Access Denied" alert with "Switch Account" button
-   - [ ] Initialization state shows spinner without premature access denial
+### Admin Login Page (`/admin/login`)
+- [ ] Page loads with Internet Identity login button
+- [ ] Clicking login button opens Internet Identity modal
+- [ ] After successful login with admin principal, user is redirected to admin dashboard
+- [ ] After successful login with non-admin principal, access denied alert is shown
+- [ ] "Switch Account" button appears for non-admin principals
+- [ ] Clicking "Switch Account" clears session and allows re-login
+- [ ] Existing authenticated admin sessions auto-redirect to dashboard
+- [ ] Loading states display properly during authentication check
 
-2. **Admin Gate Protection**
-   - [ ] Unauthenticated users redirected to `/admin/login`
-   - [ ] Non-admin authenticated users see access denied message
-   - [ ] Admin users can access all admin routes
+### Admin Gate Protection
+- [ ] Unauthenticated users attempting to access admin routes are redirected to `/admin/login`
+- [ ] Non-admin authenticated users see access denied message
+- [ ] Admin users can access all admin routes without interruption
+- [ ] Restored authenticated sessions are properly recognized (no false redirects)
 
-### Dashboard (`/admin/dashboard`)
-- [ ] OceanBackground visible behind dashboard content
-- [ ] Four metric cards display correctly (Products, Categories, Draft Uploads, Pending Reviews)
-- [ ] Sidebar navigation works (Dashboard, Products links)
-- [ ] Header shows formatted Principal
-- [ ] Logout button works and redirects to `/admin/login`
-- [ ] Gold button glow visible on all interactive buttons
+## Admin Dashboard (`/admin`)
+- [ ] Dashboard displays 4 metric cards with English labels
+- [ ] Sidebar navigation shows "Dashboard" and "Products" links
+- [ ] Header displays formatted admin Principal
+- [ ] Logout button is visible and functional
+- [ ] Dark luxury theme styling is consistent
+- [ ] OceanBackground is visible on admin dashboard
+- [ ] OceanBackground does not interfere with UI interactions
 
-### Products Management (`/admin/products`)
-- [ ] OceanBackground visible behind products page
-- [ ] Product grid displays correctly
-- [ ] "Add Product" button opens create dialog
-- [ ] Product form validates all fields
-- [ ] Category dropdown shows 7 Banarasi categories
-- [ ] Image dropzone accepts multiple images
-- [ ] Save button triggers gold wave animation (or reduced-motion fallback)
-- [ ] Success toast appears on save
-- [ ] Edit button opens dialog with pre-filled data
-- [ ] Delete button shows confirmation dialog
-- [ ] Delete confirmation removes product from grid
-- [ ] Gold button glow visible on all buttons (Add, Save, Edit, Delete, Cancel)
+## Admin Products List (`/admin/products`)
+- [ ] Products list loads from canister backend
+- [ ] Loading skeleton displays while fetching
+- [ ] Error state displays if fetch fails
+- [ ] Each product card shows name, price, category, and image
+- [ ] Edit button navigates to edit page with product ID
+- [ ] Delete button opens confirmation dialog
+- [ ] Confirming delete removes product and refreshes list
+- [ ] Empty state displays when no products exist
+- [ ] Golden hover effects work on action buttons
+- [ ] OceanBackground is visible on products list page
+- [ ] OceanBackground does not interfere with UI interactions
 
-### Visual & Animation Checks
-- [ ] OceanBackground animation runs smoothly on all admin pages
-- [ ] Background opacity ~0.55 maintains content readability
-- [ ] Reduced-motion preference simplifies background to static presentation
-- [ ] Gold pulse glow animation visible on all buttons (continuous subtle pulse)
-- [ ] Admin save animations work (gold wave fade or reduced-motion fallback)
-- [ ] No layout shifts or content obscured by background
-- [ ] Sidebar and header remain readable with background active
+## Admin Product Create (`/admin/products/create`)
+- [ ] Form displays all required fields (name, price, description, images, fabric, colors, sizes, blouse pairing, category)
+- [ ] Image dropzone accepts 5-10 images with validation
+- [ ] Fabric dropdown shows presets with custom option
+- [ ] Color swatches multi-select works correctly
+- [ ] Size checkboxes allow multiple selections
+- [ ] Category dropdown shows exactly 7 options
+- [ ] Save button is disabled when form is invalid
+- [ ] Save button shows loading state during submission
+- [ ] Success toast appears after successful save
+- [ ] Navigation returns to products list with highlight marker
+- [ ] Inline error messages display for validation failures
+- [ ] Pearl blue save button has gold glow on hover
+- [ ] OceanBackground is visible on create page
+- [ ] OceanBackground does not interfere with form interactions
 
-### Error Handling
-- [ ] Form validation errors display correctly
-- [ ] Network errors show appropriate messages
-- [ ] Invalid admin access shows clear denial reason
-- [ ] Session restoration works correctly on page refresh
+## Admin Product Edit (`/admin/products/edit/:id`)
+- [ ] Form pre-populates with existing product data
+- [ ] All fields are editable
+- [ ] Update button saves changes to canister
+- [ ] Delete button opens confirmation dialog
+- [ ] Confirming delete removes product and navigates to list
+- [ ] Success toast appears after successful update
+- [ ] Navigation returns to products list with highlight marker
+- [ ] Error handling displays appropriate messages
+- [ ] OceanBackground is visible on edit page
+- [ ] OceanBackground does not interfere with form interactions
 
-### Notes
-- **Hardcoded Admin Principal:** `aaaaa-aa` (for testing only)
-- **State Persistence:** Products stored in-memory only (session-lifetime)
-- **Background Animation:** Persistent across all admin routes with performance optimizations
-- **Button Styling:** Global gold pulse glow applied via CSS (no per-button manual classes needed)
+## Bulk Upload
+- [ ] CSV file upload validates format
+- [ ] ZIP file upload extracts and validates CSV
+- [ ] Progress bar displays during upload
+- [ ] Success toast shows "X products added" format
+- [ ] Error messages display for invalid data
+- [ ] Products list refreshes after successful bulk import
 
----
+## Admin Layout & Navigation
+- [ ] Sidebar navigation is always visible
+- [ ] Active route is highlighted in sidebar
+- [ ] Logout button clears authentication and redirects to login
+- [ ] Header displays formatted Principal consistently
+- [ ] Dark luxury theme is consistent across all admin pages
 
-© 2026. Built with love using [caffeine.ai](https://caffeine.ai)
+## Global Button Glow Behavior
+- [ ] All primary action buttons (Save, Update, Delete, etc.) have golden glow on hover
+- [ ] Golden glow animation is smooth and consistent
+- [ ] Glow effect does not interfere with button functionality
+- [ ] Glow effect respects reduced-motion preferences
+
+## Regression Checks (Post-OTP Integration)
+- [ ] Standard admin Internet Identity login page (`/admin/login`) still works as before
+- [ ] Admin gating behavior remains unchanged (non-admins cannot access admin routes)
+- [ ] Hidden `/admin-login` OTP mock page is updated to call canister methods
+- [ ] OTP mock page does not interfere with standard admin login flow
+- [ ] User authentication and authorization flows remain unaffected

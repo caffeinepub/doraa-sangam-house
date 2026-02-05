@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a minimal, reusable global error toast that appears top-right with a gold border, pearl off-white text (#F5F5F0), and auto-dismisses after ~4 seconds.
+**Goal:** Add a new allowlisted admin OTP request/verify flow and an admin-protected example method in `backend/main.mo`, while keeping existing admin OTP/session endpoints unchanged and ensuring upgrade-safe OTP storage.
 
 **Planned changes:**
-- Implement a small reusable frontend error-toast helper that shows an English error message (default like “Error: Please try again”) with gold border, text color #F5F5F0, and 4-second fade/dismiss, preserving the existing Toaster placement.
-- Wire the error-toast helper into existing error paths: invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).
-- Keep UI/routing/auth behavior unchanged and avoid adding new notification UI or heavy logic.
+- Add new public methods `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` to `backend/main.mo` without changing the existing `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession` method names/signatures.
+- Enforce an identifier allowlist (hardcoded phone/email) for the new `requestOtp`/`verifyOtp` methods, returning English error messages when the identifier is not allowed.
+- Implement 6-digit OTP generation, per-identifier storage, and 10-minute expiry using `Time.now()`, including deletion on success or expiry; return a testing success message in English that includes the OTP.
+- Make the new OTP storage upgrade-safe by persisting OTP entries in a stable-compatible representation and reconstructing any in-memory structures via upgrade hooks.
+- Add an `adminOnlyAction()` example method with a clear authorization rule (not relying on a placeholder principal) and English user-facing text.
 
-**User-visible outcome:** When an error occurs (e.g., wrong OTP, failed login, or failed profile save), a styled toast appears in the top-right and fades out after about 4 seconds without any layout shifts or changes to navigation/auth flow.
+**User-visible outcome:** Authorized admin identifiers can request and verify OTPs via the new `requestOtp`/`verifyOtp` methods (with OTP shown in the response for testing), and an admin-protected `adminOnlyAction()` endpoint is available; existing admin OTP/session endpoints continue to work as before.

@@ -1,46 +1,62 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T23:02:02.410Z",
-  "summary": "Added a reusable Sonner-based basic error toast helper (gold border, #F5F5F0 text, 4s duration). However, the diff summary does not provide clear evidence that the helper is actually invoked in all required frontend error paths, and it includes unrequested backend changes (violating the 'no backend changes' non-goal). Deployment URL/checklist was not added in code changes.",
+  "generatedAt": "2026-02-05T01:47:56.317Z",
+  "summary": "The provided diff summary does not show implementation of the requested new allowlisted OTP methods, upgrade-safe OTP storage, or the adminOnlyAction example method in backend/main.mo. The only visible backend/main.mo changes relate to RBAC-protected user profiles and order APIs, and project_state.json was updated (not requested).",
   "missing_requirements": [
     {
-      "id": "REQ-12",
-      "requirement": "Wire the new basic error toast into existing error paths: invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures.",
-      "reason": "Diff shows imports of showBasicErrorToast in LoginPage and DashboardPage, but the provided truncated snippets do not show actual calls in the specified failure branches (invalid OTP, send/verify failures, II login failure, profile save failure). Evidence is insufficient to confirm wiring.",
+      "id": "REQ-25",
+      "requirement": "Add new public canister methods `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` in `backend/main.mo` without renaming/removing/changing signatures of existing `requestAdminOtp`, `verifyAdminOtp`, `validateAdminSession`.",
+      "reason": "In the visible portion of `backend/main.mo`, there is no evidence of `requestOtp`/`verifyOtp` methods, nor any mention of the existing admin OTP endpoints to confirm they remain intact. The diff is truncated, so they may exist outside the shown section, but this cannot be verified from the provided evidence.",
       "evidence": [
-        "frontend/src/pages/LoginPage.tsx",
-        "frontend/src/pages/DashboardPage.tsx"
+        "backend/main.mo (truncated)"
       ]
     },
     {
-      "id": "REQ-14",
-      "requirement": "After implementing and deploying, provide the draft URL and confirm checklist (no blank screen on login; toast visible on wrong OTP and failed save; UI stable).",
-      "reason": "No evidence in the diff summary of a provided deployment draft URL or an explicit checklist confirmation (typically would appear in release notes or a deployment note file).",
+      "id": "REQ-26",
+      "requirement": "Implement allowlist enforcement for `requestOtp`/`verifyOtp` with hardcoded authorized identifiers and reject non-allowlisted identifiers with English error messages.",
+      "reason": "No allowlist list/constants or allowlist checks for `requestOtp`/`verifyOtp` are visible in the provided `backend/main.mo` excerpt.",
       "evidence": [
-        "frontend/RELEASE_NOTES.md"
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "requirement": "Implement 6-digit OTP generation and per-identifier storage with 10-minute expiry using `Time.now() + 600_000_000_000`, remove OTP after success/expiration, return English success message including OTP for testing.",
+      "reason": "No OTP generation, OTP storage keyed by identifier, expiry computation, or verification/removal logic is visible in the provided `backend/main.mo` excerpt.",
+      "evidence": [
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "requirement": "Make new OTP storage upgrade-safe via stable representation and rebuild in-memory structure in `preupgrade`/`postupgrade` hooks (do not store Map/HashMap directly in stable vars).",
+      "reason": "No stable OTP storage representation and no `system func preupgrade()` / `system func postupgrade()` logic related to OTP persistence is visible in the provided `backend/main.mo` excerpt.",
+      "evidence": [
+        "backend/main.mo (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "requirement": "Add `adminOnlyAction()` method enforcing a clear authorization policy and returning/trapping only English text.",
+      "reason": "No `adminOnlyAction()` method is visible in the provided `backend/main.mo` excerpt.",
+      "evidence": [
+        "backend/main.mo (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Backend changes added/modified (new confirmDeploymentChecks admin method; order creation/records; other backend logic adjustments).",
-      "reason": "BuildRequest explicitly lists backend changes as non-goals (“Any backend changes or schema migrations.”). These backend modifications are not requested by REQ-11/12/13 and violate the minimal frontend-only scope.",
+      "description": "Updated `project_state.json` (schema/project state version and summary/existing_features metadata).",
+      "reason": "The BuildRequest focuses on adding allowlisted OTP request/verify methods and upgrade-safe storage in `backend/main.mo`, plus an `adminOnlyAction()` example method. It does not request changes to `project_state.json`.",
       "evidence": [
-        "backend/main.mo",
-        "backend/order.mo"
+        "project_state.json (truncated)"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.56,
   "changed_files": [
     "backend/main.mo",
-    "backend/order.mo",
-    "frontend-file-summaries.txt",
-    "frontend/src/index.css",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/LoginPage.tsx",
-    "frontend/src/utils/errorToasts.ts",
     "project_state.json"
   ]
 }

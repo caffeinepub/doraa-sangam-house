@@ -7,9 +7,10 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface Variant {
-    color: string;
-    size: string;
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface Product {
     id: string;
@@ -22,6 +23,11 @@ export interface Product {
     fabric: string;
     images: Array<string>;
 }
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
+}
 export interface OrderRecord {
     status: string;
     orderId: string;
@@ -29,10 +35,9 @@ export interface OrderRecord {
     timestamp: bigint;
     shippingAddress: ShippingAddress;
 }
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone: string;
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
 }
 export interface ShippingAddress {
     street: string;
@@ -42,6 +47,19 @@ export interface ShippingAddress {
     name: string;
     state: string;
     phone: string;
+}
+export interface Variant {
+    color: string;
+    size: string;
+}
+export interface UserProfile {
+    name: string;
+    email: string;
+    phone: string;
+}
+export interface http_header {
+    value: string;
+    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -53,6 +71,7 @@ export interface backendInterface {
     adminBulkImportProducts(productForms: Array<Product>): Promise<bigint>;
     adminDeleteProduct(productId: string): Promise<void>;
     adminListProducts(): Promise<Array<Product>>;
+    adminOnlyAction(): Promise<string>;
     adminUpdateProduct(productId: string, name: string, price: bigint, description: string, images: Array<string>, fabric: string, variants: Array<Variant>, blousePair: string, category: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
@@ -65,5 +84,11 @@ export interface backendInterface {
     healthCheck(): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
     publicListProducts(): Promise<Array<Product>>;
+    requestAdminOtp(phone: string): Promise<string>;
+    requestOtp(identifier: string): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
+    validateAdminSession(clientIp: string, userAgent: string): Promise<boolean>;
+    verifyAdminOtp(phone: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
+    verifyOtp(identifier: string, enteredOtp: string): Promise<string>;
 }

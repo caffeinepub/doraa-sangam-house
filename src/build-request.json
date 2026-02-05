@@ -1,95 +1,115 @@
 {
   "kind": "build_request",
-  "title": "Phase 7 (Minimal): Basic global error toasts (top-right, gold border, pearl text, 4s fade)",
-  "priority": "high",
+  "title": "Integrate allowlisted OTP request/verify snippet into backend/main.mo (upgrade-safe) without breaking existing admin OTP endpoints",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-11",
-      "text": "Implement a minimal, reusable error-toast helper that shows a top-right toast for errors with: (1) gold border, (2) pearl off-white text color #F5F5F0, and (3) automatic fade-out after 4 seconds. Use English text and a default message format like \"Error: Please try again\".",
-      "target": "frontend",
+      "id": "REQ-25",
+      "text": "In `backend/main.mo`, add new public canister methods equivalent to the user-provided snippet: `requestOtp(identifier : Text)` and `verifyOtp(identifier : Text, enteredOtp : Text)` that implement an allowlisted admin identifier OTP flow (identifier can be phone or email). These new methods must not rename/remove or change the signatures of the existing endpoints `requestAdminOtp`, `verifyAdminOtp`, or `validateAdminSession`.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6",
+          "msg-10"
         ],
         "quotes": [
-          "Add basic error toasts: - On any error (invalid OTP, save fail, network) show top-right toast: - Gold border, pearl off-white text (#F5F5F0) - Message example: \"Error: Please try again\" - Fade out after 4 seconds"
+          "Isko main.mo me daal do ---import Principal \"mo:base/Principal\"; ... public shared func requestOtp(identifier: Text) ... public shared func verifyOtp(identifier: Text, enteredOtp: Text) ...",
+          "Yes"
         ]
       },
       "acceptanceCriteria": [
-        "Triggering the helper displays a toast in the top-right corner (existing Toaster placement is preserved).",
-        "Toast text color is exactly #F5F5F0 and the toast has a gold border.",
-        "Toast fades out and is fully dismissed after ~4 seconds."
+        "`backend/main.mo` still compiles with the existing `requestAdminOtp`, `verifyAdminOtp`, and `validateAdminSession` functions intact (same names and parameter lists).",
+        "A new `requestOtp(identifier : Text)` method exists and is callable.",
+        "A new `verifyOtp(identifier : Text, enteredOtp : Text)` method exists and is callable."
       ]
     },
     {
-      "id": "REQ-12",
-      "text": "Wire the new basic error toast into existing error paths without changing routing/auth flow/UI layout: show the toast on invalid OTP entry, OTP send/verify failures, Internet Identity login failures, and dashboard profile save failures (including network/actor errors).",
-      "target": "frontend",
+      "id": "REQ-26",
+      "text": "Implement allowlist enforcement for the newly added `requestOtp`/`verifyOtp` methods using a hardcoded list of authorized admin identifiers (phone/email) as shown in the snippet. If an identifier is not allowlisted, the methods must reject with English error messages (do not return Hindi user-facing strings).",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "On any error (invalid OTP, save fail, network) show top-right toast",
-          "Do NOT change routing, auth flow, or add new components."
+          "let authorizedAdmins : [Text] = [\"+919876543210\", \"shraddhanshu@example.com\"];",
+          "return #err(\"Yeh number/email admin ke liye allowed nahi hai\");"
         ]
       },
       "acceptanceCriteria": [
-        "Entering a wrong OTP triggers the error toast.",
-        "Forcing a profile save failure (e.g., actor/network failure) triggers the error toast.",
-        "Existing pages (login/dashboard/admin/storefront) remain visually stable with no layout shifts introduced by the change."
+        "Calling `requestOtp` with a non-allowlisted identifier returns an error with an English message indicating the identifier is not allowed.",
+        "Calling `verifyOtp` with a non-allowlisted identifier returns an error with an English message indicating the identifier is not allowed."
       ]
     },
     {
-      "id": "REQ-13",
-      "text": "Keep the change minimal: do not add a notification bell, do not implement rate limiting, and do not add heavy logic. Preserve the existing theme, hover effects, and dashboard layout; do not change SPA routing or authentication flow.",
-      "target": "frontend",
+      "id": "REQ-27",
+      "text": "For the new OTP flow (`requestOtp`/`verifyOtp`), generate and store a 6-digit OTP per identifier with a 10-minute expiry using `Time.now()` and delete the OTP entry after successful verification or after detecting expiration. Return a success result from `requestOtp` that includes the OTP for testing (as in the snippet), but ensure the returned message is in English.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "No notification bell, no rate limiting, no heavy logic.",
-          "Keep existing theme, hovers, dashboard layout.",
-          "Do NOT change routing, auth flow, or add new components."
+          "// Generate 6-digit OTP",
+          "// Store with 10 min expiry",
+          "#ok(\"OTP bhej diya gaya: \" # otp # \" (testing ke liye screen par dikhega)\")",
+          "if (now > expiry) { otpStorage.delete(identifier); #err(\"OTP expire ho gaya\"); } else if (storedOtp == enteredOtp) { otpStorage.delete(identifier); ... }"
         ]
       },
       "acceptanceCriteria": [
-        "No new notification/bell UI is present anywhere.",
-        "No rate-limiting logic is introduced.",
-        "Navigation/routing behavior remains identical to the current reverted working version."
+        "`requestOtp` stores an OTP tied to the identifier and sets expiry to `Time.now() + 600_000_000_000` (10 minutes in nanoseconds).",
+        "`verifyOtp` returns an error if no OTP exists for that identifier.",
+        "`verifyOtp` returns an error if the OTP is expired and removes the stored entry.",
+        "`verifyOtp` returns success only when the OTP matches and removes the stored entry.",
+        "`requestOtp` returns a success message in English that includes the generated OTP for testing."
       ]
     },
     {
-      "id": "REQ-14",
-      "text": "After implementing and deploying the update, provide the draft URL and confirm via a short checklist: (1) no blank screen on login, (2) error toast is visible when triggered (wrong OTP or failed save), and (3) UI is stable.",
-      "target": "unknown",
+      "id": "REQ-28",
+      "text": "Make the storage for the newly added OTP flow upgrade-safe. Because Motoko stable variables cannot directly hold `Map`/`HashMap` structures used at runtime, store OTP entries in a stable representation (e.g., a stable array/list of (identifier, otp, expiry) tuples) and rebuild the in-memory structure in upgrade hooks (e.g., `system func preupgrade()` / `system func postupgrade()`).",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "After update: - Give draft URL. - Confirm: - No blank screen on login. - Error toast visible when triggered (test with wrong OTP or failed save). - UI stable."
+          "stable var otpStorage = HashMap.HashMap<Text, (Text, Int)>(0, Text.equal, Text.hash);"
         ]
       },
       "acceptanceCriteria": [
-        "A draft URL is provided after deployment.",
-        "Confirmation explicitly states: no blank screen on login; toast visible on wrong OTP and failed save; UI stable."
+        "OTP entries created via `requestOtp` persist across a canister upgrade (they remain available to `verifyOtp` after upgrade) until they expire or are verified.",
+        "The chosen stable representation uses stable-compatible types only (e.g., `Text`, `Int`/`Nat`, `Time.Time`) and does not attempt to store `Map`/`HashMap` directly as `stable`."
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "text": "Add an admin-protected example method in `backend/main.mo` equivalent to the snippet’s `adminOnlyAction()`, with all returned/trap strings in English. The authorization rule must be clear and must not rely on the snippet’s placeholder principal; it should use an explicit rule such as rejecting anonymous callers or reusing existing admin checks already present in the canister.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-6"
+        ],
+        "quotes": [
+          "// Admin protected function example",
+          "public shared ({ caller }) func adminOnlyAction() : async Text {",
+          "if (Principal.isAnonymous(caller)) { \"Admin nahi ho\" } else { \"Admin dashboard access granted!\" }"
+        ]
+      },
+      "acceptanceCriteria": [
+        "`adminOnlyAction()` exists and returns English user-facing text.",
+        "`adminOnlyAction()` enforces a clear authorization policy (e.g., anonymous callers are rejected/denied, or admin role is required)."
       ]
     }
   ],
   "constraints": [
-    "Do not change SPA routing, route paths, or navigation behavior.",
-    "Do not change the authentication flow logic (OTP flow and Internet Identity flow must remain functionally the same).",
-    "Do not add new UI components (compose existing infrastructure/utilities only).",
-    "Preserve existing theme tokens, hover effects, and dashboard layout.",
-    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*."
+    "Backend must remain a single-actor Motoko canister; keep all logic in `backend/main.mo`.",
+    "Do not break compilation of existing admin OTP/session endpoints already present in `backend/main.mo` (`requestAdminOtp`, `verifyAdminOtp`, `validateAdminSession`).",
+    "Use English for any user-facing text (success/error messages) added by this change."
   ],
   "nonGoals": [
-    "Notification bell or any notification center UI.",
-    "Rate limiting / throttling / lockout logic beyond what already exists.",
-    "Any backend changes or schema migrations.",
-    "Any redesign of login/dashboard/admin layouts."
+    "Do not modify the frontend OTP flows as part of this change.",
+    "Do not replace or refactor the existing `requestAdminOtp`/`verifyAdminOtp` implementation unless required to resolve naming/type collisions introduced by adding `requestOtp`/`verifyOtp`.",
+    "Do not introduce third-party authentication beyond existing Internet Identity usage."
   ],
   "imageRequirements": {
     "required": [],
