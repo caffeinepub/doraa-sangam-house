@@ -82,8 +82,10 @@ export interface _SERVICE {
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'confirmDeploymentChecks' : ActorMethod<[], string>,
   'createOrder' : ActorMethod<[string, string, ShippingAddress], undefined>,
+  'getAdminBotLog' : ActorMethod<[], Array<string>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getHomepageBanner' : ActorMethod<[], string>,
   'getUserOrders' : ActorMethod<[], Array<OrderRecord>>,
   'getUserOrdersByYearMonth' : ActorMethod<
     [bigint, bigint],
@@ -92,9 +94,11 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'healthCheck' : ActorMethod<[], string>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'processAdminCommand' : ActorMethod<[string], string>,
   'publicListProducts' : ActorMethod<[], Array<Product>>,
   'requestAdminOtp' : ActorMethod<[string], string>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'submitAdminBotInstruction' : ActorMethod<[string], string>,
   'validateAdminSession' : ActorMethod<[string, string], boolean>,
   'verifyAdminOtp' : ActorMethod<[string, string, string, string], string>,
 }

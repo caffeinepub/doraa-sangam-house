@@ -126,6 +126,66 @@
     }
 
     /* ========================================
+       ADMIN OTP BUTTON STYLES
+       Warm orange/red theme with white text
+       ======================================== */
+    
+    .admin-otp-button {
+        background: linear-gradient(135deg, #E85D04 0%, #DC2F02 100%);
+        color: #FFFFFF;
+        border: none;
+        box-shadow: 0 4px 12px rgba(232, 93, 4, 0.3);
+    }
+
+    .admin-otp-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, #F48C06 0%, #E85D04 100%);
+        box-shadow: 0 6px 20px rgba(232, 93, 4, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .admin-otp-button:active:not(:disabled) {
+        background: linear-gradient(135deg, #DC2F02 0%, #9D0208 100%);
+        transform: translateY(0);
+    }
+
+    .admin-otp-button:focus-visible {
+        outline: 2px solid #F48C06;
+        outline-offset: 2px;
+    }
+
+    .admin-otp-button:disabled {
+        background: linear-gradient(135deg, #E85D04 0%, #DC2F02 100%);
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    /* Fade-in animation for OTP buttons */
+    .admin-otp-button-fade-in {
+        animation: adminOtpFadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes adminOtpFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .admin-otp-button-fade-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /* ========================================
        PRODUCT CARD PREMIUM INTERACTIONS
        Myntra/Flipkart style hover effects
        ======================================== */
@@ -621,699 +681,38 @@
             oklch(var(--accent) / 0.3) 50%,
             transparent 100%
         );
-        animation: shimmerSweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         pointer-events: none;
-        mix-blend-mode: screen;
     }
 
-    @keyframes shimmerSweep {
+    .roller-shimmer-active {
+        animation: rollerShimmer 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes rollerShimmer {
         0% {
             left: -100%;
-            opacity: 0;
-        }
-        20% {
-            opacity: 1;
-        }
-        80% {
-            opacity: 1;
         }
         100% {
-            left: 100%;
-            opacity: 0;
+            left: 200%;
         }
     }
 
-    /* Reduced motion fallback */
-    .roller-letter-reduced {
-        animation: none !important;
-        transition: color 0.3s ease, text-shadow 0.3s ease;
-    }
-
-    .roller-letter-reduced.roller-letter-active {
-        color: oklch(var(--accent));
-        text-shadow: 0 0 8px oklch(var(--accent) / 0.5);
-    }
-
-    /* ========================================
-       ADMIN SAVE ANIMATIONS
-       Premium fade + gold wave effect
-       ======================================== */
-    
-    .admin-save-fade-wave {
-        animation: adminSaveFadeWave 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes adminSaveFadeWave {
-        0% {
-            box-shadow: 0 0 0 0 oklch(var(--accent) / 0);
-            border-color: oklch(var(--border));
-        }
-        20% {
-            box-shadow: 0 0 32px 8px oklch(var(--accent) / 0.6);
-            border-color: oklch(var(--accent));
-        }
-        50% {
-            box-shadow: 0 0 48px 12px oklch(var(--accent) / 0.4);
-            border-color: oklch(var(--accent) / 0.8);
-        }
-        100% {
-            box-shadow: 0 0 0 0 oklch(var(--accent) / 0);
-            border-color: oklch(var(--border));
-        }
-    }
-
-    .admin-save-fade-reduced {
-        animation: adminSaveFadeReduced 0.3s ease-out forwards;
-    }
-
-    @keyframes adminSaveFadeReduced {
-        0% {
-            border-color: oklch(var(--border));
-        }
-        50% {
-            border-color: oklch(var(--accent));
-        }
-        100% {
-            border-color: oklch(var(--border));
-        }
-    }
-
-    /* ========================================
-       ADMIN PREMIUM BUTTON & INTERACTIVE STYLES
-       Pearl blue base + gold glow hover
-       ======================================== */
-
-    .admin-primary-button {
-        background-color: oklch(var(--primary));
-        color: oklch(var(--primary-foreground));
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 0 12px oklch(var(--primary) / 0.3);
-    }
-
-    .admin-primary-button:hover:not(:disabled) {
-        background-color: oklch(var(--primary) / 0.9);
-        box-shadow: 
-            0 0 24px oklch(var(--accent) / 0.6),
-            0 0 48px oklch(var(--accent) / 0.3),
-            0 0 72px oklch(var(--primary) / 0.2);
-        transform: translateY(-2px);
-    }
-
-    .admin-primary-button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .admin-interactive-glow {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .admin-interactive-glow:hover:not(:disabled) {
-        box-shadow: 
-            0 0 16px oklch(var(--accent) / 0.4),
-            0 0 32px oklch(var(--accent) / 0.2);
-    }
-
-    /* ========================================
-       DASHBOARD PREMIUM TABS & INTERACTIONS
-       Curved, animated, unique styling
-       ======================================== */
-
-    /* Dashboard scope wrapper */
-    .dashboard-scope {
-        position: relative;
-    }
-
-    /* Dashboard route transition */
-    .dashboard-route-transition {
-        animation: dashboardRouteSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes dashboardRouteSlideIn {
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    /* Dashboard tabs panel with slide-in animation */
-    .dashboard-tabs-panel {
-        animation: dashboardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes dashboardSlideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    /* Dashboard tabs list - vertical side panel on desktop */
-    .dashboard-tabs-list {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 0.75rem;
-        background-color: oklch(var(--card) / 0.3);
-        backdrop-filter: blur(12px);
-        padding: 1rem;
-        border-radius: 1.5rem;
-        border: 1px solid oklch(var(--border) / 0.3);
-        position: relative;
-    }
-
-    @media (max-width: 1023px) {
-        .dashboard-tabs-list {
-            flex-direction: row;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        
-        .dashboard-tabs-list::-webkit-scrollbar {
-            display: none;
-        }
-    }
-
-    /* Dashboard tab trigger with curved premium styling */
-    .dashboard-tab-trigger {
-        position: relative;
-        padding: 1rem 1.5rem;
-        border-radius: 1.75rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: oklch(var(--muted) / 0.1);
-        color: oklch(var(--muted-foreground));
-        border: 1px solid transparent;
-        overflow: visible;
-        transform-origin: center;
-        will-change: transform, background-color, border-color;
-        white-space: nowrap;
-        min-width: fit-content;
-    }
-
-    .dashboard-tab-trigger:hover {
-        background-color: oklch(var(--primary) / 0.15);
-        color: oklch(var(--primary));
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 
-            0 0 20px oklch(var(--primary) / 0.3),
-            0 0 40px oklch(var(--primary) / 0.15);
-    }
-
-    /* Shimmer particles on hover */
-    .dashboard-tab-trigger:hover::before {
-        content: '';
-        position: absolute;
-        inset: -4px;
-        background: radial-gradient(
-            circle at 50% 50%,
-            oklch(var(--accent) / 0.2) 0%,
-            oklch(var(--primary) / 0.1) 40%,
-            transparent 70%
-        );
-        border-radius: inherit;
-        pointer-events: none;
-        animation: shimmerParticles 1.5s ease-in-out infinite;
-        z-index: -1;
-    }
-
-    @keyframes shimmerParticles {
-        0%, 100% {
-            opacity: 0.3;
-            transform: scale(0.95);
-        }
-        50% {
-            opacity: 0.7;
-            transform: scale(1.05);
-        }
-    }
-
-    /* Active tab styling with gold wave underline */
-    .dashboard-tab-trigger[data-state="active"] {
-        background-color: oklch(var(--primary) / 0.25);
-        color: oklch(var(--primary));
-        border-color: oklch(var(--primary) / 0.5);
-        box-shadow: 
-            0 0 24px oklch(var(--primary) / 0.4),
-            0 0 48px oklch(var(--primary) / 0.2);
-    }
-
-    /* Gold wave underline for active tab */
-    .dashboard-tab-trigger[data-state="active"]::after {
-        content: '';
-        position: absolute;
-        bottom: 8px;
-        left: 15%;
-        right: 15%;
-        height: 3px;
-        background: linear-gradient(
-            90deg,
-            transparent 0%,
-            oklch(var(--accent)) 50%,
-            transparent 100%
-        );
-        border-radius: 2px;
-        animation: goldWaveFlow 2s ease-in-out infinite;
-        box-shadow: 
-            0 0 8px oklch(var(--accent) / 0.6),
-            0 0 16px oklch(var(--accent) / 0.4);
-    }
-
-    @keyframes goldWaveFlow {
-        0%, 100% {
-            transform: scaleX(0.8);
-            opacity: 0.6;
-        }
-        50% {
-            transform: scaleX(1);
-            opacity: 1;
-        }
-    }
-
-    /* Dashboard save button with pearl blue bg and gold glow */
-    .dashboard-save-button {
-        background-color: oklch(var(--primary));
-        color: oklch(var(--primary-foreground));
-        border-radius: 1.875rem;
-        padding: 0.75rem 2rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-weight: 600;
-        font-size: 1rem;
-        position: relative;
-        overflow: hidden;
-        animation: goldPulseGlow 2s ease-in-out infinite;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .dashboard-save-button:hover {
-        background-color: oklch(var(--primary) / 0.9);
-        transform: translateY(-2px);
-        box-shadow: 
-            0 0 24px oklch(var(--accent) / 0.5),
-            0 0 48px oklch(var(--accent) / 0.3),
-            0 0 72px oklch(var(--primary) / 0.2);
-    }
-
-    .dashboard-save-button:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        animation: none;
-    }
-
-    /* Premium spinner for save button */
-    .dashboard-save-spinner {
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border: 2px solid oklch(var(--accent) / 0.3);
-        border-top-color: oklch(var(--accent));
-        border-radius: 50%;
-        animation: dashboardSpinnerRotate 0.6s linear infinite;
-    }
-
-    @keyframes dashboardSpinnerRotate {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    /* Dashboard interactive elements glow */
-    .dashboard-scope .dashboard-interactive-glow {
-        position: relative;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .dashboard-scope .dashboard-interactive-glow:hover,
-    .dashboard-scope .dashboard-interactive-glow:focus-visible {
-        box-shadow: 
-            0 0 16px oklch(var(--accent) / 0.4),
-            0 0 32px oklch(var(--accent) / 0.2);
-    }
-
-    /* ========================================
-       CART & CHECKOUT GOLDEN GLOW BUTTONS
-       Phase 5: Consistent gold hover/glow
-       ======================================== */
-
-    .cart-action-glow {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .cart-action-glow:hover:not(:disabled) {
-        box-shadow: 
-            0 0 16px oklch(var(--accent) / 0.5),
-            0 0 32px oklch(var(--accent) / 0.3);
-        border-color: oklch(var(--accent) / 0.6);
-    }
-
-    .checkout-button-glow {
-        position: relative;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        animation: goldPulseGlow 2s ease-in-out infinite;
-    }
-
-    .checkout-button-glow:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 
-            0 0 24px oklch(var(--accent) / 0.6),
-            0 0 48px oklch(var(--accent) / 0.4),
-            0 0 72px oklch(var(--accent) / 0.2);
-    }
-
-    .checkout-button-glow:disabled {
-        animation: none;
-        opacity: 0.7;
-    }
-
-    /* ========================================
-       TRENDING CATEGORIES SECTION
-       Myntra/Hotstar style carousel
-       ======================================== */
-
-    /* Trending shimmer ambience animation */
-    .trending-shimmer-ambience {
-        animation: trendingShimmer 8s ease-in-out infinite;
-    }
-
-    @keyframes trendingShimmer {
-        0%, 100% {
-            opacity: 0.1;
-            transform: scale(1);
-        }
-        50% {
-            opacity: 0.2;
-            transform: scale(1.05);
-        }
-    }
-
-    /* Horizontal scrollable carousel */
-    .trending-categories-carousel {
-        display: flex;
-        gap: 1.5rem;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: oklch(var(--primary) / 0.3) transparent;
-        padding-bottom: 1rem;
-    }
-
-    .trending-categories-carousel::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    .trending-categories-carousel::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .trending-categories-carousel::-webkit-scrollbar-thumb {
-        background: oklch(var(--primary) / 0.3);
-        border-radius: 4px;
-    }
-
-    .trending-categories-carousel::-webkit-scrollbar-thumb:hover {
-        background: oklch(var(--primary) / 0.5);
-    }
-
-    /* Category card styling */
-    .trending-category-card {
-        flex: 0 0 auto;
-        width: 320px;
-        border-radius: 28px;
-        overflow: hidden;
-        background-color: oklch(var(--card));
-        border: 1px solid oklch(var(--border) / 0.4);
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-        animation: trendingCardReveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes trendingCardReveal {
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-
-    .trending-category-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        border-color: oklch(var(--primary) / 0.6);
-        box-shadow: 
-            0 0 32px rgba(127, 179, 213, 0.4),
-            0 0 64px rgba(127, 179, 213, 0.2),
-            0 12px 32px rgba(212, 175, 55, 0.25);
-    }
-
-    /* Card hover glow effect */
-    .trending-card-glow {
-        background: radial-gradient(
-            circle at center,
-            oklch(var(--accent) / 0.15) 0%,
-            oklch(var(--primary) / 0.1) 50%,
-            transparent 100%
-        );
-    }
-
-    /* Mobile responsive stacking */
-    @media (max-width: 640px) {
-        .trending-category-card {
-            width: 280px;
-        }
-    }
-
-    /* Premium toast styling with fade animation */
-    .premium-toast {
-        backdrop-filter: blur(12px);
-        border-radius: 0.75rem;
-        font-weight: 600;
-        font-size: 1rem;
-    }
-
-    .premium-toast-fade {
-        animation: premiumToastFadeOut 0.5s ease-out 2.5s forwards;
-    }
-
-    @keyframes premiumToastFadeOut {
-        from {
-            opacity: 1;
-        }
-        to {
-            opacity: 0;
-        }
-    }
-
-    /* ========================================
-       PHASE 7: BASIC ERROR TOAST
-       Minimal gold border + pearl text + 4s fade
-       ======================================== */
-
-    .basic-error-toast {
-        animation: basicErrorToastFade 4s ease-out forwards;
-    }
-
-    @keyframes basicErrorToastFade {
-        0% {
-            opacity: 1;
-        }
-        75% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-        }
-    }
-
-    /* Prefers reduced motion overrides */
+    /* Reduced motion support for roller animations */
     @media (prefers-reduced-motion: reduce) {
-        .product-card-hover:hover {
-            transform: translateY(-4px) scale(1);
-        }
-
-        .fabric-ripple-hover::after {
-            animation: none;
-        }
-
-        .micro-ripple-layer {
-            animation: none;
-        }
-
-        .action-icon-glow:hover:not(:disabled) {
-            animation: none;
-        }
-
-        .premium-card-hover:hover {
-            transform: translateY(-4px) rotateX(0deg) rotateY(0deg);
-        }
-
-        .scroll-reveal,
-        .scroll-reveal-enhanced {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            transition: none;
-        }
-
-        .gold-wipe {
-            animation: goldWaveWipeReduced 0.3s ease-out forwards;
-        }
-
-        .wave-reveal {
-            animation: none;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-        
-        .animate-pearl-bounce {
-            animation: none;
-        }
-
-        .raahi-pulse {
-            animation: none;
-        }
-
-        .raahi-chat-slide-up {
-            animation: none;
-        }
-
-        .raahi-typing-dots span {
-            animation: none;
-            opacity: 0.7;
-        }
-
-        .cart-bump {
-            animation: none;
-        }
-
-        .shimmer-skeleton {
-            animation: none;
-        }
-
-        /* Disable roller animations */
         .roller-letter-active {
-            animation: none !important;
+            animation: none;
+            color: oklch(var(--accent));
+            text-shadow: 
+                0 0 8px oklch(var(--accent) / 0.6),
+                0 0 16px oklch(var(--accent) / 0.4);
         }
 
-        .roller-shimmer-highlight {
-            animation: none !important;
-            display: none;
+        .roller-shimmer-active {
+            animation: none;
         }
 
         .roller-tagline-underline-active {
             transition: none;
-        }
-
-        /* Disable admin save animations */
-        .admin-save-fade-wave {
-            animation: adminSaveFadeReduced 0.3s ease-out forwards;
-        }
-
-        /* Disable gold pulse glow */
-        .gold-pulse-glow {
-            animation: none;
-        }
-
-        .checkout-button-glow {
-            animation: none;
-        }
-
-        .checkout-button-glow:hover:not(:disabled) {
-            transform: none;
-        }
-
-        /* Disable dashboard animations */
-        .dashboard-route-transition {
-            animation: none;
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .dashboard-tabs-panel {
-            animation: none;
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .dashboard-tab-trigger:hover {
-            transform: none;
-        }
-
-        .dashboard-tab-trigger[data-state="active"]::after {
-            animation: none;
-        }
-
-        .dashboard-tab-trigger:hover::before {
-            animation: none;
-        }
-
-        .dashboard-save-button {
-            animation: none;
-        }
-
-        .dashboard-save-button:hover {
-            transform: none;
-        }
-
-        /* Disable trending animations */
-        .trending-shimmer-ambience {
-            animation: none;
-            opacity: 0.15;
-        }
-
-        .trending-category-card {
-            animation: none;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        .trending-category-card:hover {
-            transform: translateY(-4px) scale(1);
-        }
-
-        .premium-toast-fade {
-            animation: none;
-        }
-
-        .basic-error-toast {
-            animation: none;
-        }
-
-        * {
-            will-change: auto !important;
-        }
-    }
-
-    /* Touch device hover fallbacks */
-    @media (hover: none) {
-        .product-card-hover:hover {
-            transform: translateY(-4px) scale(1);
-        }
-
-        .premium-card-hover:hover {
-            transform: translateY(-4px);
-        }
-
-        .dashboard-tab-trigger:hover {
-            transform: translateY(-1px) scale(1.01);
-        }
-
-        .trending-category-card:hover {
-            transform: translateY(-4px) scale(1);
-        }
-
-        .checkout-button-glow:hover:not(:disabled) {
-            transform: none;
         }
     }
 }

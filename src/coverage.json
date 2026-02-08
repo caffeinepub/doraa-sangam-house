@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T12:03:59.800Z",
+  "generatedAt": "2026-02-08T08:23:24.386Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,8 +11,8 @@
     "implemented": 0,
     "items": [
       {
-        "id": "REQ-28",
-        "summary": "Update the backend admin OTP authorization allowlist to include the mobile number \"+9179056555971\" as an authorized admin identifier so that calling `requestAdminOtp` and `verifyAdminOtp` with this identifier does not trigger any \"not authorized\" trap.",
+        "id": "REQ-1",
+        "summary": "In `backend/main.mo` (single-actor canister), add a new public shared function `processAdminCommand(cmd : Text) : async Text` that returns exactly `\"Command received: \" # cmd` and performs no parsing or actions.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -21,16 +21,13 @@
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
-    "backend/order.mo",
-    "backend/otp-entry.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/pages/AdminLoginHiddenPage.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

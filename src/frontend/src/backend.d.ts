@@ -58,16 +58,20 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
     createOrder(orderId: string, paymentId: string, shippingAddress: ShippingAddress): Promise<void>;
+    getAdminBotLog(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getHomepageBanner(): Promise<string>;
     getUserOrders(): Promise<Array<OrderRecord>>;
     getUserOrdersByYearMonth(year: bigint, month: bigint): Promise<Array<OrderRecord>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     healthCheck(): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
+    processAdminCommand(cmd: string): Promise<string>;
     publicListProducts(): Promise<Array<Product>>;
     requestAdminOtp(identifier: string): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    submitAdminBotInstruction(instruction: string): Promise<string>;
     validateAdminSession(clientIp: string, userAgent: string): Promise<boolean>;
     verifyAdminOtp(identifier: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
 }

@@ -1,6 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add +9179056555971 to backend admin OTP allowlist (frontend-only plan)",
+  "title": "Frontend plan (no changes) for backend-only processAdminCommand stub",
   "requirements": []
 }

@@ -1,36 +1,47 @@
 {
   "kind": "build_request",
-  "title": "Add +9179056555971 to backend admin OTP allowlist",
-  "priority": "high",
+  "title": "Add backend processAdminCommand stub that echoes input",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-28",
-      "text": "Update the backend admin OTP authorization allowlist to include the mobile number \"+9179056555971\" as an authorized admin identifier so that calling `requestAdminOtp` and `verifyAdminOtp` with this identifier does not trigger any \"not authorized\" trap.",
+      "id": "REQ-1",
+      "text": "In `backend/main.mo` (single-actor canister), add a new public shared function `processAdminCommand(cmd : Text) : async Text` that returns exactly `\"Command received: \" # cmd` and performs no parsing or actions.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-user-latest"
         ],
         "quotes": [
-          "Add mobile number \"+9179056555971\" to admin authorized list in backend. Build now."
+          "Add a public shared function processAdminCommand(cmd : Text) : async Text in backend Motoko code.\nFor now, just return \"Command received: \" # cmd (no parsing or actions)."
         ]
       },
       "acceptanceCriteria": [
-        "In `backend/main.mo`, the admin identifier allowlist contains the exact string \"+9179056555971\".",
-        "Calling `requestAdminOtp(\"+9179056555971\")` succeeds (returns the OTP message) rather than trapping with a not-authorized error.",
-        "Calling `verifyAdminOtp(\"+9179056555971\", <correct otp>, <clientIp>, <userAgent>)` does not fail due to allowlist rejection (it may still fail for other reasons like wrong OTP)."
+        "Backend canister exports `processAdminCommand(cmd : Text) : async Text` as a `public shared` function.",
+        "Calling `processAdminCommand(\"abc\")` returns `\"Command received: abc\"`.",
+        "Function does not modify any existing state (products, orders, admin log, banner, sessions, etc.) and contains no command parsing logic."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko canister (all logic in `backend/main.mo`)."
+    "Keep all Motoko logic in the existing single actor in `backend/main.mo` (no additional backend services).",
+    "Do not add a migration (`backend/migration.mo`) since no stable state/schema changes are required for this stub."
   ],
   "nonGoals": [
-    "Do not redesign the admin OTP flow (e.g., switching fully from email identifiers to phone-only identifiers) beyond adding this number to the existing backend allowlist.",
-    "No frontend changes are required unless the build fails without them."
+    "Do not implement any rule parsing, discount logic, stock/visibility updates, order updates, or banner updates.",
+    "Do not modify the frontend as part of this change."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }
