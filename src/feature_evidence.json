@@ -1,4 +1,149 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-replace-the-current-home-top-shop-by-style-block-with-a-new-top-of-home-section-that-matches-the-final-spec-a-centered-heading-explore-by-style-serif-gold-accent-followed-by-a-horizontally-scrollable-carousel-row-of-5-curved-badges-25px-radius-in-the-existing-dark-luxury-theme",
+      "featureTitle": "Replace the current home-top \"Shop by Style\" block with a new top-of-home section that matches the final spec: a centered heading \"Explore by Style\" (serif, gold accent) followed by a horizontally scrollable carousel row of 5 curved badges (25px radius) in the existing dark luxury theme.",
+      "files": [
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-5-carousel-badges-exactly-with-these-mappings-and-visuals-banarasi-zari-royalty-organza-sheer-elegance-georgette-flowing-grace-silk-silk-symphony-kalamkari-heritage-artistry-each-badge-must-include-a-small-circular-image-icon-at-the-left-plus-the-impressive-name-text",
+      "featureTitle": "Implement the 5 carousel badges exactly with these mappings and visuals: Banarasi → \"Zari Royalty\"; Organza → \"Sheer Elegance\"; Georgette → \"Flowing Grace\"; Silk → \"Silk Symphony\"; Kalamkari → \"Heritage Artistry\". Each badge must include a small circular image/icon at the left plus the impressive-name text.",
+      "files": [
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-hover-interactions-for-each-badge-on-hover-show-a-gold-glow-border-effect-and-a-subtle-lift-scale-animation-to-1-05-keep-interactions-lightweight-and-consistent-with-reduced-motion-preferences-where-applicable",
+      "featureTitle": "Add hover interactions for each badge: on hover, show a gold glow/border effect and a subtle lift/scale animation to 1.05. Keep interactions lightweight and consistent with reduced-motion preferences where applicable.",
+      "files": [
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-make-each-badge-clickable-and-navigate-via-spa-navigation-to-a-category-collection-destination-without-blank-screens-implement-a-safe-real-route-pattern-for-category-collections-for-example-a-dedicated-path-like-collections-style-slug-or-collections-slug-and-ensure-the-destination-renders-meaningful-storefront-content-not-an-empty-blank-page",
+      "featureTitle": "Make each badge clickable and navigate via SPA navigation to a category collection destination without blank screens. Implement a safe, real route pattern for category collections (for example a dedicated path like \"/collections?style=<slug>\" or \"/collections/<slug>\") and ensure the destination renders meaningful storefront content (not an empty/blank page).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+        "frontend/src/pages/StyleCollectionsPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-23"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-new-explore-by-style-carousel-is-mobile-responsive-with-swipeable-horizontal-scrolling-and-does-not-break-layout-in-small-viewports-the-design-must-preserve-the-existing-dark-luxury-theme-and-palette-black-background-pearl-blue-7fb3d5-gold-d4af37",
+      "featureTitle": "Ensure the new \"Explore by Style\" carousel is mobile-responsive with swipeable horizontal scrolling and does not break layout in small viewports. The design must preserve the existing dark luxury theme and palette (black background, pearl blue #7FB3D5, gold #D4AF37).",
+      "files": [
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-24"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-and-add-5-small-circular-category-icon-images-as-static-assets-under-frontend-public-assets-generated-and-use-them-in-the-carousel-badges-no-backend-image-serving",
+      "featureTitle": "Generate and add 5 small circular category icon images as static assets under frontend/public/assets/generated and use them in the carousel badges (no backend image serving).",
+      "files": [
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-25"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-scope-guardrails-do-not-change-dashboard-profile-login-flows-or-add-heavy-visual-effects-only-implement-the-specified-home-top-redesign-section-and-its-navigation-destinations-while-keeping-the-existing-overall-layout-and-preventing-regressions-blank-screens",
+      "featureTitle": "Scope guardrails: do not change dashboard, profile, login flows, or add heavy visual effects; only implement the specified home-top redesign section and its navigation destinations, while keeping the existing overall layout and preventing regressions/blank screens.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-26"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

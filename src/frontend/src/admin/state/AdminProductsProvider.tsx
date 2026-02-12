@@ -4,6 +4,7 @@ import { useActor } from '../../hooks/useActor';
 import { useQueryClient } from '@tanstack/react-query';
 import { adminFormToBackendProduct, backendProductToAdmin } from '../utils/productMappings';
 import { toast } from 'sonner';
+import { showBasicErrorToast } from '../../utils/errorToasts';
 
 interface AdminProductsContextValue {
   products: AdminProduct[];
@@ -37,10 +38,9 @@ export function AdminProductsProvider({ children }: { children: React.ReactNode 
       setProducts(adminProducts);
     } catch (err: any) {
       console.error('Failed to load products:', err);
-      setError(err.message || 'Failed to load products from canister');
-      toast.error('Failed to load products', {
-        description: 'Could not fetch products from the backend. Please try again.',
-      });
+      setError(err.message || 'Failed to load products');
+      toast.error('Failed to load products');
+      showBasicErrorToast('Error: Failed to load products');
     } finally {
       setIsLoading(false);
     }
@@ -52,101 +52,119 @@ export function AdminProductsProvider({ children }: { children: React.ReactNode 
 
   const refreshProducts = useCallback(async () => {
     await loadProducts();
-    // Invalidate storefront products query
+    // Invalidate storefront queries to sync
     queryClient.invalidateQueries({ queryKey: ['products'] });
   }, [loadProducts, queryClient]);
 
   const createProduct = useCallback(
     async (data: AdminProductFormData): Promise<AdminProduct> => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) {
+        const errorMsg = 'Backend not available';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Please try again');
+        throw new Error(errorMsg);
+      }
 
       try {
-        const backendPayload = adminFormToBackendProduct(data);
-        
+        const backendProduct = adminFormToBackendProduct(data);
         const productId = await actor.adminAddProduct(
-          backendPayload.name,
-          backendPayload.price,
-          backendPayload.description,
-          backendPayload.images,
-          backendPayload.fabric,
-          backendPayload.variants,
-          backendPayload.blousePair,
-          backendPayload.category
+          backendProduct.name,
+          backendProduct.price,
+          backendProduct.description,
+          backendProduct.images,
+          backendProduct.fabric,
+          backendProduct.variants,
+          backendProduct.blousePair,
+          backendProduct.category
         );
 
-        // Refresh products list
+        const newProduct: AdminProduct = {
+          ...data,
+          id: productId,
+          price: parseFloat(data.price) || 0,
+          createdAt: Date.now(),
+        };
+
+        setProducts((prev) => [...prev, newProduct]);
         await refreshProducts();
-
-        // Find the newly created product
-        const newProduct = products.find((p) => p.id === productId);
-        if (!newProduct) {
-          throw new Error('Product created but not found in list');
-        }
-
-        toast.success('Product created successfully');
         return newProduct;
       } catch (err: any) {
         console.error('Failed to create product:', err);
-        toast.error('Failed to create product', {
-          description: err.message || 'Could not save product to the backend.',
-        });
-        throw err;
+        const errorMsg = err.message || 'Failed to create product';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Failed to save');
+        throw new Error(errorMsg);
       }
     },
-    [actor, refreshProducts, products]
+    [actor, refreshProducts]
   );
 
   const updateProduct = useCallback(
-    async (id: string, data: AdminProductFormData) => {
-      if (!actor) throw new Error('Actor not available');
+    async (id: string, data: AdminProductFormData): Promise<void> => {
+      if (!actor) {
+        const errorMsg = 'Backend not available';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Please try again');
+        throw new Error(errorMsg);
+      }
 
       try {
-        const backendPayload = adminFormToBackendProduct(data, id);
-        
+        const backendProduct = adminFormToBackendProduct(data, id);
         await actor.adminUpdateProduct(
           id,
-          backendPayload.name,
-          backendPayload.price,
-          backendPayload.description,
-          backendPayload.images,
-          backendPayload.fabric,
-          backendPayload.variants,
-          backendPayload.blousePair,
-          backendPayload.category
+          backendProduct.name,
+          backendProduct.price,
+          backendProduct.description,
+          backendProduct.images,
+          backendProduct.fabric,
+          backendProduct.variants,
+          backendProduct.blousePair,
+          backendProduct.category
         );
 
-        // Refresh products list
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === id
+              ? {
+                  ...data,
+                  id,
+                  price: parseFloat(data.price) || 0,
+                  createdAt: p.createdAt, // Preserve existing createdAt
+                }
+              : p
+          )
+        );
         await refreshProducts();
-
-        toast.success('Product updated successfully');
       } catch (err: any) {
         console.error('Failed to update product:', err);
-        toast.error('Failed to update product', {
-          description: err.message || 'Could not save changes to the backend.',
-        });
-        throw err;
+        const errorMsg = err.message || 'Failed to update product';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Failed to save');
+        throw new Error(errorMsg);
       }
     },
     [actor, refreshProducts]
   );
 
   const deleteProduct = useCallback(
-    async (id: string) => {
-      if (!actor) throw new Error('Actor not available');
+    async (id: string): Promise<void> => {
+      if (!actor) {
+        const errorMsg = 'Backend not available';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Please try again');
+        throw new Error(errorMsg);
+      }
 
       try {
         await actor.adminDeleteProduct(id);
-
-        // Refresh products list
+        setProducts((prev) => prev.filter((p) => p.id !== id));
         await refreshProducts();
-
-        toast.success('Product deleted successfully');
       } catch (err: any) {
         console.error('Failed to delete product:', err);
-        toast.error('Failed to delete product', {
-          description: err.message || 'Could not delete product from the backend.',
-        });
-        throw err;
+        const errorMsg = err.message || 'Failed to delete product';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Failed to delete');
+        throw new Error(errorMsg);
       }
     },
     [actor, refreshProducts]
@@ -154,59 +172,41 @@ export function AdminProductsProvider({ children }: { children: React.ReactNode 
 
   const bulkCreateProducts = useCallback(
     async (dataArray: AdminProductFormData[]): Promise<number> => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) {
+        const errorMsg = 'Backend not available';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Please try again');
+        throw new Error(errorMsg);
+      }
 
       try {
-        // Convert all form data to backend products
-        const backendProducts = dataArray.map((data) => {
-          const payload = adminFormToBackendProduct(data);
-          return {
-            id: payload.id,
-            name: payload.name,
-            price: payload.price,
-            description: payload.description,
-            images: payload.images,
-            fabric: payload.fabric,
-            variants: payload.variants,
-            blousePair: payload.blousePair,
-            category: payload.category,
-          };
-        });
-
-        // Call bulk import
+        const backendProducts = dataArray.map((data) => adminFormToBackendProduct(data));
         const count = await actor.adminBulkImportProducts(backendProducts);
-
-        // Refresh products list
         await refreshProducts();
-
         return Number(count);
       } catch (err: any) {
         console.error('Failed to bulk import products:', err);
-        toast.error('Bulk import failed', {
-          description: err.message || 'Could not import products to the backend.',
-        });
-        throw err;
+        const errorMsg = err.message || 'Failed to bulk import products';
+        toast.error(errorMsg);
+        showBasicErrorToast('Error: Failed to import');
+        throw new Error(errorMsg);
       }
     },
     [actor, refreshProducts]
   );
 
-  return (
-    <AdminProductsContext.Provider
-      value={{
-        products,
-        isLoading,
-        error,
-        createProduct,
-        updateProduct,
-        deleteProduct,
-        bulkCreateProducts,
-        refreshProducts,
-      }}
-    >
-      {children}
-    </AdminProductsContext.Provider>
-  );
+  const value: AdminProductsContextValue = {
+    products,
+    isLoading,
+    error,
+    createProduct,
+    updateProduct,
+    deleteProduct,
+    bulkCreateProducts,
+    refreshProducts,
+  };
+
+  return <AdminProductsContext.Provider value={value}>{children}</AdminProductsContext.Provider>;
 }
 
 export function useAdminProducts() {

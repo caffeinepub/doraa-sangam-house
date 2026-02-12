@@ -1,37 +1,155 @@
 {
   "kind": "build_request",
-  "title": "Add backend processAdminCommand stub that echoes input",
+  "title": "Replace home 'Shop by Style' row with 'Explore by Style' curved-badge carousel (5 categories) and category navigation",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "In `backend/main.mo` (single-actor canister), add a new public shared function `processAdminCommand(cmd : Text) : async Text` that returns exactly `\"Command received: \" # cmd` and performs no parsing or actions.",
-      "target": "backend",
+      "id": "REQ-20",
+      "text": "Replace the current home-top \"Shop by Style\" block with a new top-of-home section that matches the final spec: a centered heading \"Explore by Style\" (serif, gold accent) followed by a horizontally scrollable carousel row of 5 curved badges (25px radius) in the existing dark luxury theme.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-user-final"
         ],
         "quotes": [
-          "Add a public shared function processAdminCommand(cmd : Text) : async Text in backend Motoko code.\nFor now, just return \"Command received: \" # cmd (no parsing or actions)."
+          "On home page top:\n  - Heading: \"Explore by Style\" (centered, serif font, gold accent)\n  - Horizontal scrollable carousel of curved badges (25px radius, pearl blue bg, gold border glow on hover)\n  - Only 5 categories with impressive names: ..."
         ]
       },
       "acceptanceCriteria": [
-        "Backend canister exports `processAdminCommand(cmd : Text) : async Text` as a `public shared` function.",
-        "Calling `processAdminCommand(\"abc\")` returns `\"Command received: abc\"`.",
-        "Function does not modify any existing state (products, orders, admin log, banner, sessions, etc.) and contains no command parsing logic."
+        "Home page (path \"/\") renders a top section above the existing CinematicHeroSlider.",
+        "Heading text is exactly \"Explore by Style\" and is visually centered, serif-styled, and uses the gold accent (#D4AF37).",
+        "A single-row, horizontally scrollable carousel of badges is present with no layout overflow/breakage on desktop or mobile."
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Implement the 5 carousel badges exactly with these mappings and visuals: Banarasi → \"Zari Royalty\"; Organza → \"Sheer Elegance\"; Georgette → \"Flowing Grace\"; Silk → \"Silk Symphony\"; Kalamkari → \"Heritage Artistry\". Each badge must include a small circular image/icon at the left plus the impressive-name text.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Only 5 categories with impressive names:\n    - Banarasi → \"Zari Royalty\"\n    - Organza → \"Sheer Elegance\"\n    - Georgette → \"Flowing Grace\"\n    - Silk → \"Silk Symphony\"\n    - Kalamkari → \"Heritage Artistry\"\n  - Each badge: small circular image/icon + name text"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Exactly 5 badges are shown (no Sequin, no Ready To Wear).",
+        "Each badge shows (1) a circular icon/image and (2) the exact impressive label text from the spec.",
+        "Badges use curved corners (25px radius) and a pearl blue background (#7FB3D5) consistent with the dark luxury theme."
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Add hover interactions for each badge: on hover, show a gold glow/border effect and a subtle lift/scale animation to 1.05. Keep interactions lightweight and consistent with reduced-motion preferences where applicable.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Hover: gold glow + subtle lift (scale 1.05)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hovering a badge visibly adds a gold glow/border highlight and scales the badge to ~1.05 without jarring motion.",
+        "Hover behavior does not introduce heavy particle effects or complex animations.",
+        "The hover effect does not interfere with scrolling/swiping the carousel on mobile."
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Make each badge clickable and navigate via SPA navigation to a category collection destination without blank screens. Implement a safe, real route pattern for category collections (for example a dedicated path like \"/collections?style=<slug>\" or \"/collections/<slug>\") and ensure the destination renders meaningful storefront content (not an empty/blank page).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Click badge → open that category collection page",
+          "No blank screen or bugs."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Clicking each badge changes the URL (SPA navigation) to a category-specific destination and does not reload the page.",
+        "The destination page renders correctly (no blank screen), and the user can navigate back to home normally.",
+        "The category destination is implemented for all 5 categories using a consistent slug scheme (e.g., banarasi/organza/georgette/silk/kalamkari)."
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "Ensure the new \"Explore by Style\" carousel is mobile-responsive with swipeable horizontal scrolling and does not break layout in small viewports. The design must preserve the existing dark luxury theme and palette (black background, pearl blue #7FB3D5, gold #D4AF37).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Keep dark luxury theme (black bg, pearl blue #7FB3D5, gold #D4AF37)",
+          "Responsive: mobile swipe carousel"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On mobile, the badge row can be swiped horizontally (native overflow scrolling) and remains a single row without wrapping into broken layouts.",
+        "On desktop, the badge row is horizontally scrollable and visually aligned/centered within the existing page container constraints.",
+        "Colors match the provided palette and do not alter global theme tokens unexpectedly."
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "text": "Generate and add 5 small circular category icon images as static assets under frontend/public/assets/generated and use them in the carousel badges (no backend image serving).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "Each badge: small circular image/icon + name text"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Five icon images exist in frontend/public/assets/generated and are referenced directly via static paths.",
+        "Each of the 5 badges displays its corresponding icon image cropped/masked to a circle.",
+        "No new backend endpoints or canister calls are introduced to serve these images."
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "text": "Scope guardrails: do not change dashboard, profile, login flows, or add heavy visual effects; only implement the specified home-top redesign section and its navigation destinations, while keeping the existing overall layout and preventing regressions/blank screens.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-final"
+        ],
+        "quotes": [
+          "No other changes (no dashboard mix, no heavy particles)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dashboard route (/dashboard) behavior and UI remain unchanged.",
+        "Login page and OTP verification flow remain functional and still land on \"/\" after success unless a return path is set.",
+        "No new particle systems or heavy background effects are added specifically for this section."
       ]
     }
   ],
   "constraints": [
-    "Keep all Motoko logic in the existing single actor in `backend/main.mo` (no additional backend services).",
-    "Do not add a migration (`backend/migration.mo`) since no stable state/schema changes are required for this stub."
+    "Frontend immutable paths must not be modified: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*.",
+    "Respect existing SPA navigation approach (useSpaLocation) and avoid introducing new routing frameworks.",
+    "Use English for all user-facing text in the implemented UI."
   ],
   "nonGoals": [
-    "Do not implement any rule parsing, discount logic, stock/visibility updates, order updates, or banner updates.",
-    "Do not modify the frontend as part of this change."
+    "Do not add Sequin or Ready To Wear categories in this iteration.",
+    "Do not redesign the dashboard or auto-open the dashboard after login.",
+    "Do not add notification bells, real-time features, or heavy particle animations."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Minimal luxury textile weave icon in pearl-blue/gold, circular-friendly (explore-style-icon-banarasi.dim_128x128.png)",
+      "Minimal sheer fabric/flow icon in pearl-blue/gold, circular-friendly (explore-style-icon-organza.dim_128x128.png)",
+      "Minimal flowing drape icon in pearl-blue/gold, circular-friendly (explore-style-icon-georgette.dim_128x128.png)",
+      "Minimal silk sheen wave icon in pearl-blue/gold, circular-friendly (explore-style-icon-silk.dim_128x128.png)",
+      "Minimal folk-art motif icon in pearl-blue/gold, circular-friendly (explore-style-icon-kalamkari.dim_128x128.png)"
+    ],
     "edits": []
   },
   "userProfileUpdate": {

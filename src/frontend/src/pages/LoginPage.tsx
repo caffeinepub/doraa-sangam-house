@@ -191,48 +191,39 @@ export default function LoginPage({ navigate }: LoginPageProps) {
   };
 
   const handleSendOTP = async () => {
-    setError('');
-    
-    // For Sign Up, validate name and email first
+    if (!phoneValidation?.isValid || !phoneValidation.e164) {
+      setError('Please enter a valid phone number');
+      showBasicErrorToast('Error: Invalid phone number');
+      return;
+    }
+
+    // For Sign Up, validate additional fields
     if (activeTab === 'signup') {
       if (!validateSignUpFields()) {
+        showBasicErrorToast('Error: Please check your information');
         return;
       }
     }
-    
-    // Validate phone number
-    const validation = validatePhoneNumber(phoneNumber, selectedCountry);
-    setPhoneValidation(validation);
-    
-    if (!validation.isValid) {
-      setError(validation.errorMessage || `Please enter a valid ${selectedCountry.name} mobile number`);
-      return;
-    }
-
-    // Check lockout
-    const lockout = getOTPLockout();
-    if (lockout) {
-      setError('Too many attempts. Please try again later.');
-      return;
-    }
 
     setIsSendingOtp(true);
-    
+    setError('');
+
     try {
-      // Simulated backend behavior
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const newOTP = Math.floor(100000 + Math.random() * 900000).toString();
-      setGeneratedOTP(newOTP);
-      setChallengeId(`challenge-${Date.now()}`);
-      
-      // Log OTP to console for testing
-      console.log(`[SIMULATED] SMS sent to ${validation.e164}: Your DoRaa Sangam House OTP is: ${newOTP}. Valid for 2 minutes.`);
-      alert(`[TEST MODE] Your OTP is: ${newOTP}`);
-      
+      // Simulate OTP generation
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOTP(otp);
+      const challenge = `challenge_${Date.now()}`;
+      setChallengeId(challenge);
+
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Set expiry to 2 minutes from now
       setOtpExpiryTimestamp(Date.now() + 2 * 60 * 1000);
       setStep('otp');
-    } catch (err: any) {
-      console.error('Send OTP error:', err);
+      console.log(`[TEST MODE] OTP sent: ${otp}`);
+    } catch (err) {
+      console.error('Error sending OTP:', err);
       setError('Failed to send OTP. Please try again.');
       showBasicErrorToast('Error: Failed to send OTP');
     } finally {
@@ -240,92 +231,107 @@ export default function LoginPage({ navigate }: LoginPageProps) {
     }
   };
 
-  const handleVerifyOTP = async (otpValue?: string) => {
-    const otpToVerify = otpValue || otp;
-    setError('');
+  const handleVerifyOTP = async (otpToVerify?: string) => {
+    const otpCode = otpToVerify || otp;
+    
+    if (otpCode.length !== 6) {
+      setError('Please enter a 6-digit OTP');
+      showBasicErrorToast('Error: Invalid OTP');
+      return;
+    }
 
     // Check lockout
-    const lockout = getOTPLockout();
-    if (lockout) {
-      setError('Too many attempts. Please try again later.');
-      return;
-    }
-
-    if (otpToVerify.length !== 6) {
-      setError('Please enter a 6-digit OTP');
-      return;
-    }
-
-    // Check expiry
-    if (isExpired) {
-      setError('OTP has expired. Please request a new one.');
+    if (lockoutTime && Date.now() < lockoutTime) {
+      setShowLockoutModalState(true);
       return;
     }
 
     setIsVerifyingOtp(true);
+    setError('');
 
     try {
-      // Simulated backend behavior
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (otpToVerify === generatedOTP) {
-        // Success
-        const validation = validatePhoneNumber(phoneNumber, selectedCountry);
-        if (validation.isValid && validation.e164) {
-          createOTPSession(validation.e164);
-          resetOTPAttempts();
-          cancelWebOtp();
-          
-          // Navigate to return path if exists, otherwise home
-          const returnPath = getReturnPath();
-          if (returnPath) {
-            clearReturnPath();
-            navigate(returnPath);
-          } else {
-            navigate('/');
-          }
-        }
-      } else {
-        // Wrong OTP - show error toast
-        const attempts = incrementOTPAttempts();
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Verify OTP
+      if (otpCode !== generatedOTP) {
+        incrementOTPAttempts();
+        const attempts = parseInt(localStorage.getItem('doraa-otp-attempts') || '0');
+        
         if (attempts >= 3) {
           setOTPLockout();
-          setLockoutTime(Date.now() + 10 * 60 * 1000);
-          setShowLockoutModalState(true);
-          showLockoutToast();
-          setError('Too many attempts. Retry after 10 minutes.');
-          showBasicErrorToast('Error: Too many attempts');
+          const lockout = getOTPLockout();
+          if (lockout) {
+            setLockoutTime(lockout);
+            setShowLockoutModalState(true);
+            showLockoutToast();
+          }
         } else {
-          const errorMsg = `Incorrect OTP. ${3 - attempts} attempt(s) remaining.`;
-          setError(errorMsg);
+          setError(`Invalid OTP. ${3 - attempts} attempts remaining.`);
           showBasicErrorToast('Error: Invalid OTP');
         }
+        return;
       }
-    } catch (err: any) {
-      console.error('Verify OTP error:', err);
-      setError('Verification failed. Please try again.');
-      showBasicErrorToast('Error: Verification failed');
+
+      // Success - create session
+      if (!phoneValidation?.e164) {
+        setError('Phone validation failed');
+        showBasicErrorToast('Error: Please try again');
+        return;
+      }
+
+      createOTPSession(phoneValidation.e164);
+      resetOTPAttempts();
+
+      // Navigate to return path or home
+      const returnPath = getReturnPath();
+      if (returnPath) {
+        clearReturnPath();
+        navigate(returnPath);
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      setError('Failed to verify OTP. Please try again.');
+      showBasicErrorToast('Error: Please try again');
     } finally {
       setIsVerifyingOtp(false);
     }
   };
 
-  const handleInternetIdentityLogin = async () => {
-    // If already authenticated, just navigate
-    if (identity && !identity.getPrincipal().isAnonymous()) {
-      const returnPath = getReturnPath();
-      if (returnPath) {
-        clearReturnPath();
-        navigate(returnPath);
-      } else {
-        navigate('/');
-      }
-      return;
-    }
+  const handleResendOTP = async () => {
+    if (!isExpired) return;
+    
+    setIsSendingOtp(true);
+    setError('');
+    setOtp('');
 
     try {
+      // Generate new OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOTP(otp);
+      
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Reset expiry
+      setOtpExpiryTimestamp(Date.now() + 2 * 60 * 1000);
+      console.log(`[TEST MODE] OTP resent: ${otp}`);
+    } catch (err) {
+      console.error('Error resending OTP:', err);
+      setError('Failed to resend OTP. Please try again.');
+      showBasicErrorToast('Error: Failed to resend OTP');
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleInternetIdentityLogin = async () => {
+    try {
       await loginII();
-      // Navigate to return path if exists, otherwise home
+      
+      // Navigate to return path or home
       const returnPath = getReturnPath();
       if (returnPath) {
         clearReturnPath();
@@ -334,375 +340,398 @@ export default function LoginPage({ navigate }: LoginPageProps) {
         navigate('/');
       }
     } catch (err: any) {
-      // Suppress "already authenticated" errors
-      if (err?.message?.includes('already authenticated')) {
-        const returnPath = getReturnPath();
-        if (returnPath) {
-          clearReturnPath();
-          navigate(returnPath);
-        } else {
-          navigate('/');
-        }
-        return;
-      }
-      setError('Internet Identity login failed. Please try again.');
+      console.error('Internet Identity login error:', err);
+      setError('Failed to login with Internet Identity. Please try again.');
       showBasicErrorToast('Error: Login failed');
     }
   };
 
-  const getRemainingLockoutTime = () => {
-    if (!lockoutTime) return '';
-    const remaining = Math.ceil((lockoutTime - Date.now()) / 1000);
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handlePhoneBlur = () => {
-    if (phoneNumber) {
-      const validation = validatePhoneNumber(phoneNumber, selectedCountry);
-      setPhoneValidation(validation);
-      if (!validation.isValid) {
-        setError(validation.errorMessage || '');
-      } else {
-        setError('');
-      }
-    }
-  };
-
-  const handleManualEntry = () => {
-    setShowPermissionModal(false);
+  const handleBackToPhone = () => {
+    setStep('phone');
+    setOtp('');
+    setError('');
+    setOtpExpiryTimestamp(null);
     cancelWebOtp();
   };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as TabValue);
     setError('');
+    // Reset both flows when switching tabs
+    setSignInStep('phone');
+    setSignUpStep('phone');
+    setSignInOtp('');
+    setSignUpOtp('');
+    setOtpExpiryTimestamp(null);
+    cancelWebOtp();
+  };
+
+  const handleManualOtpEntry = () => {
+    // Just close the modal and let user enter OTP manually
+    setShowPermissionModal(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-card/95 backdrop-blur-xl border-border/40">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl font-serif text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center text-muted-foreground">
-            Login to access your account
+      <Card className="w-full max-w-md bg-black/40 backdrop-blur-xl border-pearl-blue/20">
+        <CardHeader>
+          <CardTitle className="text-2xl font-serif text-pearl-off-white text-center">
+            Welcome to DoRaa Sangam House
+          </CardTitle>
+          <CardDescription className="text-center text-pearl-off-white/60">
+            Sign in to continue your luxury shopping experience
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {flashMessage && (
-            <Alert className={flashMessage.type === 'success' ? 'border-primary bg-primary/10' : 'border-accent bg-accent/10'}>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className={flashMessage.type === 'success' ? 'text-primary' : 'text-accent'}>
-                {flashMessage.message}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {error && !phoneValidation && (
-            <Alert variant="destructive" className="border-accent bg-accent/10">
-              <AlertCircle className="h-4 w-4 text-accent" />
-              <AlertDescription className="text-accent">{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {lockoutTime && (
-            <Alert className="border-destructive bg-destructive/10">
-              <AlertCircle className="h-4 w-4 text-destructive" />
-              <AlertDescription className="text-destructive">
-                Too many attempts. Retry after {getRemainingLockoutTime()}
-              </AlertDescription>
-            </Alert>
-          )}
-
+        <CardContent>
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-muted/50">
-              <TabsTrigger value="signin" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                Sign Up
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="signin">Sign In</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="signin" className="space-y-4 mt-6">
-              {signInStep === 'phone' ? (
-                <div className="space-y-4">
-                  <InternationalPhoneInput
-                    id="phone-signin"
-                    label="Mobile Number"
-                    value={signInPhone}
-                    onChange={setSignInPhone}
-                    selectedCountry={signInCountry}
-                    onCountryChange={setSignInCountry}
-                    onValidationChange={handleValidationChange}
-                    disabled={isSendingOtp || !!lockoutTime}
-                    error={signInValidation && !signInValidation.isValid ? signInValidation.errorMessage : undefined}
-                    onBlur={handlePhoneBlur}
-                  />
+
+            {/* Flash Message */}
+            {flashMessage && (
+              <Alert className="mb-4 border-pearl-blue/30 bg-pearl-blue/10">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{flashMessage.message}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Sign In Tab */}
+            <TabsContent value="signin" className="space-y-4">
+              {step === 'phone' ? (
+                <>
+                  <div className="space-y-2">
+                    <InternationalPhoneInput
+                      id="signin-phone"
+                      label="Mobile Number"
+                      value={signInPhone}
+                      onChange={setSignInPhone}
+                      selectedCountry={signInCountry}
+                      onCountryChange={setSignInCountry}
+                      onValidationChange={handleValidationChange}
+                      disabled={isSendingOtp}
+                    />
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
                   <Button
                     onClick={handleSendOTP}
-                    disabled={isSendingOtp || !!lockoutTime}
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gold-pulse-glow h-12 text-lg"
+                    disabled={isSendingOtp || !phoneValidation?.isValid}
+                    className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isSendingOtp ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Sending...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending OTP...
                       </>
                     ) : (
                       'Send OTP'
                     )}
                   </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="otp-signin" className="text-foreground">Enter OTP</Label>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="h-4 w-4 text-primary" />
-                        <span className={`font-mono ${isExpired ? 'text-destructive' : 'text-primary'}`}>
-                          {formattedTime}
-                        </span>
-                      </div>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-pearl-blue/20" />
                     </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-black/40 px-2 text-pearl-off-white/60">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleInternetIdentityLogin}
+                    disabled={isLoggingIn}
+                    variant="outline"
+                    className="w-full border-pearl-blue/30 hover:bg-pearl-blue/10 min-h-[44px]"
+                  >
+                    {isLoggingIn ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>
+                        <Shield className="mr-2 h-4 w-4" />
+                        Passkey Login
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-pearl-off-white/80 block text-center">
+                      Enter 6-digit OTP sent to {phoneValidation?.e164}
+                    </Label>
                     <div className="flex justify-center">
                       <InputOTP
                         maxLength={6}
                         value={signInOtp}
                         onChange={setSignInOtp}
-                        disabled={isVerifyingOtp || !!lockoutTime || isExpired}
+                        disabled={isVerifyingOtp}
                       >
                         <InputOTPGroup>
-                          <InputOTPSlot index={0} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={1} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={2} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={3} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={4} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={5} className="border-border/60 bg-background/50" />
+                          <InputOTPSlot index={0} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={1} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={2} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={3} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={4} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={5} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
                         </InputOTPGroup>
                       </InputOTP>
                     </div>
-                    {isExpired && (
-                      <p className="text-sm text-destructive text-center">
-                        OTP has expired. Please request a new one.
-                      </p>
-                    )}
+                    <div className="flex items-center justify-center gap-2 text-sm text-pearl-off-white/60">
+                      <Clock className="h-4 w-4" />
+                      <span>
+                        {isExpired ? 'OTP expired' : `Expires in ${formattedTime}`}
+                      </span>
+                    </div>
                   </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="text-center text-sm text-pearl-off-white/60">
+                    Test OTP: {generatedOTP}
+                  </div>
+
                   <Button
                     onClick={() => handleVerifyOTP()}
-                    disabled={isVerifyingOtp || signInOtp.length !== 6 || !!lockoutTime || isExpired}
-                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90 gold-pulse-glow h-12 text-lg"
+                    disabled={isVerifyingOtp || signInOtp.length !== 6 || isExpired}
+                    className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isVerifyingOtp ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Verifying...
                       </>
                     ) : (
                       'Verify OTP'
                     )}
                   </Button>
-                  <Button
-                    onClick={() => {
-                      setSignInStep('phone');
-                      setSignInOtp('');
-                      setError('');
-                      setSignInValidation(null);
-                      setOtpExpiryTimestamp(null);
-                      cancelWebOtp();
-                    }}
-                    variant="ghost"
-                    className="w-full text-muted-foreground hover:text-primary"
-                    disabled={isVerifyingOtp}
-                  >
-                    Change Number
-                  </Button>
-                </div>
+
+                  <div className="flex justify-between items-center">
+                    <Button
+                      onClick={handleBackToPhone}
+                      variant="ghost"
+                      className="text-pearl-blue hover:text-pearl-blue/80"
+                    >
+                      Change Number
+                    </Button>
+                    <Button
+                      onClick={handleResendOTP}
+                      variant="ghost"
+                      disabled={!isExpired || isSendingOtp}
+                      className="text-pearl-blue hover:text-pearl-blue/80 disabled:opacity-50"
+                    >
+                      {isSendingOtp ? 'Sending...' : 'Resend OTP'}
+                    </Button>
+                  </div>
+                </>
               )}
             </TabsContent>
-            
-            <TabsContent value="signup" className="space-y-4 mt-6">
-              {signUpStep === 'phone' ? (
-                <div className="space-y-4">
+
+            {/* Sign Up Tab */}
+            <TabsContent value="signup" className="space-y-4">
+              {step === 'phone' ? (
+                <>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name" className="text-foreground">Name (Optional)</Label>
+                    <Label htmlFor="signup-name" className="text-pearl-off-white/80">
+                      Name (Optional)
+                    </Label>
                     <Input
                       id="signup-name"
                       type="text"
-                      placeholder="Enter your name"
                       value={signUpName}
-                      onChange={(e) => {
-                        setSignUpName(e.target.value);
-                        setSignUpNameError('');
-                      }}
-                      disabled={isSendingOtp || !!lockoutTime}
-                      className="bg-background/50 border-border/60 focus:border-primary"
+                      onChange={(e) => setSignUpName(e.target.value)}
+                      placeholder="Your name"
+                      className="bg-black/30 border-pearl-blue/30 text-pearl-off-white placeholder:text-pearl-off-white/40"
+                      disabled={isSendingOtp}
                     />
                     {signUpNameError && (
-                      <p className="text-sm text-accent">{signUpNameError}</p>
+                      <p className="text-sm text-red-400">{signUpNameError}</p>
                     )}
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email" className="text-foreground">Email (Optional)</Label>
+                    <Label htmlFor="signup-email" className="text-pearl-off-white/80">
+                      Email (Optional)
+                    </Label>
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="Enter your email"
                       value={signUpEmail}
-                      onChange={(e) => {
-                        setSignUpEmail(e.target.value);
-                        setSignUpEmailError('');
-                      }}
-                      disabled={isSendingOtp || !!lockoutTime}
-                      className="bg-background/50 border-border/60 focus:border-primary"
+                      onChange={(e) => setSignUpEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="bg-black/30 border-pearl-blue/30 text-pearl-off-white placeholder:text-pearl-off-white/40"
+                      disabled={isSendingOtp}
                     />
                     {signUpEmailError && (
-                      <p className="text-sm text-accent">{signUpEmailError}</p>
+                      <p className="text-sm text-red-400">{signUpEmailError}</p>
                     )}
                   </div>
-                  
-                  <InternationalPhoneInput
-                    id="phone-signup"
-                    label="Mobile Number"
-                    value={signUpPhone}
-                    onChange={setSignUpPhone}
-                    selectedCountry={signUpCountry}
-                    onCountryChange={setSignUpCountry}
-                    onValidationChange={handleValidationChange}
-                    disabled={isSendingOtp || !!lockoutTime}
-                    error={signUpValidation && !signUpValidation.isValid ? signUpValidation.errorMessage : undefined}
-                    onBlur={handlePhoneBlur}
-                  />
+
+                  <div className="space-y-2">
+                    <InternationalPhoneInput
+                      id="signup-phone"
+                      label="Mobile Number"
+                      value={signUpPhone}
+                      onChange={setSignUpPhone}
+                      selectedCountry={signUpCountry}
+                      onCountryChange={setSignUpCountry}
+                      onValidationChange={handleValidationChange}
+                      disabled={isSendingOtp}
+                    />
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
                   <Button
                     onClick={handleSendOTP}
-                    disabled={isSendingOtp || !!lockoutTime}
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gold-pulse-glow h-12 text-lg"
+                    disabled={isSendingOtp || !phoneValidation?.isValid}
+                    className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isSendingOtp ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Sending...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending OTP...
                       </>
                     ) : (
                       'Send OTP'
                     )}
                   </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="otp-signup" className="text-foreground">Enter OTP</Label>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="h-4 w-4 text-primary" />
-                        <span className={`font-mono ${isExpired ? 'text-destructive' : 'text-primary'}`}>
-                          {formattedTime}
-                        </span>
-                      </div>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-pearl-blue/20" />
                     </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-black/40 px-2 text-pearl-off-white/60">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleInternetIdentityLogin}
+                    disabled={isLoggingIn}
+                    variant="outline"
+                    className="w-full border-pearl-blue/30 hover:bg-pearl-blue/10 min-h-[44px]"
+                  >
+                    {isLoggingIn ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>
+                        <Shield className="mr-2 h-4 w-4" />
+                        Passkey Login
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-pearl-off-white/80 block text-center">
+                      Enter 6-digit OTP sent to {phoneValidation?.e164}
+                    </Label>
                     <div className="flex justify-center">
                       <InputOTP
                         maxLength={6}
                         value={signUpOtp}
                         onChange={setSignUpOtp}
-                        disabled={isVerifyingOtp || !!lockoutTime || isExpired}
+                        disabled={isVerifyingOtp}
                       >
                         <InputOTPGroup>
-                          <InputOTPSlot index={0} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={1} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={2} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={3} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={4} className="border-border/60 bg-background/50" />
-                          <InputOTPSlot index={5} className="border-border/60 bg-background/50" />
+                          <InputOTPSlot index={0} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={1} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={2} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={3} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={4} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
+                          <InputOTPSlot index={5} className="bg-black/30 border-pearl-blue/30 text-pearl-off-white" />
                         </InputOTPGroup>
                       </InputOTP>
                     </div>
-                    {isExpired && (
-                      <p className="text-sm text-destructive text-center">
-                        OTP has expired. Please request a new one.
-                      </p>
-                    )}
+                    <div className="flex items-center justify-center gap-2 text-sm text-pearl-off-white/60">
+                      <Clock className="h-4 w-4" />
+                      <span>
+                        {isExpired ? 'OTP expired' : `Expires in ${formattedTime}`}
+                      </span>
+                    </div>
                   </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="text-center text-sm text-pearl-off-white/60">
+                    Test OTP: {generatedOTP}
+                  </div>
+
                   <Button
                     onClick={() => handleVerifyOTP()}
-                    disabled={isVerifyingOtp || signUpOtp.length !== 6 || !!lockoutTime || isExpired}
-                    className="w-full bg-accent text-accent-foreground hover:bg-accent/90 gold-pulse-glow h-12 text-lg"
+                    disabled={isVerifyingOtp || signUpOtp.length !== 6 || isExpired}
+                    className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isVerifyingOtp ? (
                       <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Verifying...
                       </>
                     ) : (
                       'Verify OTP'
                     )}
                   </Button>
-                  <Button
-                    onClick={() => {
-                      setSignUpStep('phone');
-                      setSignUpOtp('');
-                      setError('');
-                      setSignUpValidation(null);
-                      setOtpExpiryTimestamp(null);
-                      cancelWebOtp();
-                    }}
-                    variant="ghost"
-                    className="w-full text-muted-foreground hover:text-primary"
-                    disabled={isVerifyingOtp}
-                  >
-                    Change Number
-                  </Button>
-                </div>
+
+                  <div className="flex justify-between items-center">
+                    <Button
+                      onClick={handleBackToPhone}
+                      variant="ghost"
+                      className="text-pearl-blue hover:text-pearl-blue/80"
+                    >
+                      Change Number
+                    </Button>
+                    <Button
+                      onClick={handleResendOTP}
+                      variant="ghost"
+                      disabled={!isExpired || isSendingOtp}
+                      className="text-pearl-blue hover:text-pearl-blue/80 disabled:opacity-50"
+                    >
+                      {isSendingOtp ? 'Sending...' : 'Resend OTP'}
+                    </Button>
+                  </div>
+                </>
               )}
             </TabsContent>
           </Tabs>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/40" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Button
-              onClick={handleInternetIdentityLogin}
-              disabled={isLoggingIn}
-              variant="outline"
-              className="w-full border-primary/50 text-primary hover:bg-primary/10 hover:border-primary gold-pulse-glow h-12"
-            >
-              {isLoggingIn ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Connecting...
-                </>
-              ) : (
-                <>
-                  <Shield className="mr-2 h-5 w-5" />
-                  Login with Internet Identity
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              Secure password-less login with your device
-            </p>
-          </div>
         </CardContent>
       </Card>
 
-      {/* WebOTP Permission Modal */}
+      {/* Modals */}
       <WebOtpPermissionModal
         open={showPermissionModal}
         onOpenChange={setShowPermissionModal}
-        onManualEntry={handleManualEntry}
+        onManualEntry={handleManualOtpEntry}
       />
-
-      {/* OTP Lockout Modal */}
       <OtpLockoutModal
         open={showLockoutModalState}
         onOpenChange={setShowLockoutModalState}

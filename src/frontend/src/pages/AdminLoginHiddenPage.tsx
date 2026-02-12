@@ -9,6 +9,7 @@ import { useActor } from '@/hooks/useActor';
 import { setAdminSessionFlag } from '@/utils/adminSessionFlag';
 import { checkCanisterAvailability } from '@/utils/canisterAvailability';
 import { normalizeIcError } from '@/utils/icErrorNormalization';
+import { showBasicErrorToast } from '@/utils/errorToasts';
 import InternationalPhoneInput from '@/components/auth/InternationalPhoneInput';
 import { type CountryData } from '@/utils/phoneCountries';
 import { detectCountryFromLocale } from '@/utils/detectCountryFromLocale';
@@ -47,6 +48,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
   const handleSendMobileOtp = async () => {
     if (!actor) {
       setSendError('Backend not available');
+      showBasicErrorToast('Error: Please try again');
       return;
     }
 
@@ -54,6 +56,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     const validation = validatePhoneNumber(phoneNumber, selectedCountry);
     if (!validation.isValid) {
       setSendError(validation.errorMessage || 'Invalid phone number');
+      showBasicErrorToast('Error: Invalid phone number');
       return;
     }
 
@@ -85,6 +88,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const normalized = normalizeIcError(error);
       setSendError(normalized.message);
       setDisplayedOtp(null);
+      showBasicErrorToast('Error: Please try again');
       // Stay on identifier step on error
     } finally {
       setIsSendingOtp(false);
@@ -94,6 +98,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
   const handleSendEmailOtp = async () => {
     if (!actor) {
       setSendError('Backend not available');
+      showBasicErrorToast('Error: Please try again');
       return;
     }
 
@@ -101,6 +106,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email.trim() || !emailRegex.test(email)) {
       setSendError('Please enter a valid email address');
+      showBasicErrorToast('Error: Invalid email address');
       return;
     }
 
@@ -127,6 +133,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const normalized = normalizeIcError(error);
       setSendError(normalized.message);
       setDisplayedOtp(null);
+      showBasicErrorToast('Error: Please try again');
       // Stay on identifier step on error
     } finally {
       setIsSendingOtp(false);
@@ -136,6 +143,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
   const handleVerifyOtp = async () => {
     if (!actor) {
       setVerifyError('Backend not available');
+      showBasicErrorToast('Error: Please try again');
       return;
     }
 
@@ -145,6 +153,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const validation = validatePhoneNumber(phoneNumber, selectedCountry);
       if (!validation.isValid || !validation.e164) {
         setVerifyError('Invalid phone number');
+        showBasicErrorToast('Error: Invalid phone number');
         return;
       }
       identifier = validation.e164;
@@ -153,6 +162,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!email.trim() || !emailRegex.test(email)) {
         setVerifyError('Invalid email address');
+        showBasicErrorToast('Error: Invalid email address');
         return;
       }
       identifier = email;
@@ -182,6 +192,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
     } catch (error: any) {
       const normalized = normalizeIcError(error);
       setVerifyError(normalized.message);
+      showBasicErrorToast('Error: Invalid OTP');
       // Do not store session flag on error
     } finally {
       setIsVerifyingOtp(false);
@@ -197,6 +208,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const validation = validatePhoneNumber(phoneNumber, selectedCountry);
       if (!validation.isValid || !validation.e164) {
         setSendError('Invalid phone number');
+        showBasicErrorToast('Error: Invalid phone number');
         return;
       }
       identifier = validation.e164;
@@ -205,6 +217,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!email.trim() || !emailRegex.test(email)) {
         setSendError('Invalid email address');
+        showBasicErrorToast('Error: Invalid email address');
         return;
       }
       identifier = email;
@@ -241,6 +254,7 @@ export default function AdminLoginHiddenPage({ navigate }: AdminLoginHiddenPageP
       const normalized = normalizeIcError(error);
       setSendError(normalized.message);
       setDisplayedOtp(null);
+      showBasicErrorToast('Error: Please try again');
     } finally {
       setIsSendingOtp(false);
     }

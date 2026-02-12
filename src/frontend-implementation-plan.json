@@ -1,6 +1,169 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Frontend plan (no changes) for backend-only processAdminCommand stub",
-  "requirements": []
+  "title": "Explore by Style curved-badge carousel and style collection navigation",
+  "requirements": [
+    {
+      "id": "REQ-20",
+      "summary": "Replace the home-top Shop by Style block with an Explore by Style heading and a horizontally scrollable curved-badge carousel placed above CinematicHeroSlider.",
+      "acceptanceCriteria": [
+        "Home page (path \"/\") renders a top section above the existing CinematicHeroSlider.",
+        "Heading text is exactly \"Explore by Style\" and is visually centered, serif-styled, and uses the gold accent (#D4AF37).",
+        "A single-row, horizontally scrollable carousel of badges is present with no layout overflow/breakage on desktop or mobile."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Replace the existing \"Shop by Style\" UI with the new top-of-home \"Explore by Style\" section: centered serif heading, gold accent styling, and a single-row horizontally scrollable badge carousel container compatible with the existing dark luxury theme."
+        },
+        {
+          "path": "frontend/src/pages/HomeSection.tsx",
+          "operation": "modify",
+          "description": "Ensure the updated top section (ShopByStyleBlock now acting as Explore-by-Style) remains rendered above CinematicHeroSlider on the home section without altering other home layout blocks."
+        }
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "summary": "Implement exactly 5 curved badges with specified category→label mappings and a left circular icon + text layout using pearl blue background.",
+      "acceptanceCriteria": [
+        "Exactly 5 badges are shown (no Sequin, no Ready To Wear).",
+        "Each badge shows (1) a circular icon/image and (2) the exact impressive label text from the spec.",
+        "Badges use curved corners (25px radius) and a pearl blue background (#7FB3D5) consistent with the dark luxury theme."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Implement the 5 badge items and mappings exactly: Banarasi→\"Zari Royalty\", Organza→\"Sheer Elegance\", Georgette→\"Flowing Grace\", Silk→\"Silk Symphony\", Kalamkari→\"Heritage Artistry\". Each badge must render a left circular icon image plus the impressive label, with 25px corner radius and pearl blue (#7FB3D5) styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "summary": "Add lightweight hover interactions (gold glow/border + subtle lift/scale to 1.05) respecting reduced-motion and not harming mobile scrolling.",
+      "acceptanceCriteria": [
+        "Hovering a badge visibly adds a gold glow/border highlight and scales the badge to ~1.05 without jarring motion.",
+        "Hover behavior does not introduce heavy particle effects or complex animations.",
+        "The hover effect does not interfere with scrolling/swiping the carousel on mobile."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Add hover/focus-visible styling to badges: gold glow/border highlight and transform scale to ~1.05 with a subtle lift, while disabling/toning down motion when reduced-motion is preferred (using the existing prefers-reduced-motion approach)."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add (or adjust) utility classes for the new explore-by-style badge hover glow/border and reduced-motion-safe transitions, avoiding heavy effects and keeping changes scoped to this new carousel."
+        }
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "summary": "Make each badge clickable with SPA navigation to a real, consistent style-collection route that renders meaningful storefront content for all 5 categories.",
+      "acceptanceCriteria": [
+        "Clicking each badge changes the URL (SPA navigation) to a category-specific destination and does not reload the page.",
+        "The destination page renders correctly (no blank screen), and the user can navigate back to home normally.",
+        "The category destination is implemented for all 5 categories using a consistent slug scheme (e.g., banarasi/organza/georgette/silk/kalamkari)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
+          "operation": "create",
+          "description": "Create a storefront page that renders a meaningful style-collection view for a given style slug (banarasi/organza/georgette/silk/kalamkari), including a heading and a filtered product grid using existing product listing components/empty-state handling so the page is never blank."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire SPA route handling for a consistent style collection route pattern (e.g., \"/collections/<slug>\") using the existing useSpaLocation approach, rendering the new StyleCollectionsPage within the standard storefront shell (OceanBackground/Header/Footer/Toaster) and keeping other routes unchanged."
+        },
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Make each badge clickable to navigate via useSpaLocation to the corresponding style collection route (e.g., /collections/banarasi, /collections/organza, /collections/georgette, /collections/silk, /collections/kalamkari) without page reload."
+        }
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "summary": "Ensure the Explore by Style carousel is mobile-responsive, swipeable via native horizontal overflow, single-row, and consistent with the dark luxury palette.",
+      "acceptanceCriteria": [
+        "On mobile, the badge row can be swiped horizontally (native overflow scrolling) and remains a single row without wrapping into broken layouts.",
+        "On desktop, the badge row is horizontally scrollable and visually aligned/centered within the existing page container constraints.",
+        "Colors match the provided palette and do not alter global theme tokens unexpectedly."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Implement the carousel row layout as a single-line, horizontally scrollable container (native overflow scrolling) with appropriate spacing/padding so it remains swipeable on mobile and aligned within the existing max-width container on desktop; keep palette aligned to black background, pearl blue (#7FB3D5), and gold (#D4AF37)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "summary": "Add 5 generated circular-friendly icon assets under frontend/public/assets/generated and use them in the carousel badges as static images.",
+      "acceptanceCriteria": [
+        "Five icon images exist in frontend/public/assets/generated and are referenced directly via static paths.",
+        "Each of the 5 badges displays its corresponding icon image cropped/masked to a circle.",
+        "No new backend endpoints or canister calls are introduced to serve these images."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png."
+        },
+        {
+          "path": "frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png",
+          "operation": "create",
+          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png."
+        },
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Reference the 5 static generated icon files from frontend/public/assets/generated (as direct static paths) and render each icon masked/cropped to a circle within the left side of its corresponding badge."
+        }
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "summary": "Keep changes scoped to the home-top redesign and its navigation destinations; avoid dashboard/profile/login regressions and avoid heavy visual effects.",
+      "acceptanceCriteria": [
+        "Dashboard route (/dashboard) behavior and UI remain unchanged.",
+        "Login page and OTP verification flow remain functional and still land on \"/\" after success unless a return path is set.",
+        "No new particle systems or heavy background effects are added specifically for this section."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add only the minimal new storefront route handling needed for style collections while preserving all existing route branches (including /dashboard and /login) and avoiding changes to authentication flows."
+        },
+        {
+          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "operation": "modify",
+          "description": "Keep the implementation lightweight (no particle/heavy effects) and confined to the Explore-by-Style UI and its navigation, ensuring no cross-cutting changes to dashboard/profile/login components."
+        }
+      ]
+    }
+  ]
 }
