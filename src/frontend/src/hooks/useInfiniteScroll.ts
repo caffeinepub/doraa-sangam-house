@@ -5,21 +5,28 @@ interface UseInfiniteScrollOptions {
   hasMore: boolean;
   isLoading: boolean;
   threshold?: number;
+  rootMargin?: string;
 }
 
+/**
+ * Custom hook using IntersectionObserver to trigger load-more callback when sentinel element enters viewport.
+ * 
+ * NOTE: This hook is deprecated for storefront product listing in Phase 2.
+ * Product listing pages now use an explicit "Load More" button instead of infinite scroll.
+ * This hook may still be used for other features (e.g., admin panels, non-product content).
+ */
 export function useInfiniteScroll({
   onLoadMore,
   hasMore,
   isLoading,
-  threshold = 0.8,
+  threshold = 0.1,
+  rootMargin = '100px',
 }: UseInfiniteScrollOptions) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!hasMore || isLoading) return;
-
     const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    if (!sentinel || !hasMore || isLoading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -30,7 +37,7 @@ export function useInfiniteScroll({
       },
       {
         threshold,
-        rootMargin: '100px',
+        rootMargin,
       }
     );
 
@@ -41,7 +48,7 @@ export function useInfiniteScroll({
         observer.unobserve(sentinel);
       }
     };
-  }, [hasMore, isLoading, onLoadMore, threshold]);
+  }, [hasMore, isLoading, onLoadMore, threshold, rootMargin]);
 
   return { sentinelRef };
 }

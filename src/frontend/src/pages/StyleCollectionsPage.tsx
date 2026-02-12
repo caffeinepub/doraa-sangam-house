@@ -2,8 +2,14 @@ import { useMemo, useState } from 'react';
 import { useGetAllProducts } from '../hooks/useQueries';
 import ProductCard from '../components/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
-import PremiumCatalogEmptyState from '../components/storefront/PremiumCatalogEmptyState';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import QuickViewSheet from '../components/QuickViewSheet';
+import PremiumCatalogEmptyState from '../components/storefront/PremiumCatalogEmptyState';
+import PremiumCatalogErrorState from '../components/storefront/PremiumCatalogErrorState';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { isAdminClient } from '../utils/isAdminClient';
+import { ADMIN_ROUTES } from '../admin/adminConfig';
 import { useSpaLocation } from '../hooks/useSpaLocation';
 
 interface StyleCollectionsPageProps {
@@ -11,139 +17,132 @@ interface StyleCollectionsPageProps {
   onClose: () => void;
 }
 
-const STYLE_LABELS: Record<string, string> = {
-  banarasi: 'Zari Royalty',
-  organza: 'Sheer Elegance',
-  georgette: 'Flowing Grace',
-  silk: 'Silk Symphony',
-  kalamkari: 'Heritage Artistry',
-};
-
-const FABRIC_KEYWORDS: Record<string, string[]> = {
-  banarasi: ['banarasi', 'zari', 'brocade'],
-  organza: ['organza', 'sheer', 'transparent'],
-  georgette: ['georgette', 'flowing', 'drape'],
-  silk: ['silk', 'mulberry', 'tussar'],
-  kalamkari: ['kalamkari', 'hand-painted', 'block print'],
-};
-
 export default function StyleCollectionsPage({ slug, onClose }: StyleCollectionsPageProps) {
-  const { data: allProducts, isLoading } = useGetAllProducts();
-  const [, navigate] = useSpaLocation();
+  const { data: allProducts = [], isLoading, isError, refetch } = useGetAllProducts();
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
+  const [displayCount, setDisplayCount] = useState(12);
+  const { identity } = useInternetIdentity();
+  const [location, navigate] = useSpaLocation();
+
+  const isAdmin = isAdminClient(identity?.getPrincipal().toString());
+
+  const collectionMap: Record<string, { title: string; keywords: string[] }> = {
+    'banarasi': { title: 'Zari Royalty', keywords: ['banarasi', 'zari'] },
+    'organza': { title: 'Sheer Elegance', keywords: ['organza'] },
+    'georgette': { title: 'Flowing Grace', keywords: ['georgette'] },
+    'silk': { title: 'Silk Symphony', keywords: ['silk'] },
+    'kalamkari': { title: 'Heritage Artistry', keywords: ['kalamkari'] },
+  };
+
+  const collection = collectionMap[slug] || { title: 'Collection', keywords: [] };
 
   const filteredProducts = useMemo(() => {
-    if (!allProducts) return [];
-    
-    const keywords = FABRIC_KEYWORDS[slug] || [];
-    
+    if (!collection.keywords.length) return [];
     return allProducts.filter((product) => {
-      const fabricLower = product.fabric.toLowerCase();
-      const nameLower = product.name.toLowerCase();
-      const descLower = product.description.toLowerCase();
-      
-      return keywords.some(
-        (keyword) =>
-          fabricLower.includes(keyword) ||
-          nameLower.includes(keyword) ||
-          descLower.includes(keyword)
-      );
+      const searchText = `${product.name} ${product.description} ${product.fabric}`.toLowerCase();
+      return collection.keywords.some((keyword) => searchText.includes(keyword.toLowerCase()));
     });
-  }, [allProducts, slug]);
-
-  const styleLabel = STYLE_LABELS[slug] || 'Collection';
-
-  const handleQuickView = (productId: string) => {
-    setQuickViewProductId(productId);
-  };
+  }, [allProducts, collection.keywords]);
 
   const handleViewDetail = (productId: string) => {
     navigate(`/product/${productId}`);
   };
 
-  const handleQuickViewOpenChange = (open: boolean) => {
-    if (!open) {
-      setQuickViewProductId(null);
-    }
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + 12);
   };
 
+  const handleAdminAction = () => {
+    navigate(ADMIN_ROUTES.PRODUCTS);
+  };
+
+  const handleRetry = () => {
+    refetch();
+  };
+
+  const displayedProducts = filteredProducts.slice(0, displayCount);
+  const hasMore = displayCount < filteredProducts.length;
+
   return (
-    <>
-      <div className="min-h-screen pt-24 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8 text-center">
-            <button
-              onClick={onClose}
-              className="inline-flex items-center gap-2 text-pearl-blue hover:text-gold transition-colors mb-4"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back to Home
-            </button>
-            
-            <h1 className="text-4xl md:text-5xl font-serif text-gold mb-2">
-              {styleLabel}
-            </h1>
-            <p className="text-pearl-off-white/80 text-lg">
-              Discover our curated collection
-            </p>
-          </div>
+    <section className="min-h-screen py-16 px-4 md:px-8">
+      <div className="container max-w-7xl mx-auto">
+        {/* Header with back button */}
+        <div className="mb-12">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-6 text-primary hover:text-primary/80 hover:bg-primary/10"
+            onClick={onClose}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Button>
+          <h1 className="text-4xl md:text-5xl font-serif text-foreground mb-4">{collection.title}</h1>
+          <p className="text-muted-foreground text-lg">
+            Explore our curated collection of {collection.title.toLowerCase()} sarees
+          </p>
+        </div>
 
-          {/* Loading state */}
-          {isLoading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="space-y-4">
-                  <Skeleton className="w-full h-96 rounded-[24px]" />
-                  <Skeleton className="w-3/4 h-6" />
-                  <Skeleton className="w-1/2 h-4" />
+        {/* Products grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div key={idx} className="rounded-[28px] overflow-hidden bg-card/50 backdrop-blur-sm">
+                <Skeleton className="aspect-[3/4] w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!isLoading && filteredProducts.length === 0 && (
-            <PremiumCatalogEmptyState
-              actionLabel="Explore All Collections"
-              onAction={onClose}
-            />
-          )}
-
-          {/* Product grid */}
-          {!isLoading && filteredProducts.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
+              </div>
+            ))}
+          </div>
+        ) : isError ? (
+          <PremiumCatalogErrorState onRetry={handleRetry} />
+        ) : filteredProducts.length === 0 ? (
+          <PremiumCatalogEmptyState
+            onAction={isAdmin ? undefined : onClose}
+            actionLabel="Back to Home"
+            showAdminCta={isAdmin}
+            onAdminAction={isAdmin ? handleAdminAction : undefined}
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {displayedProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   productId={product.id}
-                  onQuickView={handleQuickView}
+                  onQuickView={setQuickViewProductId}
                   onViewDetail={handleViewDetail}
                 />
               ))}
             </div>
-          )}
-        </div>
+
+            {/* Load More button */}
+            {hasMore && (
+              <div className="flex justify-center mt-12">
+                <Button
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  style={{
+                    boxShadow: '0 0 20px rgba(127, 179, 213, 0.3)',
+                  }}
+                  onClick={handleLoadMore}
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
-      {/* Quick View Sheet */}
+      {/* Quick view sheet */}
       <QuickViewSheet
         productId={quickViewProductId}
         open={!!quickViewProductId}
-        onOpenChange={handleQuickViewOpenChange}
+        onOpenChange={(open) => !open && setQuickViewProductId(null)}
       />
-    </>
+    </section>
   );
 }

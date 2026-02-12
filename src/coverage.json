@@ -1,127 +1,132 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T11:30:47.777Z",
+  "generatedAt": "2026-02-12T12:20:55.508Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 7,
-    "implemented": 7,
+    "total": 8,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-20",
-        "summary": "Replace the current home-top \"Shop by Style\" block with a new top-of-home section that matches the final spec: a centered heading \"Explore by Style\" (serif, gold accent) followed by a horizontally scrollable carousel row of 5 curved badges (25px radius) in the existing dark luxury theme.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "frontend/src/pages/HomeSection.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
-        ]
+        "id": "REQ-37",
+        "summary": "Implement durable product persistence in the Motoko canister so that products created/updated/deleted via the admin panel are stored in stable canister memory and survive page reloads and canister upgrades.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-21",
-        "summary": "Implement the 5 carousel badges exactly with these mappings and visuals: Banarasi → \"Zari Royalty\"; Organza → \"Sheer Elegance\"; Georgette → \"Flowing Grace\"; Silk → \"Silk Symphony\"; Kalamkari → \"Heritage Artistry\". Each badge must include a small circular image/icon at the left plus the impressive-name text.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
-        ]
+        "id": "REQ-38",
+        "summary": "Ensure backend product APIs fully support the required product fields for Phase 3 persistence: name, price, description, image URLs, fabric, variants, blouse pairing, and category; and ensure `publicListProducts()` returns all persisted products for storefront usage.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-22",
-        "summary": "Add hover interactions for each badge: on hover, show a gold glow/border effect and a subtle lift/scale animation to 1.05. Keep interactions lightweight and consistent with reduced-motion preferences where applicable.",
+        "id": "REQ-39",
+        "summary": "Fix the storefront \"Could not fetch products from the backend\" failure mode by correctly distinguishing between (a) empty catalog and (b) failed fetch; show an error toast only on real fetch failures, and show a premium empty state when the catalog is empty.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "frontend/src/index.css"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "frontend/src/index.css"
-        ]
-      },
-      {
-        "id": "REQ-23",
-        "summary": "Make each badge clickable and navigate via SPA navigation to a category collection destination without blank screens. Implement a safe, real route pattern for category collections (for example a dedicated path like \"/collections?style=<slug>\" or \"/collections/<slug>\") and ensure the destination renders meaningful storefront content (not an empty/blank page).",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/pages/ProductsPage.tsx",
           "frontend/src/pages/StyleCollectionsPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/components/storefront/PremiumCatalogErrorState.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/pages/ProductsPage.tsx",
           "frontend/src/pages/StyleCollectionsPage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/components/storefront/PremiumCatalogErrorState.tsx"
         ]
       },
       {
-        "id": "REQ-24",
-        "summary": "Ensure the new \"Explore by Style\" carousel is mobile-responsive with swipeable horizontal scrolling and does not break layout in small viewports. The design must preserve the existing dark luxury theme and palette (black background, pearl blue #7FB3D5, gold #D4AF37).",
+        "id": "REQ-40",
+        "summary": "Update `useGetAllProducts` (React Query) so it surfaces fetch failures to the UI (instead of silently returning an empty array), enabling pages to render a dedicated error state vs an empty-catalog state.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-25",
-        "summary": "Generate and add 5 small circular category icon images as static assets under frontend/public/assets/generated and use them in the carousel badges (no backend image serving).",
+        "id": "REQ-41",
+        "summary": "Implement the premium empty-state UI for empty product catalog on collections/category pages: show \"No products yet — add in admin panel\" in gold text, and if the viewer is logged in as an admin, show a pearl-blue CTA button that navigates to the admin products page.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/utils/isAdminClient.ts",
+          "frontend/src/pages/ProductsPage.tsx",
+          "frontend/src/pages/StyleCollectionsPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png",
-          "frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/utils/isAdminClient.ts",
+          "frontend/src/pages/ProductsPage.tsx",
+          "frontend/src/pages/StyleCollectionsPage.tsx"
         ]
       },
       {
-        "id": "REQ-26",
-        "summary": "Scope guardrails: do not change dashboard, profile, login flows, or add heavy visual effects; only implement the specified home-top redesign section and its navigation destinations, while keeping the existing overall layout and preventing regressions/blank screens.",
+        "id": "REQ-42",
+        "summary": "Ensure the admin panel product list shows all persisted products and supports edit/delete actions backed by canister persistence; deleting a product must remove it from canister storage and from the admin list after refresh.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/admin/state/AdminProductsProvider.tsx",
+          "frontend/src/admin/pages/AdminProductsPage.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-43",
+        "summary": "Apply/retain premium dark-luxury styling and golden hover/glow interactions for Phase 3 UI changes (empty state CTA, retry/error state actions, admin list actions), while keeping the app responsive and preventing blank screens/crashes.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+          "frontend/src/pages/ProductsPage.tsx",
+          "frontend/src/pages/StyleCollectionsPage.tsx",
+          "frontend/src/admin/pages/AdminProductsPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/storefront/ShopByStyleBlock.tsx"
+          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+          "frontend/src/pages/ProductsPage.tsx",
+          "frontend/src/pages/StyleCollectionsPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-44",
+        "summary": "Add a Phase 3 verification step in the project documentation/release notes flow: after deployment, provide the draft/live URL and confirm a checklist proving persistence and error/empty states behave correctly.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
+          "frontend/RELEASE_NOTES.md"
+        ],
+        "matchedFiles": [
+          "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
+          "frontend/RELEASE_NOTES.md"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png",
-    "frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png",
-    "frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png",
-    "frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png",
-    "frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png",
-    "frontend/src/App.tsx",
-    "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-    "frontend/src/index.css",
+    "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
+    "frontend/RELEASE_NOTES.md",
+    "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+    "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/ProductsPage.tsx",
     "frontend/src/pages/StyleCollectionsPage.tsx",
+    "frontend/src/utils/isAdminClient.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

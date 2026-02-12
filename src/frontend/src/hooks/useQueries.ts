@@ -4,6 +4,7 @@ import type { StorefrontProduct } from '../types';
 import { useCommerce } from './useCommerce';
 import type { OrderRecord, ShippingAddress, Product as BackendProduct } from '../backend';
 import { toast } from 'sonner';
+import { useEffect, useRef } from 'react';
 
 /**
  * Convert backend Product to StorefrontProduct
@@ -41,26 +42,43 @@ function backendToStorefrontProduct(backendProduct: BackendProduct): StorefrontP
 
 export function useGetAllProducts() {
   const { actor, isFetching } = useActor();
+  const hasShownErrorRef = useRef(false);
 
-  return useQuery<StorefrontProduct[]>({
+  const query = useQuery<StorefrontProduct[]>({
     queryKey: ['products'],
     queryFn: async () => {
-      if (!actor) return [];
+      if (!actor) throw new Error('Actor not available');
       
-      try {
-        const backendProducts = await actor.publicListProducts();
-        return backendProducts.map(backendToStorefrontProduct);
-      } catch (error: any) {
-        console.error('Failed to fetch products:', error);
-        toast.error('Failed to load products', {
-          description: 'Could not fetch products from the backend.',
-        });
-        return [];
-      }
+      const backendProducts = await actor.publicListProducts();
+      return backendProducts.map(backendToStorefrontProduct);
     },
     enabled: !!actor && !isFetching,
     staleTime: 30000, // Cache for 30 seconds
+    retry: 1,
   });
+
+  // Show toast only once per error event
+  useEffect(() => {
+    if (query.isError && !hasShownErrorRef.current) {
+      hasShownErrorRef.current = true;
+      toast.error('Failed to load products. Try refreshing.', {
+        duration: 4000,
+        style: {
+          background: 'rgba(20, 20, 30, 0.95)',
+          border: '1px solid #D4AF37',
+          color: '#F5F5F0',
+          fontWeight: 600,
+        },
+      });
+    }
+    
+    // Reset flag when error clears
+    if (!query.isError) {
+      hasShownErrorRef.current = false;
+    }
+  }, [query.isError]);
+
+  return query;
 }
 
 export function useGetProduct(id: string) {

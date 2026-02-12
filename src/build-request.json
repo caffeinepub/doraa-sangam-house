@@ -1,155 +1,180 @@
 {
   "kind": "build_request",
-  "title": "Replace home 'Shop by Style' row with 'Explore by Style' curved-badge carousel (5 categories) and category navigation",
-  "priority": "normal",
+  "title": "Phase 3: Persist products in Motoko canister + fix storefront product fetch error + admin product list CRUD",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-20",
-      "text": "Replace the current home-top \"Shop by Style\" block with a new top-of-home section that matches the final spec: a centered heading \"Explore by Style\" (serif, gold accent) followed by a horizontally scrollable carousel row of 5 curved badges (25px radius) in the existing dark luxury theme.",
-      "target": "frontend",
+      "id": "REQ-37",
+      "text": "Implement durable product persistence in the Motoko canister so that products created/updated/deleted via the admin panel are stored in stable canister memory and survive page reloads and canister upgrades.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "On home page top:\n  - Heading: \"Explore by Style\" (centered, serif font, gold accent)\n  - Horizontal scrollable carousel of curved badges (25px radius, pearl blue bg, gold border glow on hover)\n  - Only 5 categories with impressive names: ..."
+          "Use Motoko canister memory to store products permanently",
+          "Products reload pe survive karein (no loss)."
         ]
       },
       "acceptanceCriteria": [
-        "Home page (path \"/\") renders a top section above the existing CinematicHeroSlider.",
-        "Heading text is exactly \"Explore by Style\" and is visually centered, serif-styled, and uses the gold accent (#D4AF37).",
-        "A single-row, horizontally scrollable carousel of badges is present with no layout overflow/breakage on desktop or mobile."
+        "Products added via `adminAddProduct` remain available after browser refresh.",
+        "Products remain available after canister upgrade/redeploy (stable memory persistence).",
+        "Product updates via `adminUpdateProduct` are reflected in subsequent `publicListProducts`/`adminListProducts` results.",
+        "Product deletions via `adminDeleteProduct` remove the item from subsequent `publicListProducts`/`adminListProducts` results.",
+        "No changes violate the single-actor architecture (all logic remains in `backend/main.mo`; add upgrade hooks and/or `backend/migration.mo` only if required by state migration)."
       ]
     },
     {
-      "id": "REQ-21",
-      "text": "Implement the 5 carousel badges exactly with these mappings and visuals: Banarasi → \"Zari Royalty\"; Organza → \"Sheer Elegance\"; Georgette → \"Flowing Grace\"; Silk → \"Silk Symphony\"; Kalamkari → \"Heritage Artistry\". Each badge must include a small circular image/icon at the left plus the impressive-name text.",
-      "target": "frontend",
+      "id": "REQ-38",
+      "text": "Ensure backend product APIs fully support the required product fields for Phase 3 persistence: name, price, description, image URLs, fabric, variants, blouse pairing, and category; and ensure `publicListProducts()` returns all persisted products for storefront usage.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "Only 5 categories with impressive names:\n    - Banarasi → \"Zari Royalty\"\n    - Organza → \"Sheer Elegance\"\n    - Georgette → \"Flowing Grace\"\n    - Silk → \"Silk Symphony\"\n    - Kalamkari → \"Heritage Artistry\"\n  - Each badge: small circular image/icon + name text"
+          "On admin save: store product (name, price, desc, image URLs, fabric, variants, blouse pairing, category).",
+          "On page load (collections/category): fetch products from canister and display."
         ]
       },
       "acceptanceCriteria": [
-        "Exactly 5 badges are shown (no Sequin, no Ready To Wear).",
-        "Each badge shows (1) a circular icon/image and (2) the exact impressive label text from the spec.",
-        "Badges use curved corners (25px radius) and a pearl blue background (#7FB3D5) consistent with the dark luxury theme."
+        "The backend product record includes fields for: `name`, `price`, `description`, `images`, `fabric`, `variants`, `blousePair`, `category`.",
+        "`publicListProducts()` returns the stored products without requiring admin auth.",
+        "`adminListProducts()` continues to require admin authorization and returns the same persisted products visible via `publicListProducts()`."
       ]
     },
     {
-      "id": "REQ-22",
-      "text": "Add hover interactions for each badge: on hover, show a gold glow/border effect and a subtle lift/scale animation to 1.05. Keep interactions lightweight and consistent with reduced-motion preferences where applicable.",
+      "id": "REQ-39",
+      "text": "Fix the storefront \"Could not fetch products from the backend\" failure mode by correctly distinguishing between (a) empty catalog and (b) failed fetch; show an error toast only on real fetch failures, and show a premium empty state when the catalog is empty.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "Hover: gold glow + subtle lift (scale 1.05)"
+          "Fix \"Could not fetch\" error: If no products, show premium empty state: \"No products yet — add in admin panel\"",
+          "Error handling: show toast \"Failed to load products. Try refreshing.\" if fetch fails."
         ]
       },
       "acceptanceCriteria": [
-        "Hovering a badge visibly adds a gold glow/border highlight and scales the badge to ~1.05 without jarring motion.",
-        "Hover behavior does not introduce heavy particle effects or complex animations.",
-        "The hover effect does not interfere with scrolling/swiping the carousel on mobile."
+        "When product fetch fails (e.g., canister/network error), show a toast with exact text: \"Failed to load products. Try refreshing.\"",
+        "When the fetch succeeds but returns zero products, do not show the fetch-failed toast; instead show an empty state with the exact headline text: \"No products yet — add in admin panel\".",
+        "Storefront pages that depend on products (at minimum collections/category listing experiences that use `useGetAllProducts`) do not render blank screens or crash in either empty or error scenarios.",
+        "The old error presentation \"Could not fetch products from the backend\" is not shown to users in the normal UI flow."
       ]
     },
     {
-      "id": "REQ-23",
-      "text": "Make each badge clickable and navigate via SPA navigation to a category collection destination without blank screens. Implement a safe, real route pattern for category collections (for example a dedicated path like \"/collections?style=<slug>\" or \"/collections/<slug>\") and ensure the destination renders meaningful storefront content (not an empty/blank page).",
+      "id": "REQ-40",
+      "text": "Update `useGetAllProducts` (React Query) so it surfaces fetch failures to the UI (instead of silently returning an empty array), enabling pages to render a dedicated error state vs an empty-catalog state.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "Click badge → open that category collection page",
-          "No blank screen or bugs."
+          "Fix fetch error",
+          "If no products, show premium empty state",
+          "if fetch fails show toast"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking each badge changes the URL (SPA navigation) to a category-specific destination and does not reload the page.",
-        "The destination page renders correctly (no blank screen), and the user can navigate back to home normally.",
-        "The category destination is implemented for all 5 categories using a consistent slug scheme (e.g., banarasi/organza/georgette/silk/kalamkari)."
+        "On fetch failure, `useGetAllProducts` results in React Query error state (`isError`/`error`) rather than only returning an empty list.",
+        "On fetch failure, the toast with exact text \"Failed to load products. Try refreshing.\" is shown once per failure event (no toast spam loops).",
+        "On success with zero products, `useGetAllProducts` is not in error state and returns an empty array."
       ]
     },
     {
-      "id": "REQ-24",
-      "text": "Ensure the new \"Explore by Style\" carousel is mobile-responsive with swipeable horizontal scrolling and does not break layout in small viewports. The design must preserve the existing dark luxury theme and palette (black background, pearl blue #7FB3D5, gold #D4AF37).",
+      "id": "REQ-41",
+      "text": "Implement the premium empty-state UI for empty product catalog on collections/category pages: show \"No products yet — add in admin panel\" in gold text, and if the viewer is logged in as an admin, show a pearl-blue CTA button that navigates to the admin products page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "Keep dark luxury theme (black bg, pearl blue #7FB3D5, gold #D4AF37)",
-          "Responsive: mobile swipe carousel"
+          "If no products, show premium empty state: \"No products yet — add in admin panel\" (gold text, pearl blue button to admin if logged in as admin)."
         ]
       },
       "acceptanceCriteria": [
-        "On mobile, the badge row can be swiped horizontally (native overflow scrolling) and remains a single row without wrapping into broken layouts.",
-        "On desktop, the badge row is horizontally scrollable and visually aligned/centered within the existing page container constraints.",
-        "Colors match the provided palette and do not alter global theme tokens unexpectedly."
+        "Empty catalog state displays the exact text: \"No products yet — add in admin panel\".",
+        "The empty state matches the existing dark luxury theme, using gold-accent typography for the headline and premium card styling consistent with the app.",
+        "If and only if the user is recognized as an admin using the app’s existing admin detection approach (consistent with current admin gating logic), a visible pearl-blue button is rendered.",
+        "The admin CTA button navigates via SPA navigation to the admin products page route (existing admin route), without a full page reload.",
+        "If the user is not an admin, the admin CTA is not shown."
       ]
     },
     {
-      "id": "REQ-25",
-      "text": "Generate and add 5 small circular category icon images as static assets under frontend/public/assets/generated and use them in the carousel badges (no backend image serving).",
-      "target": "frontend",
+      "id": "REQ-42",
+      "text": "Ensure the admin panel product list shows all persisted products and supports edit/delete actions backed by canister persistence; deleting a product must remove it from canister storage and from the admin list after refresh.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "Each badge: small circular image/icon + name text"
+          "Admin panel product list: Show all saved products with edit/delete buttons.",
+          "Delete removes from canister."
         ]
       },
       "acceptanceCriteria": [
-        "Five icon images exist in frontend/public/assets/generated and are referenced directly via static paths.",
-        "Each of the 5 badges displays its corresponding icon image cropped/masked to a circle.",
-        "No new backend endpoints or canister calls are introduced to serve these images."
+        "Admin products list loads products from the backend (`adminListProducts`) and reflects the canister’s persisted state.",
+        "Delete action calls the backend delete API and the product disappears from the list without requiring a manual reload.",
+        "After deleting a product, refreshing the page does not bring it back (it is removed from canister persistence).",
+        "Edit action updates the persisted product and the updated values are visible after refresh in both admin list and storefront listings (when applicable)."
       ]
     },
     {
-      "id": "REQ-26",
-      "text": "Scope guardrails: do not change dashboard, profile, login flows, or add heavy visual effects; only implement the specified home-top redesign section and its navigation destinations, while keeping the existing overall layout and preventing regressions/blank screens.",
+      "id": "REQ-43",
+      "text": "Apply/retain premium dark-luxury styling and golden hover/glow interactions for Phase 3 UI changes (empty state CTA, retry/error state actions, admin list actions), while keeping the app responsive and preventing blank screens/crashes.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-final"
+          "msg-5"
         ],
         "quotes": [
-          "No other changes (no dashboard mix, no heavy particles)"
+          "Golden hover/glow on buttons.",
+          "Dark luxury theme.",
+          "Responsive, no blank screen or crash."
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard route (/dashboard) behavior and UI remain unchanged.",
-        "Login page and OTP verification flow remain functional and still land on \"/\" after success unless a return path is set.",
-        "No new particle systems or heavy background effects are added specifically for this section."
+        "New/modified buttons added for Phase 3 have a gold hover/glow treatment consistent with existing styling utilities/classes.",
+        "All Phase 3-touched pages remain usable on mobile and desktop widths (no layout breakage or overflow causing horizontal scroll bugs).",
+        "No blank screen occurs when navigating to collections/category pages with empty catalog or when backend fetch fails.",
+        "No routing/authentication flow changes are introduced beyond linking to existing admin routes."
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "text": "Add a Phase 3 verification step in the project documentation/release notes flow: after deployment, provide the draft/live URL and confirm a checklist proving persistence and error/empty states behave correctly.",
+      "target": "unknown",
+      "source": {
+        "messageIds": [
+          "msg-5"
+        ],
+        "quotes": [
+          "After update:\n- Give draft/live URL.\n- Confirm:\n  - Products fetch from backend (no \"Could not fetch\" error).\n  - Products save permanently (reload pe dikhte hain).\n  - Admin list shows with edit/delete.\n  - UI stable & impressive."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A post-deploy checklist is provided confirming: (1) products fetch from backend without the prior \"Could not fetch\" user-visible error, (2) persistence across reload, (3) admin list shows edit/delete, (4) UI remains stable/responsive.",
+        "The draft/live URL is provided after deployment."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutable paths must not be modified: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*.",
-    "Respect existing SPA navigation approach (useSpaLocation) and avoid introducing new routing frameworks.",
-    "Use English for all user-facing text in the implemented UI."
+    "Backend must remain a single-actor Motoko canister with all logic in `backend/main.mo`; add `backend/migration.mo` only if required for state upgrades.",
+    "Do not edit frontend files listed as immutable by the platform (e.g., `frontend/src/hooks/useInternetIdentity.ts(x)`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, and `frontend/src/components/ui`).",
+    "Keep the existing dark luxury theme and existing routing/authentication flows; only add minimal UI necessary for Phase 3 (persistence + error/empty states + admin list correctness).",
+    "No external databases or third-party backends; persistence must be implemented using canister stable storage."
   ],
   "nonGoals": [
-    "Do not add Sequin or Ready To Wear categories in this iteration.",
-    "Do not redesign the dashboard or auto-open the dashboard after login.",
-    "Do not add notification bells, real-time features, or heavy particle animations."
+    "Adding new payment, shipping, or order-management features beyond what already exists.",
+    "Introducing real-time features (WebSockets/chat) or third-party auth providers beyond Internet Identity.",
+    "Adding new category taxonomy or redesigning non-product pages (dashboard/profile/login) beyond what is necessary to prevent regressions."
   ],
   "imageRequirements": {
-    "required": [
-      "Minimal luxury textile weave icon in pearl-blue/gold, circular-friendly (explore-style-icon-banarasi.dim_128x128.png)",
-      "Minimal sheer fabric/flow icon in pearl-blue/gold, circular-friendly (explore-style-icon-organza.dim_128x128.png)",
-      "Minimal flowing drape icon in pearl-blue/gold, circular-friendly (explore-style-icon-georgette.dim_128x128.png)",
-      "Minimal silk sheen wave icon in pearl-blue/gold, circular-friendly (explore-style-icon-silk.dim_128x128.png)",
-      "Minimal folk-art motif icon in pearl-blue/gold, circular-friendly (explore-style-icon-kalamkari.dim_128x128.png)"
-    ],
+    "required": [],
     "edits": []
   },
   "userProfileUpdate": {

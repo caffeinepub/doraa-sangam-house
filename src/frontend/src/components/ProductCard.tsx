@@ -57,7 +57,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
 
   if (isLoading) {
     return (
-      <Card className="overflow-hidden rounded-[24px] bg-card/50 backdrop-blur-sm border-border/30">
+      <Card className="overflow-hidden rounded-[28px] bg-card/50 backdrop-blur-sm border-border/30">
         <div className="aspect-[3/4] shimmer-skeleton" />
         <CardContent className="p-4 space-y-2">
           <div className="h-4 shimmer-skeleton rounded" />
@@ -116,7 +116,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   return (
     <Card
       ref={cardRef}
-      className="group relative overflow-hidden rounded-[24px] bg-card/80 backdrop-blur-sm border-border/30 transition-all duration-500 hover:border-primary/50 cursor-pointer product-card-hover shadow-lg"
+      className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-black via-slate-950 to-blue-950/30 backdrop-blur-sm border-border/30 transition-all duration-400 hover:border-primary/50 cursor-pointer product-card-hover-phase2 shadow-lg"
       style={
         {
           '--mouse-x': `${mousePos.x}%`,
@@ -137,11 +137,11 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
           alt={product.name}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.12]"
         />
 
-        {/* Fabric ripple overlay */}
-        <div className="fabric-ripple-hover absolute inset-0" />
+        {/* Fabric ripple overlay - CSS only */}
+        <div className="fabric-ripple-hover-phase2 absolute inset-0" />
 
         {/* Top badges - Premium Myntra/Flipkart style */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
@@ -239,7 +239,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
         </div>
       </CardContent>
 
-      {/* Quick details overlay - Shows on hover with color swatches, fabric, size chart, blouse pairing */}
+      {/* Quick details overlay - Shows on hover with dummy values */}
       <BanarasiQuickDetailsOverlay productId={productId} isVisible={showQuickDetails} />
     </Card>
   );

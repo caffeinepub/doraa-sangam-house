@@ -6,60 +6,48 @@
 
 @layer base {
   :root {
-    /* Light mode colors (OKLCH) */
-    --background: oklch(98% 0.01 240);
-    --foreground: oklch(15% 0.02 240);
-    --card: oklch(100% 0 0);
-    --card-foreground: oklch(15% 0.02 240);
-    --popover: oklch(100% 0 0);
-    --popover-foreground: oklch(15% 0.02 240);
-    --primary: oklch(45% 0.15 240);
-    --primary-foreground: oklch(98% 0.01 240);
-    --secondary: oklch(92% 0.02 240);
-    --secondary-foreground: oklch(15% 0.02 240);
-    --muted: oklch(92% 0.02 240);
-    --muted-foreground: oklch(50% 0.02 240);
-    --accent: oklch(92% 0.02 240);
-    --accent-foreground: oklch(15% 0.02 240);
-    --destructive: oklch(55% 0.22 25);
-    --destructive-foreground: oklch(98% 0.01 240);
-    --border: oklch(85% 0.02 240);
-    --input: oklch(85% 0.02 240);
-    --ring: oklch(45% 0.15 240);
+    --background: oklch(0.12 0.02 240);
+    --foreground: oklch(0.96 0.01 240);
+    --card: oklch(0.15 0.02 240);
+    --card-foreground: oklch(0.96 0.01 240);
+    --popover: oklch(0.15 0.02 240);
+    --popover-foreground: oklch(0.96 0.01 240);
+    --primary: oklch(0.68 0.12 220);
+    --primary-foreground: oklch(0.12 0.02 240);
+    --secondary: oklch(0.25 0.03 240);
+    --secondary-foreground: oklch(0.96 0.01 240);
+    --muted: oklch(0.25 0.03 240);
+    --muted-foreground: oklch(0.65 0.05 240);
+    --accent: oklch(0.72 0.15 60);
+    --accent-foreground: oklch(0.12 0.02 240);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.96 0.01 240);
+    --border: oklch(0.25 0.03 240);
+    --input: oklch(0.25 0.03 240);
+    --ring: oklch(0.68 0.12 220);
     --radius: 0.5rem;
-    --chart-1: oklch(60% 0.15 240);
-    --chart-2: oklch(70% 0.12 180);
-    --chart-3: oklch(65% 0.18 120);
-    --chart-4: oklch(75% 0.10 60);
-    --chart-5: oklch(55% 0.20 300);
   }
 
   .dark {
-    /* Dark luxury theme (OKLCH) */
-    --background: oklch(10% 0.02 240);
-    --foreground: oklch(95% 0.01 60);
-    --card: oklch(12% 0.02 240);
-    --card-foreground: oklch(95% 0.01 60);
-    --popover: oklch(12% 0.02 240);
-    --popover-foreground: oklch(95% 0.01 60);
-    --primary: oklch(65% 0.12 200);
-    --primary-foreground: oklch(10% 0.02 240);
-    --secondary: oklch(20% 0.03 240);
-    --secondary-foreground: oklch(95% 0.01 60);
-    --muted: oklch(20% 0.03 240);
-    --muted-foreground: oklch(60% 0.02 240);
-    --accent: oklch(20% 0.03 240);
-    --accent-foreground: oklch(95% 0.01 60);
-    --destructive: oklch(50% 0.20 25);
-    --destructive-foreground: oklch(95% 0.01 60);
-    --border: oklch(25% 0.03 240);
-    --input: oklch(25% 0.03 240);
-    --ring: oklch(65% 0.12 200);
-    --chart-1: oklch(60% 0.15 240);
-    --chart-2: oklch(70% 0.12 180);
-    --chart-3: oklch(65% 0.18 120);
-    --chart-4: oklch(75% 0.10 60);
-    --chart-5: oklch(55% 0.20 300);
+    --background: oklch(0.12 0.02 240);
+    --foreground: oklch(0.96 0.01 240);
+    --card: oklch(0.15 0.02 240);
+    --card-foreground: oklch(0.96 0.01 240);
+    --popover: oklch(0.15 0.02 240);
+    --popover-foreground: oklch(0.96 0.01 240);
+    --primary: oklch(0.68 0.12 220);
+    --primary-foreground: oklch(0.12 0.02 240);
+    --secondary: oklch(0.25 0.03 240);
+    --secondary-foreground: oklch(0.96 0.01 240);
+    --muted: oklch(0.25 0.03 240);
+    --muted-foreground: oklch(0.65 0.05 240);
+    --accent: oklch(0.72 0.15 60);
+    --accent-foreground: oklch(0.12 0.02 240);
+    --destructive: oklch(0.55 0.22 25);
+    --destructive-foreground: oklch(0.96 0.01 240);
+    --border: oklch(0.25 0.03 240);
+    --input: oklch(0.25 0.03 240);
+    --ring: oklch(0.68 0.12 220);
   }
 }
 
@@ -76,258 +64,169 @@
   }
 }
 
-/* Custom luxury color tokens */
-:root {
-  --pearl-blue: oklch(70% 0.08 220);
-  --pearl-off-white: oklch(96% 0.01 60);
-  --gold: oklch(75% 0.12 85);
-  --deep-ocean: oklch(15% 0.04 240);
-}
-
-.text-pearl-blue {
-  color: var(--pearl-blue);
-}
-
-.text-pearl-off-white {
-  color: var(--pearl-off-white);
-}
-
-.text-gold {
-  color: var(--gold);
-}
-
-.bg-pearl-blue {
-  background-color: var(--pearl-blue);
-}
-
-.bg-gold {
-  background-color: var(--gold);
-}
-
-.border-gold {
-  border-color: var(--gold);
-}
-
-.shadow-gold-glow {
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
-}
-
-/* Explore by Style badge hover effects */
-.explore-style-badge {
-  position: relative;
-  overflow: hidden;
-}
-
-.explore-style-badge:hover {
-  text-shadow: 0 0 8px var(--gold);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .explore-style-badge:hover {
-    transform: none !important;
-    text-shadow: none;
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-}
-
-/* Hide scrollbar for carousel */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Category button hover glow */
-.category-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.category-button:hover {
-  text-shadow: 0 0 8px var(--gold);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .category-button:hover {
-    text-shadow: none;
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
-}
 
-/* Admin OTP button styles */
-.admin-otp-button {
-  background: linear-gradient(135deg, oklch(65% 0.18 40) 0%, oklch(55% 0.20 25) 100%);
-  color: var(--pearl-off-white);
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.admin-otp-button:hover:not(:disabled) {
-  border-color: var(--gold);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-  transform: translateY(-2px);
-}
-
-.admin-otp-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .admin-otp-button:hover:not(:disabled) {
-    transform: none;
-  }
-}
-
-/* Fade-in animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade-in {
-    animation: none;
-  }
-}
-
-/* Scroll reveal animations */
-@keyframes scrollReveal {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.scroll-reveal {
-  opacity: 0;
-  animation: scrollReveal 0.8s ease-out forwards;
-}
-
-.scroll-reveal-delay-1 {
-  animation-delay: 0.1s;
-}
-
-.scroll-reveal-delay-2 {
-  animation-delay: 0.2s;
-}
-
-.scroll-reveal-delay-3 {
-  animation-delay: 0.3s;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-reveal {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Product card animations */
-@keyframes productCardHover {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-4px) scale(1.02);
-  }
-  100% {
-    transform: translateY(-2px) scale(1.01);
-  }
-}
-
-.product-card:hover {
-  animation: productCardHover 0.3s ease-out forwards;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .product-card:hover {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* Shimmer skeleton */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.shimmer-skeleton {
-  background: linear-gradient(
-    90deg,
-    oklch(20% 0.03 240) 0%,
-    oklch(25% 0.03 240) 50%,
-    oklch(20% 0.03 240) 100%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite linear;
-}
-
-@media (prefers-reduced-motion: reduce) {
   .shimmer-skeleton {
-    animation: none;
+    background: linear-gradient(
+      90deg,
+      oklch(0.20 0.02 240) 0%,
+      oklch(0.25 0.03 240) 50%,
+      oklch(0.20 0.02 240) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
   }
-}
 
-/* Gold wave animation for save feedback */
-@keyframes goldWave {
-  0% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
-  50% {
-    box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0.3);
+
+  /* Phase 2: Premium product card hover effects */
+  .product-card-hover-phase2 {
+    transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1);
   }
-  100% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .product-card-hover-phase2:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 0 40px rgba(127, 179, 213, 0.4),
+                  0 20px 60px rgba(0, 0, 0, 0.6);
+    }
   }
-}
 
-.gold-wave-pulse {
-  animation: goldWave 1s ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gold-wave-pulse {
-    animation: none;
+  @media (prefers-reduced-motion: reduce) {
+    .product-card-hover-phase2:hover {
+      transform: none;
+      box-shadow: 0 0 20px rgba(127, 179, 213, 0.3);
+    }
   }
-}
 
-/* Dashboard route transition */
-.dashboard-route-transition {
-  animation: fadeIn 0.5s ease-out;
-}
+  /* Phase 2: CSS-only fabric ripple effect (lightweight, no GSAP) */
+  .fabric-ripple-hover-phase2 {
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(212, 175, 55, 0.15) 0%,
+      rgba(127, 179, 213, 0.1) 30%,
+      transparent 60%
+    );
+    transition: opacity 400ms ease-out;
+  }
 
-@media (prefers-reduced-motion: reduce) {
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .product-card-hover-phase2:hover .fabric-ripple-hover-phase2 {
+      opacity: 1;
+      animation: ripple-wave 2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes ripple-wave {
+    0%, 100% {
+      filter: brightness(1) blur(0px);
+    }
+    50% {
+      filter: brightness(1.15) blur(2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fabric-ripple-hover-phase2 {
+      animation: none !important;
+    }
+  }
+
+  /* Micro ripple layer for subtle interaction feedback */
+  .micro-ripple-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(127, 179, 213, 0.08) 0%,
+      transparent 50%
+    );
+    transition: opacity 300ms ease-out;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .product-card-hover-phase2:hover .micro-ripple-layer {
+      opacity: 1;
+    }
+  }
+
+  /* Action icon glow for wishlist/cart buttons */
+  .action-icon-glow {
+    position: relative;
+    transition: all 300ms ease-out;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .action-icon-glow:hover {
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4),
+                  0 0 40px rgba(127, 179, 213, 0.2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .action-icon-glow:hover {
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+  }
+
+  /* Explore style badge hover effects */
+  .explore-style-badge {
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .explore-style-badge:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.5),
+                  0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .explore-style-badge:hover {
+      transform: none;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    }
+  }
+
+  /* Dashboard route transition */
   .dashboard-route-transition {
-    animation: none;
+    animation: fadeIn 400ms ease-out;
   }
-}
 
-/* Utility classes */
-.bg-gradient-radial {
-  background: radial-gradient(var(--tw-gradient-stops));
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dashboard-route-transition {
+      animation: none;
+    }
+  }
 }

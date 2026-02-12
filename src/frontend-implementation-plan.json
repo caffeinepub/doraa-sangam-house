@@ -1,167 +1,165 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Explore by Style curved-badge carousel and style collection navigation",
+  "title": "Phase 3 (Frontend): Fix storefront product fetch error/empty states + admin products list correctness + verification checklist",
   "requirements": [
     {
-      "id": "REQ-20",
-      "summary": "Replace the home-top Shop by Style block with an Explore by Style heading and a horizontally scrollable curved-badge carousel placed above CinematicHeroSlider.",
+      "id": "REQ-39",
+      "summary": "Distinguish empty catalog vs failed fetch on storefront and remove the old user-visible fetch error message.",
       "acceptanceCriteria": [
-        "Home page (path \"/\") renders a top section above the existing CinematicHeroSlider.",
-        "Heading text is exactly \"Explore by Style\" and is visually centered, serif-styled, and uses the gold accent (#D4AF37).",
-        "A single-row, horizontally scrollable carousel of badges is present with no layout overflow/breakage on desktop or mobile."
+        "When product fetch fails (e.g., canister/network error), show a toast with exact text: \"Failed to load products. Try refreshing.\"",
+        "When the fetch succeeds but returns zero products, do not show the fetch-failed toast; instead show an empty state with the exact headline text: \"No products yet — add in admin panel\".",
+        "Storefront pages that depend on products (at minimum collections/category listing experiences that use `useGetAllProducts`) do not render blank screens or crash in either empty or error scenarios.",
+        "The old error presentation \"Could not fetch products from the backend\" is not shown to users in the normal UI flow."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "path": "frontend/src/pages/ProductsPage.tsx",
           "operation": "modify",
-          "description": "Replace the existing \"Shop by Style\" UI with the new top-of-home \"Explore by Style\" section: centered serif heading, gold accent styling, and a single-row horizontally scrollable badge carousel container compatible with the existing dark luxury theme."
+          "description": "Update product listing rendering to handle React Query error vs empty-catalog states explicitly (error card + retry action vs premium empty state), and ensure no blank screen/crash. Verify the component's usage instructions before implementing."
         },
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Ensure the updated top section (ShopByStyleBlock now acting as Explore-by-Style) remains rendered above CinematicHeroSlider on the home section without altering other home layout blocks."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Implement exactly 5 curved badges with specified category→label mappings and a left circular icon + text layout using pearl blue background.",
-      "acceptanceCriteria": [
-        "Exactly 5 badges are shown (no Sequin, no Ready To Wear).",
-        "Each badge shows (1) a circular icon/image and (2) the exact impressive label text from the spec.",
-        "Badges use curved corners (25px radius) and a pearl blue background (#7FB3D5) consistent with the dark luxury theme."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "operation": "modify",
-          "description": "Implement the 5 badge items and mappings exactly: Banarasi→\"Zari Royalty\", Organza→\"Sheer Elegance\", Georgette→\"Flowing Grace\", Silk→\"Silk Symphony\", Kalamkari→\"Heritage Artistry\". Each badge must render a left circular icon image plus the impressive label, with 25px corner radius and pearl blue (#7FB3D5) styling."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Add lightweight hover interactions (gold glow/border + subtle lift/scale to 1.05) respecting reduced-motion and not harming mobile scrolling.",
-      "acceptanceCriteria": [
-        "Hovering a badge visibly adds a gold glow/border highlight and scales the badge to ~1.05 without jarring motion.",
-        "Hover behavior does not introduce heavy particle effects or complex animations.",
-        "The hover effect does not interfere with scrolling/swiping the carousel on mobile."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "operation": "modify",
-          "description": "Add hover/focus-visible styling to badges: gold glow/border highlight and transform scale to ~1.05 with a subtle lift, while disabling/toning down motion when reduced-motion is preferred (using the existing prefers-reduced-motion approach)."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add (or adjust) utility classes for the new explore-by-style badge hover glow/border and reduced-motion-safe transitions, avoiding heavy effects and keeping changes scoped to this new carousel."
-        }
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "summary": "Make each badge clickable with SPA navigation to a real, consistent style-collection route that renders meaningful storefront content for all 5 categories.",
-      "acceptanceCriteria": [
-        "Clicking each badge changes the URL (SPA navigation) to a category-specific destination and does not reload the page.",
-        "The destination page renders correctly (no blank screen), and the user can navigate back to home normally.",
-        "The category destination is implemented for all 5 categories using a consistent slug scheme (e.g., banarasi/organza/georgette/silk/kalamkari)."
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/pages/StyleCollectionsPage.tsx",
+          "operation": "modify",
+          "description": "Update collections/category listing rendering to handle React Query error vs empty-catalog states explicitly (error card + retry action vs premium empty state), and ensure no blank screen/crash. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "operation": "modify",
+          "description": "Extend/adjust the empty-state component to support the Phase 3 copy and styling (gold headline text) and optional admin CTA slot. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
           "operation": "create",
-          "description": "Create a storefront page that renders a meaningful style-collection view for a given style slug (banarasi/organza/georgette/silk/kalamkari), including a heading and a filtered product grid using existing product listing components/empty-state handling so the page is never blank."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire SPA route handling for a consistent style collection route pattern (e.g., \"/collections/<slug>\") using the existing useSpaLocation approach, rendering the new StyleCollectionsPage within the standard storefront shell (OceanBackground/Header/Footer/Toaster) and keeping other routes unchanged."
-        },
-        {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
-          "operation": "modify",
-          "description": "Make each badge clickable to navigate via useSpaLocation to the corresponding style collection route (e.g., /collections/banarasi, /collections/organza, /collections/georgette, /collections/silk, /collections/kalamkari) without page reload."
+          "description": "Create a premium dark-luxury error state component for product fetch failures, with a retry action and styling consistent with existing theme utilities (gold hover/glow). Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-24",
-      "summary": "Ensure the Explore by Style carousel is mobile-responsive, swipeable via native horizontal overflow, single-row, and consistent with the dark luxury palette.",
+      "id": "REQ-40",
+      "summary": "Update useGetAllProducts to surface fetch failures via React Query error state and show a single premium toast per failure event.",
       "acceptanceCriteria": [
-        "On mobile, the badge row can be swiped horizontally (native overflow scrolling) and remains a single row without wrapping into broken layouts.",
-        "On desktop, the badge row is horizontally scrollable and visually aligned/centered within the existing page container constraints.",
-        "Colors match the provided palette and do not alter global theme tokens unexpectedly."
+        "On fetch failure, `useGetAllProducts` results in React Query error state (`isError`/`error`) rather than only returning an empty list.",
+        "On fetch failure, the toast with exact text \"Failed to load products. Try refreshing.\" is shown once per failure event (no toast spam loops).",
+        "On success with zero products, `useGetAllProducts` is not in error state and returns an empty array."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Implement the carousel row layout as a single-line, horizontally scrollable container (native overflow scrolling) with appropriate spacing/padding so it remains swipeable on mobile and aligned within the existing max-width container on desktop; keep palette aligned to black background, pearl blue (#7FB3D5), and gold (#D4AF37)."
+          "description": "Refactor `useGetAllProducts` to remove the current catch-and-return-empty behavior, allowing errors to propagate into React Query error state; implement a non-spammy toast side effect with exact copy \"Failed to load products. Try refreshing.\" and remove the old \"Could not fetch products from the backend\" messaging. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-25",
-      "summary": "Add 5 generated circular-friendly icon assets under frontend/public/assets/generated and use them in the carousel badges as static images.",
+      "id": "REQ-41",
+      "summary": "Implement premium empty-state UI for empty product catalog on collections/category pages, including an admin-only CTA to the admin products route.",
       "acceptanceCriteria": [
-        "Five icon images exist in frontend/public/assets/generated and are referenced directly via static paths.",
-        "Each of the 5 badges displays its corresponding icon image cropped/masked to a circle.",
-        "No new backend endpoints or canister calls are introduced to serve these images."
+        "Empty catalog state displays the exact text: \"No products yet — add in admin panel\".",
+        "The empty state matches the existing dark luxury theme, using gold-accent typography for the headline and premium card styling consistent with the app.",
+        "If and only if the user is recognized as an admin using the app’s existing admin detection approach (consistent with current admin gating logic), a visible pearl-blue button is rendered.",
+        "The admin CTA button navigates via SPA navigation to the admin products page route (existing admin route), without a full page reload.",
+        "If the user is not an admin, the admin CTA is not shown."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-banarasi.dim_128x128.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-organza.dim_128x128.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-georgette.dim_128x128.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-silk.dim_128x128.png."
-        },
-        {
-          "path": "frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png",
-          "operation": "create",
-          "description": "Add the generated static icon asset: frontend/public/assets/generated/explore-style-icon-kalamkari.dim_128x128.png."
-        },
-        {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
           "operation": "modify",
-          "description": "Reference the 5 static generated icon files from frontend/public/assets/generated (as direct static paths) and render each icon masked/cropped to a circle within the left side of its corresponding badge."
+          "description": "Add props/variants to render the exact Phase 3 headline text in gold-accent styling and optionally render an admin CTA button with pearl-blue styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/utils/isAdminClient.ts",
+          "operation": "create",
+          "description": "Add a small client-side helper that mirrors the existing admin detection approach (based on the current Internet Identity principal and the admin principal constant) to decide whether to show the admin-only CTA. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ProductsPage.tsx",
+          "operation": "modify",
+          "description": "Wire the empty-state variant into the main storefront collections section; when admin is detected, show CTA that SPA-navigates to the existing admin products route. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
+          "operation": "modify",
+          "description": "Wire the empty-state variant into collections/category pages; when admin is detected, show CTA that SPA-navigates to the existing admin products route. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-26",
-      "summary": "Keep changes scoped to the home-top redesign and its navigation destinations; avoid dashboard/profile/login regressions and avoid heavy visual effects.",
+      "id": "REQ-42",
+      "summary": "Ensure admin products list reflects persisted backend state and supports edit/delete actions with immediate UI updates.",
       "acceptanceCriteria": [
-        "Dashboard route (/dashboard) behavior and UI remain unchanged.",
-        "Login page and OTP verification flow remain functional and still land on \"/\" after success unless a return path is set.",
-        "No new particle systems or heavy background effects are added specifically for this section."
+        "Admin products list loads products from the backend (`adminListProducts`) and reflects the canister’s persisted state.",
+        "Delete action calls the backend delete API and the product disappears from the list without requiring a manual reload.",
+        "After deleting a product, refreshing the page does not bring it back (it is removed from canister persistence).",
+        "Edit action updates the persisted product and the updated values are visible after refresh in both admin list and storefront listings (when applicable)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/admin/state/AdminProductsProvider.tsx",
           "operation": "modify",
-          "description": "Add only the minimal new storefront route handling needed for style collections while preserving all existing route branches (including /dashboard and /login) and avoiding changes to authentication flows."
+          "description": "Harden admin product list refresh/invalidation behavior so the list stays in sync after create/update/delete and errors are handled without forcing full-page reloads. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/components/storefront/ShopByStyleBlock.tsx",
+          "path": "frontend/src/admin/pages/AdminProductsPage.tsx",
           "operation": "modify",
-          "description": "Keep the implementation lightweight (no particle/heavy effects) and confined to the Explore-by-Style UI and its navigation, ensuring no cross-cutting changes to dashboard/profile/login components."
+          "description": "Update admin list retry/error UI to avoid full reload where possible (prefer provider refresh) and ensure delete/edit actions keep premium styling and remain responsive. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "summary": "Retain premium dark-luxury styling and golden hover/glow interactions across Phase 3 UI changes while staying responsive and crash-free.",
+      "acceptanceCriteria": [
+        "New/modified buttons added for Phase 3 have a gold hover/glow treatment consistent with existing styling utilities/classes.",
+        "All Phase 3-touched pages remain usable on mobile and desktop widths (no layout breakage or overflow causing horizontal scroll bugs).",
+        "No blank screen occurs when navigating to collections/category pages with empty catalog or when backend fetch fails.",
+        "No routing/authentication flow changes are introduced beyond linking to existing admin routes."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "operation": "modify",
+          "description": "Apply/extend existing premium utility classes (gold hover/glow) for the empty-state CTA/button and ensure responsive layout. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+          "operation": "create",
+          "description": "Implement the error-state component with dark-luxury card styling, gold hover/glow on retry, and responsive spacing. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ProductsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure the new empty/error state integration preserves the dark-luxury theme and remains responsive (no overflow/blank screens). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure the new empty/error state integration preserves the dark-luxury theme and remains responsive (no overflow/blank screens). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/admin/pages/AdminProductsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure Phase 3-touched admin list actions (retry/delete/edit) keep premium hover/glow interactions and mobile-friendly layout. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Add Phase 3 post-deploy verification checklist to project documentation/release notes flow.",
+      "acceptanceCriteria": [
+        "A post-deploy checklist is provided confirming: (1) products fetch from backend without the prior \"Could not fetch\" user-visible error, (2) persistence across reload, (3) admin list shows edit/delete, (4) UI remains stable/responsive.",
+        "The draft/live URL is provided after deployment."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
+          "operation": "create",
+          "description": "Create a Phase 3 verification checklist template including fields for draft/live URL and checks for: fetch success without the old message, correct error toast text, premium empty state, admin list CRUD behavior, and responsive UI stability."
+        },
+        {
+          "path": "frontend/RELEASE_NOTES.md",
+          "operation": "modify",
+          "description": "Add a Phase 3 entry referencing the new verification checklist and documenting the storefront error/empty state behavior and admin products list expectations."
         }
       ]
     }

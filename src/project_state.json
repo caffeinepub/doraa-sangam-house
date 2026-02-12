@@ -1,17 +1,23 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
-  "summary": "Update post-login home redesign scope for DoRaa Sangam House: keep redirect to '/' after successful login, and replace the ultra-minimal 'Shop by Style' text-button row with a new top-of-home 'Explore by Style' heading plus a horizontally scrollable curved-badge carousel (25px radius) in dark luxury theme, using 5 categories with short icon/image + impressive name labels; hover shows gold glow/border + subtle lift (scale ~1.05); clicking a badge navigates to its category collection page; must be responsive (mobile swipe carousel) and avoid blank screens; no other sections (dashboard/profile/login) should change.",
+  "projectStateVersion": 17,
+  "summary": "Expand DoRaa Sangam House (latest draft/version) scope to include Phase 3: implement real backend product persistence in the Motoko canister (survives reloads/upgrades), fix the \"Could not fetch products from the backend\" error with proper empty/error states and toasts, and enhance the admin panel with a persistent product list plus edit/delete actions; keep dark luxury theme, premium styling, responsiveness, and no blank screens/crashes.",
   "architectural_notes": [
     "Admin-bot command handling will be exposed via a public shared Motoko function `processAdminCommand(cmd : Text) : async Text`; initial implementation is a no-op stub that echoes the command.",
     "Implement a new minimal toast UI component (top-right) limited to error notifications; auto-dismiss after 4 seconds; do not alter routing/auth flow or overall layout/theme.",
     "Routing change is now in-scope: post-login redirect should land on '/' (home) rather than opening the dashboard.",
     "Apply redesign changes starting from the currently deployed stable version (explicit revert before modifications).",
-    "Replace the ultra-minimal 'Shop by Style' text-button row with a top-of-home 'Explore by Style' curved-badge carousel (25px radius) that includes small circular images/icons, supports hover glow + subtle lift, and enables click navigation to category collection pages; must remain responsive via horizontal scroll/swipe and must not introduce blank screens."
+    "Replace the ultra-minimal 'Shop by Style' text-button row with a top-of-home 'Explore by Style' curved-badge carousel (25px radius) that includes small circular images/icons, supports hover glow + subtle lift, and enables click navigation to category collection pages; must remain responsive via horizontal scroll/swipe and must not introduce blank screens.",
+    "Phase 2 product cards: hover overlay data should use placeholder/dummy values for now (e.g., swatches Red/Blue/Green; fabric Banarasi Silk; size chart links to a dummy page; blouse pairing text \"Matching silk blouse included\").",
+    "Collections/category pages pagination: implement a \"Load More\" button (no infinite scroll yet).",
+    "Fabric ripple/wave hover effect must be lightweight CSS-only (do not add GSAP) to keep performance high.",
+    "Home (/) top section scope: remove any vertical card mix/vertical category-card UI at the top of home; keep ONLY the horizontal curved/circular \"Explore by Style\" carousel at the top post-login.",
+    "Phase 3 persistence: implement canister-side product storage and retrieval (admin save writes; collections/category pages read) such that products survive reloads and upgrades (use stable storage strategy as needed)."
   ],
-  "known_issues": [],
+  "known_issues": [
+    "Collections/category pages can show error: \"Could not fetch products from the backend\" (Phase 3 fix requested)."
+  ],
   "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Minimal luxury textile weave icon in pearl-blue/gold, circular-friendly (explore-style-icon-banarasi.dim_128x128.png)\n- Minimal sheer fabric/flow icon in pearl-blue/gold, circular-friendly (explore-style-icon-organza.dim_128x128.png)\n- Minimal flowing drape icon in pearl-blue/gold, circular-friendly (explore-style-icon-georgette.dim_128x128.png)\n- Minimal silk sheen wave icon in pearl-blue/gold, circular-friendly (explore-style-icon-silk.dim_128x128.png)\n- Minimal folk-art motif icon in pearl-blue/gold, circular-friendly (explore-style-icon-kalamkari.dim_128x128.png)",
   "existing_features": [
     {
       "id": "feature-wire-the-basic-error-toast-to-appear-on-the-main-error-paths-in-existing-flows-at-minimum-invalid-otp-otp-verification-failure-network-canister-availability-failures-and-save-failures-e-g-admin-product-create-update-delete-bulk-import-and-user-profile-save",
@@ -196,6 +202,126 @@
         "REQ-26"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-storefront-product-cards-used-on-collections-category-listing-pages-to-match-the-phase-2-premium-spec-curved-cards-with-28px-border-radius-dark-luxury-black-navy-gradient-background-full-width-on-model-image-at-the-top-lazy-loaded-object-cover-serif-product-name-in-pearl-off-white-gold-current-price-with-gray-strike-through-mrp-and-pearl-blue-discount-gold-star-rating-with-review-count-premium-badges-and-wishlist-cart-action-icons-with-gold-pulse-glow-on-hover-keep-smooth-400ms-transitions",
+      "title": "Update storefront product cards used on collections/category listing pages to match the Phase 2 premium spec: curved cards with 28px border-radius, dark luxury black→navy gradient background, full-width on-model image at the top (lazy loaded, object-cover), serif product name in pearl off-white, gold current price with gray strike-through MRP and pearl-blue discount %, gold star rating with review count, premium badges, and wishlist/cart action icons with gold pulse glow on hover; keep smooth ~400ms transitions.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-full-hover-animation-stack-for-the-phase-2-product-cards-using-lightweight-css-no-gsap-on-hover-lift-translatey-8px-and-scale-to-1-05-show-a-pearl-blue-border-glow-zoom-the-image-to-1-12-apply-a-lightweight-css-only-fabric-ripple-wave-overlay-effect-and-fade-in-a-quick-details-overlay",
+      "title": "Implement the full hover animation stack for the Phase 2 product cards using lightweight CSS (no GSAP): on hover, lift translateY(-8px) and scale to 1.05, show a pearl-blue border glow, zoom the image to 1.12, apply a lightweight CSS-only fabric ripple/wave overlay effect, and fade in a quick-details overlay.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-hover-quick-details-overlay-content-to-use-placeholder-dummy-values-not-product-data-for-now-show-color-swatches-for-red-blue-green-show-fabric-as-banarasi-silk-show-a-size-chart-link-that-navigates-to-a-dummy-size-chart-page-and-show-blouse-pairing-text-matching-silk-blouse-included",
+      "title": "Change the hover quick-details overlay content to use placeholder/dummy values (not product data) for now: show color swatches for Red, Blue, Green; show fabric as “Banarasi Silk”; show a “Size chart” link that navigates to a dummy size chart page; and show blouse pairing text “Matching silk blouse included”.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-infinite-scroll-with-an-explicit-load-more-button-on-category-collection-listing-pages-no-infinite-scroll-yet-the-button-should-load-the-next-page-chunk-of-products-and-preserve-the-existing-dark-luxury-theme-styling",
+      "title": "Replace infinite scroll with an explicit “Load More” button on category/collection listing pages (no infinite scroll yet). The button should load the next page/chunk of products and preserve the existing dark luxury theme styling.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-product-listing-grid-responsive-per-the-phase-2-spec-1-column-on-mobile-and-2-columns-on-desktop-for-category-collection-pages-where-phase-2-cards-are-used-with-consistent-spacing-and-no-layout-breakage",
+      "title": "Make the product listing grid responsive per the Phase 2 spec: 1 column on mobile and 2 columns on desktop for category/collection pages where Phase 2 cards are used, with consistent spacing and no layout breakage.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-minimal-dummy-size-chart-page-route-that-the-product-card-overlay-can-navigate-to-showing-a-simple-placeholder-size-chart-view-consistent-with-the-dark-luxury-theme-and-providing-an-obvious-way-to-return-back",
+      "title": "Add a minimal dummy “Size chart” page/route that the product-card overlay can navigate to, showing a simple placeholder size chart view consistent with the dark luxury theme and providing an obvious way to return back.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-extend-the-phase-2-verification-checklist-documentation-to-reflect-the-finalized-phase-2-card-spec-dummy-overlay-values-load-more-button-css-only-ripple-and-ensure-it-can-be-used-to-validate-the-release-after-deployment",
+      "title": "Update/extend the Phase 2 verification checklist documentation to reflect the finalized Phase 2 card spec (dummy overlay values, Load More button, CSS-only ripple) and ensure it can be used to validate the release after deployment.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-any-vertical-stacked-category-card-sections-from-the-post-login-home-page-content-so-the-home-feed-does-not-mix-vertical-category-cards-near-the-top-keep-the-home-top-experience-focused-on-the-horizontal-explore-by-style-carousel-section",
+      "title": "Remove any vertical/stacked category-card sections from the post-login home page content so the home feed does not mix vertical category cards near the top; keep the home-top experience focused on the horizontal “Explore by Style” carousel section.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-post-login-home-page-path-top-section-renders-exactly-a-centered-heading-text-explore-by-style-serif-gold-followed-by-a-horizontally-scrollable-swipeable-carousel-row-of-5-curved-badges-25px-radius-using-the-existing-dark-luxury-theme-black-background-pearl-blue-7fb3d5-gold-d4af37",
+      "title": "Ensure the post-login home page (path \"/\") top section renders exactly: a centered heading text “Explore by Style” (serif, gold), followed by a horizontally scrollable/swipeable carousel row of 5 curved badges (25px radius) using the existing dark luxury theme (black background, pearl blue #7FB3D5, gold #D4AF37).",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-each-carousel-badge-includes-a-small-circular-preview-icon-image-plus-the-impressive-name-label-supports-a-lightweight-hover-interaction-gold-glow-border-subtle-lift-scale-to-1-05-and-on-click-navigates-via-spa-navigation-to-a-category-collection-page-without-blank-screens",
+      "title": "Ensure each carousel badge includes a small circular preview icon/image plus the impressive-name label, supports a lightweight hover interaction (gold glow/border + subtle lift/scale to ~1.05), and on click navigates via SPA navigation to a category collection page without blank screens.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-storefront-could-not-fetch-products-from-the-backend-failure-mode-by-correctly-distinguishing-between-a-empty-catalog-and-b-failed-fetch-show-an-error-toast-only-on-real-fetch-failures-and-show-a-premium-empty-state-when-the-catalog-is-empty",
+      "title": "Fix the storefront \"Could not fetch products from the backend\" failure mode by correctly distinguishing between (a) empty catalog and (b) failed fetch; show an error toast only on real fetch failures, and show a premium empty state when the catalog is empty.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-usegetallproducts-react-query-so-it-surfaces-fetch-failures-to-the-ui-instead-of-silently-returning-an-empty-array-enabling-pages-to-render-a-dedicated-error-state-vs-an-empty-catalog-state",
+      "title": "Update `useGetAllProducts` (React Query) so it surfaces fetch failures to the UI (instead of silently returning an empty array), enabling pages to render a dedicated error state vs an empty-catalog state.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-premium-empty-state-ui-for-empty-product-catalog-on-collections-category-pages-show-no-products-yet-add-in-admin-panel-in-gold-text-and-if-the-viewer-is-logged-in-as-an-admin-show-a-pearl-blue-cta-button-that-navigates-to-the-admin-products-page",
+      "title": "Implement the premium empty-state UI for empty product catalog on collections/category pages: show \"No products yet — add in admin panel\" in gold text, and if the viewer is logged in as an admin, show a pearl-blue CTA button that navigates to the admin products page.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-retain-premium-dark-luxury-styling-and-golden-hover-glow-interactions-for-phase-3-ui-changes-empty-state-cta-retry-error-state-actions-admin-list-actions-while-keeping-the-app-responsive-and-preventing-blank-screens-crashes",
+      "title": "Apply/retain premium dark-luxury styling and golden hover/glow interactions for Phase 3 UI changes (empty state CTA, retry/error state actions, admin list actions), while keeping the app responsive and preventing blank screens/crashes.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-phase-3-verification-step-in-the-project-documentation-release-notes-flow-after-deployment-provide-the-draft-live-url-and-confirm-a-checklist-proving-persistence-and-error-empty-states-behave-correctly",
+      "title": "Add a Phase 3 verification step in the project documentation/release notes flow: after deployment, provide the draft/live URL and confirm a checklist proving persistence and error/empty states behave correctly.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -287,6 +413,60 @@
       "id": "AR-19",
       "summary": "Responsiveness: carousel must be horizontally swipeable on mobile and scrollable on desktop without layout overflow issues; keep dark luxury theme and do not change dashboard/profile/login/other sections.",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Phase 2: Upgrade collections/category product cards to premium Myntra/Flipkart style: 28px radius, dark luxury black→navy gradient, top full-width on-model image (lazy load, object-cover), rich content (serif name, gold price + gray MRP strike + pearl-blue discount %, gold star rating + review count, pearl-blue/gold badges), wishlist heart + add-to-cart icons with gold pulse glow hover, smooth 400ms hover (lift -8px + scale 1.05 + pearl-blue border glow + image zoom 1.12 + CSS-only fabric ripple + overlay fade-in with placeholder swatches/fabric/size chart link/blouse pairing), click opens product detail page, responsive grid (2 cols desktop/1 mobile), and \"Load More\" button (no infinite scroll).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Phase 3: Persist products in the Motoko canister (store on admin save; fetch on collections/category page load) so products survive reloads (no loss).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Fix collections/category fetch error path: if fetch fails show toast \"Failed to load products. Try refreshing.\"; if zero products show premium empty state \"No products yet — add in admin panel\" with gold text + pearl-blue admin CTA (only if logged in as admin).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Admin panel: add persistent product list view showing all saved products with edit and delete buttons; delete removes the product from canister storage.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Phase 3 verification + delivery: provide draft/live URL and confirm via checklist that products fetch from backend (no \"Could not fetch\"), persistence works across reload, admin list shows edit/delete, and UI remains stable (dark luxury theme, golden hover/glow, responsive, no blank screens).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Implement durable product persistence in the Motoko canister so that products created/updated/deleted via the admin panel are stored in stable canister memory and survive page reloads and canister upgrades.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Ensure backend product APIs fully support the required product fields for Phase 3 persistence: name, price, description, image URLs, fabric, variants, blouse pairing, and category; and ensure `publicListProducts()` returns all persisted products for storefront usage.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Ensure the admin panel product list shows all persisted products and supports edit/delete actions backed by canister persistence; deleting a product must remove it from canister storage and from the admin list after refresh.",
+      "reqIds": [
+        "REQ-42"
+      ],
       "status": "pending"
     }
   ],

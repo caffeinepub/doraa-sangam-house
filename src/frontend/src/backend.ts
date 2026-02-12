@@ -141,16 +141,20 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
     createOrder(orderId: string, paymentId: string, shippingAddress: ShippingAddress): Promise<void>;
+    getAdminBotLog(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getHomepageBanner(): Promise<string>;
     getUserOrders(): Promise<Array<OrderRecord>>;
     getUserOrdersByYearMonth(year: bigint, month: bigint): Promise<Array<OrderRecord>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     healthCheck(): Promise<string>;
     isCallerAdmin(): Promise<boolean>;
+    processAdminCommand(cmd: string): Promise<string>;
     publicListProducts(): Promise<Array<Product>>;
     requestAdminOtp(identifier: string): Promise<string>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    submitAdminBotInstruction(instruction: string): Promise<string>;
     validateAdminSession(clientIp: string, userAgent: string): Promise<boolean>;
     verifyAdminOtp(identifier: string, otp: string, clientIp: string, userAgent: string): Promise<string>;
 }
@@ -297,6 +301,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getAdminBotLog(): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAdminBotLog();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAdminBotLog();
+            return result;
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -323,6 +341,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getHomepageBanner(): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHomepageBanner();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHomepageBanner();
+            return result;
         }
     }
     async getUserOrders(): Promise<Array<OrderRecord>> {
@@ -395,6 +427,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async processAdminCommand(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.processAdminCommand(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.processAdminCommand(arg0);
+            return result;
+        }
+    }
     async publicListProducts(): Promise<Array<Product>> {
         if (this.processError) {
             try {
@@ -434,6 +480,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async submitAdminBotInstruction(arg0: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitAdminBotInstruction(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitAdminBotInstruction(arg0);
             return result;
         }
     }

@@ -22,6 +22,8 @@ import { useStorefrontAuth } from './hooks/useStorefrontAuth';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
 import ProductDetailView from './pages/ProductDetailView';
+import StyleCollectionsPage from './pages/StyleCollectionsPage';
+import SizeChartPage from './pages/SizeChartPage';
 
 // Lazy load admin components for code splitting
 const AdminGate = lazy(() => import('./admin/components/AdminGate'));
@@ -30,6 +32,7 @@ const AdminLoginPage = lazy(() => import('./admin/pages/AdminLoginPage'));
 const AdminLoginHiddenPage = lazy(() => import('./pages/AdminLoginHiddenPage'));
 const AdminOtpProtectedPage = lazy(() => import('./pages/AdminOtpProtectedPage'));
 const AdminOtpDashboardPage = lazy(() => import('./pages/AdminOtpDashboardPage'));
+const AdminBotPage = lazy(() => import('./pages/AdminBotPage'));
 
 function App() {
   const { actor } = useActor();
@@ -68,6 +71,49 @@ function App() {
     },
   });
 
+  // Handle size chart route
+  if (location.pathname === '/size-chart') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <CommerceProvider>
+          <div className="relative min-h-screen bg-black">
+            <OceanBackground />
+            <div className="relative z-10">
+              <Header />
+              <SizeChartPage />
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </div>
+        </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
+  // Handle style collection routes
+  const collectionMatch = location.pathname.match(/^\/collections\/([^/]+)$/);
+  if (collectionMatch) {
+    const slug = collectionMatch[1];
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <CommerceProvider>
+          <div className="relative min-h-screen bg-black">
+            <OceanBackground />
+            <div className="relative z-10">
+              <Header />
+              <StyleCollectionsPage
+                slug={slug}
+                onClose={() => navigate('/')}
+              />
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </div>
+        </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
   // Handle product detail route
   const productMatch = location.pathname.match(/^\/product\/([^/]+)$/);
   if (productMatch) {
@@ -88,6 +134,23 @@ function App() {
             <Toaster position="top-right" />
           </div>
         </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
+  // Hidden admin bot route (no links to this anywhere)
+  if (location.pathname === '/admin-bot') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="relative min-h-screen bg-black">
+          <OceanBackground />
+          <div className="relative z-10">
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+              <AdminBotPage />
+            </Suspense>
+          </div>
+          <Toaster position="top-right" />
+        </div>
       </ThemeProvider>
     );
   }

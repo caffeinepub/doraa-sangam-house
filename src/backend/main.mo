@@ -1,19 +1,21 @@
 import AccessControl "authorization/access-control";
-import Principal "mo:core/Principal";
-import Runtime "mo:core/Runtime";
-import Order "order";
 import Map "mo:core/Map";
 import Iter "mo:core/Iter";
-import Time "mo:core/Time";
-import List "mo:core/List";
 import Nat "mo:core/Nat";
-import Text "mo:core/Text";
-import OtpEntry "otp-entry";
-import MixinAuthorization "authorization/MixinAuthorization";
-import Random "mo:core/Random";
-import Blob "mo:core/Blob";
 import Nat8 "mo:core/Nat8";
+import List "mo:core/List";
+import Time "mo:core/Time";
+import Blob "mo:core/Blob";
+import Runtime "mo:core/Runtime";
+import Text "mo:core/Text";
+import Order "order";
+import OtpEntry "otp-entry";
+import Principal "mo:core/Principal";
+import Random "mo:core/Random";
+import MixinAuthorization "authorization/MixinAuthorization";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -264,9 +266,9 @@ actor {
     };
 
     let num = (bytes[0].toNat() * 256 * 256 * 256) +
-              (bytes[1].toNat() * 256 * 256) +
-              (bytes[2].toNat() * 256) +
-              bytes[3].toNat();
+      (bytes[1].toNat() * 256 * 256) +
+      (bytes[2].toNat() * 256) +
+      bytes[3].toNat();
 
     let otp = num % 1000000;
     let otpText = otp.toText();

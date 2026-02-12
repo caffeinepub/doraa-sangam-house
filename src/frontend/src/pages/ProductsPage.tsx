@@ -3,24 +3,24 @@ import { useGetAllProducts } from '../hooks/useQueries';
 import ProductCard from '../components/ProductCard';
 import QuickViewSheet from '../components/QuickViewSheet';
 import PremiumCatalogEmptyState from '../components/storefront/PremiumCatalogEmptyState';
-import { BanarasiCategoryShowcase } from '../components/banarasi/BanarasiCategoryShowcase';
-import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import PremiumCatalogErrorState from '../components/storefront/PremiumCatalogErrorState';
 import { useSpaLocation } from '../hooks/useSpaLocation';
+import { Button } from '@/components/ui/button';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { isAdminClient } from '../utils/isAdminClient';
+import { ADMIN_ROUTES } from '../admin/adminConfig';
 
 const ProductDetailView = lazy(() => import('./ProductDetailView'));
 
 export default function ProductsPage() {
-  const { data: allProducts = [], isLoading } = useGetAllProducts();
+  const { data: allProducts = [], isLoading, isError, refetch } = useGetAllProducts();
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [detailViewProductId, setDetailViewProductId] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(12);
   const [location, navigate] = useSpaLocation();
+  const { identity } = useInternetIdentity();
 
-  const { sentinelRef } = useInfiniteScroll({
-    onLoadMore: () => setDisplayCount((prev) => prev + 12),
-    hasMore: displayCount < allProducts.length,
-    isLoading: false,
-  });
+  const isAdmin = isAdminClient(identity?.getPrincipal().toString());
 
   const handleExploreCollections = () => {
     const element = document.querySelector('#home');
@@ -29,17 +29,27 @@ export default function ProductsPage() {
     }
   };
 
+  const handleAdminAction = () => {
+    navigate(ADMIN_ROUTES.PRODUCTS);
+  };
+
   const handleViewDetail = (productId: string) => {
     navigate(`/product/${productId}`);
   };
 
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + 12);
+  };
+
+  const handleRetry = () => {
+    refetch();
+  };
+
   const displayedProducts = allProducts.slice(0, displayCount);
+  const hasMore = displayCount < allProducts.length;
 
   return (
     <>
-      {/* Banarasi Category Showcase */}
-      <BanarasiCategoryShowcase />
-
       {/* All Products Section */}
       <section id="collections" className="border-t border-border/30 py-16 px-4 md:px-8">
         <div className="container max-w-7xl mx-auto">
@@ -51,9 +61,9 @@ export default function ProductsPage() {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 6 }).map((_, idx) => (
-                <div key={idx} className="rounded-[24px] overflow-hidden bg-card/50 backdrop-blur-sm">
+                <div key={idx} className="rounded-[28px] overflow-hidden bg-card/50 backdrop-blur-sm">
                   <div className="aspect-[3/4] shimmer-skeleton" />
                   <div className="p-4 space-y-2">
                     <div className="h-4 shimmer-skeleton rounded" />
@@ -62,11 +72,18 @@ export default function ProductsPage() {
                 </div>
               ))}
             </div>
+          ) : isError ? (
+            <PremiumCatalogErrorState onRetry={handleRetry} />
           ) : allProducts.length === 0 ? (
-            <PremiumCatalogEmptyState onAction={handleExploreCollections} actionLabel="Back to Home" />
+            <PremiumCatalogEmptyState
+              onAction={isAdmin ? undefined : handleExploreCollections}
+              actionLabel="Back to Home"
+              showAdminCta={isAdmin}
+              onAdminAction={isAdmin ? handleAdminAction : undefined}
+            />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {displayedProducts.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -77,10 +94,19 @@ export default function ProductsPage() {
                 ))}
               </div>
 
-              {/* Infinite scroll sentinel */}
-              {displayCount < allProducts.length && (
-                <div ref={sentinelRef} className="h-20 flex items-center justify-center mt-8">
-                  <div className="shimmer-skeleton w-32 h-8 rounded" />
+              {/* Load More button */}
+              {hasMore && (
+                <div className="flex justify-center mt-12">
+                  <Button
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    style={{
+                      boxShadow: '0 0 20px rgba(127, 179, 213, 0.3)',
+                    }}
+                    onClick={handleLoadMore}
+                  >
+                    Load More
+                  </Button>
                 </div>
               )}
             </>

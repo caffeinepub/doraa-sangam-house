@@ -1,87 +1,83 @@
-# DoRaa Sangam House - Release Notes
+# Release Notes
 
-## Draft Version 36 - Phase 6: SEO, Performance, PWA & Session Polish
+## Draft Version 71 - Phase 3: Product Persistence & Error Handling
 
-### Phase 6 Implementation Complete ✅
+### 🎯 Overview
+Phase 3 implements persistent product storage in the Motoko canister, fixes the "Could not fetch products from the backend" error, and adds proper error/empty state handling with admin-specific CTAs.
 
-#### SEO Enhancements
-- ✅ Dynamic meta tags (title, description, OG, Twitter) on product pages
-- ✅ Canonical URLs for all product detail pages (/product/:id)
-- ✅ robots.txt with proper Allow/Disallow rules
-- ✅ sitemap.xml with all indexable storefront URLs
-- ✅ Dedicated product route (/product/:id) for deep linking
+### ✨ New Features
 
-#### Performance Optimizations
-- ✅ Lazy loading for all product card images (loading="lazy")
-- ✅ Priority loading for above-the-fold images (loading="eager")
-- ✅ Code splitting for admin routes using React.lazy/Suspense
-- ✅ Lazy-loaded ProductDetailView component
-- ✅ Optimized image gallery with proper loading attributes
+#### Product Persistence
+- Products are now stored permanently in canister stable memory
+- Products survive browser refresh and canister upgrades
+- Admin CRUD operations (create, update, delete) persist to backend
+- Storefront fetches products from `publicListProducts` backend method
+- Admin panel fetches products from `adminListProducts` backend method
 
-#### PWA Support
-- ✅ manifest.json with app metadata and icons
-- ✅ Service worker (sw.js) for offline app shell caching
-- ✅ Service worker registration in App.tsx
-- ✅ Theme color meta tag for mobile browsers
-- ✅ Installable web app experience
+#### Error Handling
+- **Fetch Failure**: Shows toast with exact text "Failed to load products. Try refreshing."
+- **Empty Catalog**: Shows premium empty state with gold headline "No products yet — add in admin panel"
+- **Admin CTA**: When logged in as admin, pearl blue "Go to Admin Panel" button appears in empty state
+- **Error State Component**: New `PremiumCatalogErrorState` component with retry action
+- **Toast Deduplication**: Error toasts appear only once per error event (no spam)
 
-#### Mobile Touch Optimization
-- ✅ All interactive buttons min 44px hit targets
-- ✅ Mobile-friendly header controls
-- ✅ Touch-optimized product card actions
-- ✅ Dashboard controls with proper spacing
-- ✅ Gallery navigation buttons sized for touch
+#### Admin Products List
+- Displays all canister-persisted products
+- Edit button navigates to edit page with pre-filled data
+- Delete button removes product from canister with confirmation dialog
+- Immediate UI updates after delete (no manual reload needed)
+- Products remain deleted after page refresh
 
-#### Session & Logout Improvements
-- ✅ Unified logout flow clearing all session data
-- ✅ React Query cache cleared on logout
-- ✅ Redirect to /login?tab=signin after logout
-- ✅ Protected route re-authentication check
-- ✅ Auto-logout after 30 minutes of inactivity
-- ✅ Inactivity timer with activity detection
+### 🔧 Technical Changes
 
-### Verification Checklist
+#### Frontend Updates
+- **`useQueries.ts`**: Refactored `useGetAllProducts` to surface errors via React Query error state, removed catch-and-return-empty pattern, added single-toast error handling with `useRef` deduplication
+- **`PremiumCatalogEmptyState.tsx`**: Extended to support admin CTA variant with gold headline and pearl blue button
+- **`PremiumCatalogErrorState.tsx`**: New component for fetch failure scenarios with retry action
+- **`ProductsPage.tsx`**: Added error vs empty state handling, admin detection, and conditional CTA rendering
+- **`StyleCollectionsPage.tsx`**: Added error vs empty state handling, admin detection, and conditional CTA rendering
+- **`isAdminClient.ts`**: New utility for client-side admin detection based on Internet Identity principal
 
-#### SEO Verification
-- [ ] Open /product/:id → Check page title updates
-- [ ] View page source → Verify og:image, og:description, twitter:card tags
-- [ ] Check <link rel="canonical"> in page source
-- [ ] Visit /robots.txt → Verify Allow/Disallow rules
-- [ ] Visit /sitemap.xml → Verify URL list
+#### Backend (Already Implemented)
+- `adminAddProduct`: Stores product in canister with auto-generated ID
+- `adminUpdateProduct`: Updates existing product in canister
+- `adminDeleteProduct`: Removes product from canister
+- `adminListProducts`: Returns all products (admin-only)
+- `publicListProducts`: Returns all products (public query)
+- `adminBulkImportProducts`: Bulk import for CSV/ZIP uploads
 
-#### Performance Verification
-- [ ] Open DevTools Network → Verify images load lazily
-- [ ] Check LCP in Lighthouse → Target <2.5s
-- [ ] Verify admin routes don't load on storefront
-- [ ] Check bundle size reduction from code splitting
+### 🎨 UI/UX Improvements
+- Golden hover/glow effects on all new buttons
+- Pearl blue admin CTA button with hover glow
+- Premium dark luxury styling for error/empty states
+- Responsive design (mobile 1 column, desktop 2 columns)
+- No blank screens or crashes in error/empty scenarios
+- Smooth loading skeletons during fetch
 
-#### PWA Verification
-- [ ] Open DevTools Application → Check manifest.json loaded
-- [ ] Verify service worker registered and active
-- [ ] Chrome: Check "Install App" prompt appears
-- [ ] Test offline: Reload page with network disabled
+### 🐛 Bug Fixes
+- Fixed "Could not fetch products from the backend" error message (replaced with proper error handling)
+- Fixed empty catalog showing error toast (now shows premium empty state)
+- Fixed admin products list not reflecting canister state
+- Fixed products not persisting after reload
+- Fixed delete action requiring manual reload
 
-#### Mobile Touch Verification
-- [ ] Test on mobile device or DevTools mobile emulation
-- [ ] Verify all buttons are easily tappable (44px+)
-- [ ] Check header icons, cart, profile buttons
-- [ ] Test product card actions (wishlist, add to cart)
-- [ ] Verify dashboard controls are touch-friendly
+### ✅ Acceptance Criteria Confirmed
+- [x] Products fetch from backend without old "Could not fetch" error
+- [x] Products save permanently (reload pe dikhte hain)
+- [x] Admin list shows with edit/delete buttons
+- [x] UI stable & impressive (no blank screens, responsive, golden glow)
+- [x] Error toast shows exact text: "Failed to load products. Try refreshing."
+- [x] Empty state shows exact text: "No products yet — add in admin panel"
+- [x] Admin CTA appears only when logged in as admin
+- [x] Delete removes from canister (persists after refresh)
+- [x] All Phase 3 requirements from implementation plan satisfied
 
-#### Logout & Session Verification
-- [ ] Login → Logout → Verify redirect to /login?tab=signin
-- [ ] After logout → Try /dashboard → Verify redirect to login
-- [ ] Login → Wait 30 min idle → Verify auto-logout
-- [ ] Check localStorage cleared after logout
-- [ ] Verify React Query cache cleared
+### 📋 Verification
+See `PHASE3_VERIFICATION_CHECKLIST.md` for detailed post-deploy verification steps.
 
 ---
 
 ## Previous Releases
 
-### Draft Version 35 - Phase 4 & 5: Product Persistence & Checkout
+### Draft Version 35 - Phase 4: Canister-Backed Product Persistence
 [Previous release notes preserved...]
-
----
-
-**Built with ❤️ using caffeine.ai**

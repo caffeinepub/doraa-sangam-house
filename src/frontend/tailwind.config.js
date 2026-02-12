@@ -64,10 +64,13 @@ export default {
           border: 'oklch(var(--sidebar-border))',
           ring: 'oklch(var(--sidebar-ring))',
         },
+        gold: '#D4AF37',
+        'pearl-blue': '#7FB3D5',
       },
       boxShadow: {
         'glow-pearl': '0 0 20px rgba(127, 179, 213, 0.4), 0 0 40px rgba(127, 179, 213, 0.2)',
         'glow-gold': '0 0 20px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)',
+        'gold-glow': '0 0 30px rgba(212, 175, 55, 0.5), 0 10px 40px rgba(0, 0, 0, 0.4)',
         luxury: '0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(127, 179, 213, 0.1)',
       },
       animation: {
