@@ -13,9 +13,9 @@ import OtpEntry "otp-entry";
 import Principal "mo:core/Principal";
 import Random "mo:core/Random";
 import MixinAuthorization "authorization/MixinAuthorization";
+import Migration "migration";
 
-
-
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -26,6 +26,18 @@ actor {
     name : Text;
     email : Text;
     phone : Text;
+    addresses : [Address];
+  };
+
+  public type Address = {
+    addressLabel : Text;
+    street : Text;
+    city : Text;
+    state : Text;
+    postalCode : Text;
+    country : Text;
+    phone : Text;
+    isDefault : Bool;
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
@@ -59,6 +71,34 @@ actor {
       Runtime.trap("Unauthorized: Only authenticated users can save their profile");
     };
     userProfiles.add(caller, profile);
+  };
+
+  public shared ({ caller }) func addAddress(address : Address) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can add addresses");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) {
+        Runtime.trap("User profile not found");
+      };
+      case (?existingProfile) {
+        let updatedAddresses = existingProfile.addresses.concat([address]);
+        let updatedProfile = { existingProfile with addresses = updatedAddresses };
+        userProfiles.add(caller, updatedProfile);
+      };
+    };
+  };
+
+  public query ({ caller }) func getAddresses() : async [Address] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can view addresses");
+    };
+
+    switch (userProfiles.get(caller)) {
+      case (null) { [] };
+      case (?profile) { profile.addresses };
+    };
   };
 
   public shared ({ caller }) func confirmDeploymentChecks() : async Text {

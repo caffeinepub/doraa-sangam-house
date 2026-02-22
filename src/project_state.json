@@ -1,60 +1,115 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "DoRaa Sangam House website with authentication features including OTP login with resend functionality",
+  "summary": "DoRaa Sangam House - Premium e-commerce website with Vastrado-style layout, featuring centered logo, horizontal category navigation, product grid, user dashboard with theme switcher (Dark/Light/System), and Internet Identity authentication",
   "architectural_notes": [
-    "Uses localStorage for tracking resend timer and attempt count",
-    "Dark luxury theme with pearl blue (#7FB3D5) and gold accents",
-    "OTP login system with Internet Identity integration"
+    "Dark luxury theme (#0B0E0C bg, white text) as default with Light theme option (#F8F9FA bg, #1A1A1A text)",
+    "localStorage used for theme persistence across sessions",
+    "System theme mode follows OS preference using prefers-color-scheme media query",
+    "Golden hover effects (#FFD700) and glow animations on interactive elements",
+    "16px curved corners on product cards with subtle shadows and hover lift effects",
+    "Cyan/teal buttons for category navigation with hover glow",
+    "Internet Identity authentication system with login/OTP flow",
+    "Protected routes requiring authentication for dashboard and cart actions",
+    "Mock product data with placeholder images for initial deployment"
   ],
   "known_issues": [],
   "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Elegant saree on model with Banarasi zari work, rich red and gold colors (product-banarasi.dim_800x1000.png)\n- Luxurious silk saree on model with flowing drape, deep purple and silver (product-silk.dim_800x1000.png)\n- Lightweight organza saree on model with subtle patterns, pastel pink and gold (product-organza.dim_800x1000.png)\n- Traditional georgette saree on model with embroidery, teal and gold accents (product-georgette.dim_800x1000.png)\n- Kalamkari print saree on model with artistic motifs, cream and brown tones (product-kalamkari.dim_800x1000.png)",
   "existing_features": [
     {
-      "id": "feature-after-clicking-send-otp-button-display-a-resend-otp-button-link-below-the-6-digit-otp-input-fields-with-pearl-blue-text-color-7fb3d5-initially-disable-the-button-for-60-seconds-with-a-countdown-timer-showing-resend-in-60s-resend-in-59s-etc-counting-down-to-resend-otp-when-the-timer-ends",
-      "title": "After clicking 'Send OTP' button, display a 'Resend OTP' button/link below the 6-digit OTP input fields with pearl blue text color (#7FB3D5). Initially disable the button for 60 seconds with a countdown timer showing 'Resend in 60s', 'Resend in 59s', etc., counting down to 'Resend OTP' when the timer ends.",
+      "id": "feature-transform-the-home-page-post-login-layout-to-display-a-large-centered-doraa-sangam-house-logo-in-elegant-gold-font-on-dark-background-at-the-top-center-of-the-page",
+      "title": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
       "reqIds": [
-        "REQ-1"
+        "REQ-17"
       ],
       "version": 1
     },
     {
-      "id": "feature-when-the-60-second-timer-expires-and-the-user-clicks-the-enabled-resend-otp-button-send-a-new-otp-to-the-same-mobile-number-and-reset-the-countdown-timer-to-60-seconds-again",
-      "title": "When the 60-second timer expires and the user clicks the enabled 'Resend OTP' button, send a new OTP to the same mobile number and reset the countdown timer to 60 seconds again.",
+      "id": "feature-add-a-horizontal-category-navigation-bar-below-the-logo-with-five-categories-shirts-kurta-bottoms-sarees-shop-all-style-buttons-with-cyan-teal-colors-and-golden-hover-glow-effects-make-the-navigation-horizontally-scrollable-on-mobile-devices",
+      "title": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
       "reqIds": [
-        "REQ-2"
+        "REQ-18"
       ],
       "version": 1
     },
     {
-      "id": "feature-style-the-resend-otp-button-with-pearl-blue-text-7fb3d5-gold-underline-glow-effect-on-hover-and-subtle-pulse-animation-when-enabled-display-timer-text-in-small-pearl-off-white-color-f5f5f0-with-gold-accent-on-the-countdown-number-maintain-the-dark-luxury-theme-with-black-background-and-pearl-blue-gold-accents-ensure-responsive-design-for-mobile-devices",
-      "title": "Style the 'Resend OTP' button with pearl blue text (#7FB3D5), gold underline/glow effect on hover, and subtle pulse animation when enabled. Display timer text in small pearl off-white color (#F5F5F0) with gold accent on the countdown number. Maintain the dark luxury theme with black background and pearl blue/gold accents. Ensure responsive design for mobile devices.",
+      "id": "feature-display-a-grid-of-product-cards-below-the-navigation-showing-saree-products-with-on-model-images-product-name-price-discount-percentage-badge-and-add-to-cart-button-cards-should-have-16px-curved-corners-subtle-shadows-and-on-hover-display-lift-animation-with-golden-border-glow",
+      "title": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
       "reqIds": [
-        "REQ-3"
+        "REQ-20"
       ],
       "version": 1
     },
     {
-      "id": "feature-implement-a-maximum-of-3-resend-attempts-within-a-10-minute-window-using-localstorage-to-track-timer-state-and-attempt-count-if-the-user-exceeds-3-resends-display-the-message-too-many-attempts-try-again-after-10-minutes-and-disable-the-resend-button-until-the-10-minute-window-expires",
-      "title": "Implement a maximum of 3 resend attempts within a 10-minute window using localStorage to track timer state and attempt count. If the user exceeds 3 resends, display the message 'Too many attempts. Try again after 10 minutes' and disable the resend button until the 10-minute window expires.",
+      "id": "feature-add-an-optional-hero-banner-section-at-the-top-of-the-product-grid-with-full-width-saree-showcase-image-and-overlay-text-reading-new-arrivals-flat-60-off",
+      "title": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
       "reqIds": [
-        "REQ-4"
+        "REQ-21"
       ],
       "version": 1
     },
     {
-      "id": "feature-on-successful-otp-resend-display-a-toast-notification-with-the-message-new-otp-sent-using-gold-border-and-pearl-off-white-text-f5f5f0-consistent-with-the-premium-dark-luxury-theme",
-      "title": "On successful OTP resend, display a toast notification with the message 'New OTP sent!' using gold border and pearl off-white text (#F5F5F0), consistent with the premium dark luxury theme.",
+      "id": "feature-create-a-user-dashboard-page-accessible-via-the-profile-icon-with-three-tabs-profile-orders-and-addresses-display-user-profile-information-including-name-email-and-phone-number-with-a-save-button-to-update-the-data",
+      "title": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
       "reqIds": [
-        "REQ-5"
+        "REQ-22"
       ],
       "version": 1
     },
     {
-      "id": "feature-do-not-modify-any-existing-functionality-for-send-otp-otp-verification-internet-identity-integration-or-other-parts-of-the-login-flow-only-add-the-resend-otp-feature-with-timer-and-attempt-limit",
-      "title": "Do not modify any existing functionality for Send OTP, OTP verification, Internet Identity integration, or other parts of the login flow. Only add the Resend OTP feature with timer and attempt limit.",
+      "id": "feature-add-a-theme-switcher-section-in-the-user-dashboard-with-three-theme-options-dark-current-0b0e0c-background-with-white-text-light-white-light-gray-f8f9fa-background-with-dark-1a1a1a-text-and-system-follows-os-prefers-color-scheme-save-the-user-s-theme-choice-in-localstorage-and-apply-it-on-page-load",
+      "title": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
       "reqIds": [
-        "REQ-6"
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-light-theme-maintains-clean-readability-with-proper-contrast-ratios-for-all-text-buttons-and-interactive-elements-while-preserving-the-premium-luxury-aesthetic",
+      "title": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-golden-hover-glow-effects-consistently-across-all-buttons-icons-and-interactive-elements-in-both-dark-and-light-themes",
+      "title": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-entire-interface-is-fully-responsive-on-mobile-devices-categories-scroll-horizontally-logo-remains-centered-and-product-grid-adjusts-to-single-or-two-column-layout",
+      "title": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-require-user-authentication-to-access-the-dashboard-and-perform-cart-actions-display-a-login-prompt-or-redirect-to-login-page-when-unauthenticated-users-attempt-to-access-protected-features",
+      "title": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-preserve-all-existing-functionality-including-internet-identity-authentication-otp-login-flows-shopping-cart-operations-and-category-carousel-features-without-introducing-regressions-or-bugs",
+      "title": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-five-generated-product-images-showing-sarees-on-models-for-use-in-the-product-grid-each-with-dimensions-800x1000-pixels-and-visually-distinct-styles",
+      "title": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
+      "reqIds": [
+        "REQ-29"
       ],
       "version": 1
     }
@@ -62,11 +117,56 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add Resend OTP feature to login page with 60s countdown timer, max 3 attempts in 10 minutes, premium UI styling (pearl blue/gold theme)",
+      "summary": "Home page with centered DoRaa Sangam House logo, horizontal category navigation bar (Shirts, Kurta, Bottoms, Sarees, Shop All), and profile icon",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Product grid with saree cards featuring images, names, prices, discount badges, and Add to Cart buttons with hover effects",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "User dashboard with Profile, Orders, and Addresses tabs, accessible via profile icon click",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Theme switcher in dashboard with Dark, Light, and System modes, saved in localStorage",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Internet Identity authentication with login/OTP flow, login required for dashboard and cart",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Hero banner with 'New Arrivals - Flat 60% Off' text overlay",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Responsive design with horizontal scrolling categories and centered logo on mobile",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Add a user profile/dashboard icon (circle avatar or icon) in the top right corner of the navigation bar that opens the user dashboard when clicked",
+      "reqIds": [
+        "REQ-19"
+      ],
       "status": "pending"
     }
   ],
+  "gameProjectType": "none",
   "projectName": "DoRaa Sangam House",
   "clarification_mode": "instant",
   "clarification_rounds": 0

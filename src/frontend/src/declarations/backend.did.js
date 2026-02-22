@@ -8,6 +8,16 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const Address = IDL.Record({
+  'street' : IDL.Text,
+  'country' : IDL.Text,
+  'city' : IDL.Text,
+  'postalCode' : IDL.Text,
+  'state' : IDL.Text,
+  'addressLabel' : IDL.Text,
+  'isDefault' : IDL.Bool,
+  'phone' : IDL.Text,
+});
 export const Variant = IDL.Record({ 'color' : IDL.Text, 'size' : IDL.Text });
 export const Product = IDL.Record({
   'id' : IDL.Text,
@@ -37,6 +47,7 @@ export const ShippingAddress = IDL.Record({
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'email' : IDL.Text,
+  'addresses' : IDL.Vec(Address),
   'phone' : IDL.Text,
 });
 export const OrderRecord = IDL.Record({
@@ -49,6 +60,7 @@ export const OrderRecord = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAddress' : IDL.Func([Address], [], []),
   'adminAddProduct' : IDL.Func(
       [
         IDL.Text,
@@ -85,6 +97,7 @@ export const idlService = IDL.Service({
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'confirmDeploymentChecks' : IDL.Func([], [IDL.Text], []),
   'createOrder' : IDL.Func([IDL.Text, IDL.Text, ShippingAddress], [], []),
+  'getAddresses' : IDL.Func([], [IDL.Vec(Address)], ['query']),
   'getAdminBotLog' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -118,6 +131,16 @@ export const idlService = IDL.Service({
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const Address = IDL.Record({
+    'street' : IDL.Text,
+    'country' : IDL.Text,
+    'city' : IDL.Text,
+    'postalCode' : IDL.Text,
+    'state' : IDL.Text,
+    'addressLabel' : IDL.Text,
+    'isDefault' : IDL.Bool,
+    'phone' : IDL.Text,
+  });
   const Variant = IDL.Record({ 'color' : IDL.Text, 'size' : IDL.Text });
   const Product = IDL.Record({
     'id' : IDL.Text,
@@ -147,6 +170,7 @@ export const idlFactory = ({ IDL }) => {
   const UserProfile = IDL.Record({
     'name' : IDL.Text,
     'email' : IDL.Text,
+    'addresses' : IDL.Vec(Address),
     'phone' : IDL.Text,
   });
   const OrderRecord = IDL.Record({
@@ -159,6 +183,7 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAddress' : IDL.Func([Address], [], []),
     'adminAddProduct' : IDL.Func(
         [
           IDL.Text,
@@ -195,6 +220,7 @@ export const idlFactory = ({ IDL }) => {
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'confirmDeploymentChecks' : IDL.Func([], [IDL.Text], []),
     'createOrder' : IDL.Func([IDL.Text, IDL.Text, ShippingAddress], [], []),
+    'getAddresses' : IDL.Func([], [IDL.Vec(Address)], ['query']),
     'getAdminBotLog' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),

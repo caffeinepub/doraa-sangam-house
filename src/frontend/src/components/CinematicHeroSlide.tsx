@@ -99,26 +99,38 @@ export default function CinematicHeroSlide({
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
 
-        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center space-y-6">
-          {/* Headline with letter reveal */}
-          <LetterRevealText
-            text={slide.title}
-            isActive={isActive}
-            className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-foreground"
-          />
+        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center justify-center space-y-8">
+          {/* Headline with letter reveal - styles applied via wrapper div */}
+          <div
+            style={{ 
+              color: '#D4AF37',
+              textShadow: '0 0 12px rgba(212,175,55,0.5)',
+              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+            }}
+          >
+            <LetterRevealText
+              text={slide.title}
+              isActive={isActive}
+              className="font-serif font-black tracking-[0.075em]"
+            />
+          </div>
 
-          {/* Tagline with roller hover animation */}
+          {/* Tagline with roller hover animation - styles applied via wrapper div */}
           <div
             className={`flex items-center justify-center transition-all duration-700 delay-500 ${
               isActive
                 ? 'opacity-100 translate-y-0'
                 : 'opacity-0 translate-y-4'
             }`}
+            style={{
+              color: '#F5F5F0',
+              fontSize: 'clamp(1.25rem, 3vw, 2.5rem)',
+            }}
           >
             <RollerTagline
               text={slide.subtitle}
               isActive={isActive}
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wide"
+              className="font-sans font-normal tracking-wide"
             />
           </div>
 
@@ -132,13 +144,22 @@ export default function CinematicHeroSlide({
           >
             <a
               href="#collections"
-              className="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-4 text-base font-medium text-primary-foreground shadow-glow-pearl hover:shadow-glow-gold hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-black"
+              className="inline-flex items-center justify-center rounded-lg px-8 py-4 text-base font-button font-bold uppercase tracking-wider button-luxury focus:outline-none focus:ring-2 focus:ring-offset-2"
+              style={{ 
+                backgroundColor: '#7FB3D5',
+                color: '#D4AF37',
+                boxShadow: '0 0 20px rgba(127, 179, 213, 0.4)',
+              }}
             >
               Shop the Sangam Collection
             </a>
             <a
               href="#product"
-              className="inline-flex items-center justify-center rounded-lg border-2 border-primary px-8 py-4 text-base font-medium text-primary hover:bg-primary/10 hover:shadow-glow-pearl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-black"
+              className="inline-flex items-center justify-center rounded-lg border-2 px-8 py-4 text-base font-button font-bold uppercase tracking-wider transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2"
+              style={{ 
+                borderColor: '#D4AF37',
+                color: '#D4AF37',
+              }}
             >
               Explore Categories
             </a>

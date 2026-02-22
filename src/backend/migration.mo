@@ -1,68 +1,48 @@
 import Map "mo:core/Map";
-import Text "mo:core/Text";
-import Nat "mo:core/Nat";
+import Principal "mo:core/Principal";
 
 module {
-  type OldProduct = {
-    id : Text;
+  type OldUserProfile = {
     name : Text;
-    price : Nat;
-    description : Text;
-    images : [Text];
-    fabric : Text;
-    variants : [OldVariant];
-    blousePair : Text;
-    category : Text;
+    email : Text;
+    phone : Text;
   };
 
-  type OldVariant = {
-    color : Text;
-    size : Text;
+  type NewUserProfile = {
+    name : Text;
+    email : Text;
+    phone : Text;
+    addresses : [Address];
+  };
+
+  type Address = {
+    addressLabel : Text;
+    street : Text;
+    city : Text;
+    state : Text;
+    postalCode : Text;
+    country : Text;
+    phone : Text;
+    isDefault : Bool;
   };
 
   type OldActor = {
-    products : Map.Map<Text, OldProduct>;
-    nextProductId : Nat;
-  };
-
-  type NewProduct = {
-    id : Text;
-    name : Text;
-    price : Nat;
-    description : Text;
-    images : [Text];
-    fabric : Text;
-    variants : [NewVariant];
-    blousePair : Text;
-    category : Text;
-  };
-
-  type NewVariant = {
-    color : Text;
-    size : Text;
+    userProfiles : Map.Map<Principal.Principal, OldUserProfile>;
   };
 
   type NewActor = {
-    products : Map.Map<Text, NewProduct>;
-    nextProductId : Nat;
+    userProfiles : Map.Map<Principal.Principal, NewUserProfile>;
   };
 
   public func run(old : OldActor) : NewActor {
-    let newProducts = old.products.map<Text, OldProduct, NewProduct>(
-      func(_id, oldProduct) {
+    let newUserProfiles = old.userProfiles.map<Principal.Principal, OldUserProfile, NewUserProfile>(
+      func(_principal, oldProfile) {
         {
-          oldProduct with
-          variants = oldProduct.variants.map<OldVariant, NewVariant>(
-            func(variant) {
-              {
-                color = variant.color;
-                size = variant.size;
-              };
-            }
-          );
+          oldProfile with
+          addresses = [];
         };
       }
     );
-    { old with products = newProducts };
+    { userProfiles = newUserProfiles };
   };
 };

@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-after-clicking-send-otp-button-display-a-resend-otp-button-link-below-the-6-digit-otp-input-fields-with-pearl-blue-text-color-7fb3d5-initially-disable-the-button-for-60-seconds-with-a-countdown-timer-showing-resend-in-60s-resend-in-59s-etc-counting-down-to-resend-otp-when-the-timer-ends",
-      "featureTitle": "After clicking 'Send OTP' button, display a 'Resend OTP' button/link below the 6-digit OTP input fields with pearl blue text color (#7FB3D5). Initially disable the button for 60 seconds with a countdown timer showing 'Resend in 60s', 'Resend in 59s', etc., counting down to 'Resend OTP' when the timer ends.",
+      "featureId": "feature-transform-the-home-page-post-login-layout-to-display-a-large-centered-doraa-sangam-house-logo-in-elegant-gold-font-on-dark-background-at-the-top-center-of-the-page",
+      "featureTitle": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
       "files": [
-        "frontend/src/hooks/useOtpResendTimer.ts",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/pages/HomeSection.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -18,15 +17,16 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-17"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-when-the-60-second-timer-expires-and-the-user-clicks-the-enabled-resend-otp-button-send-a-new-otp-to-the-same-mobile-number-and-reset-the-countdown-timer-to-60-seconds-again",
-      "featureTitle": "When the 60-second timer expires and the user clicks the enabled 'Resend OTP' button, send a new OTP to the same mobile number and reset the countdown timer to 60 seconds again.",
+      "featureId": "feature-add-a-horizontal-category-navigation-bar-below-the-logo-with-five-categories-shirts-kurta-bottoms-sarees-shop-all-style-buttons-with-cyan-teal-colors-and-golden-hover-glow-effects-make-the-navigation-horizontally-scrollable-on-mobile-devices",
+      "featureTitle": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
       "files": [
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/components/CategoryNavigationBar.tsx",
+        "frontend/src/pages/HomeSection.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -38,15 +38,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-18"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-style-the-resend-otp-button-with-pearl-blue-text-7fb3d5-gold-underline-glow-effect-on-hover-and-subtle-pulse-animation-when-enabled-display-timer-text-in-small-pearl-off-white-color-f5f5f0-with-gold-accent-on-the-countdown-number-maintain-the-dark-luxury-theme-with-black-background-and-pearl-blue-gold-accents-ensure-responsive-design-for-mobile-devices",
-      "featureTitle": "Style the 'Resend OTP' button with pearl blue text (#7FB3D5), gold underline/glow effect on hover, and subtle pulse animation when enabled. Display timer text in small pearl off-white color (#F5F5F0) with gold accent on the countdown number. Maintain the dark luxury theme with black background and pearl blue/gold accents. Ensure responsive design for mobile devices.",
+      "featureId": "feature-display-a-grid-of-product-cards-below-the-navigation-showing-saree-products-with-on-model-images-product-name-price-discount-percentage-badge-and-add-to-cart-button-cards-should-have-16px-curved-corners-subtle-shadows-and-on-hover-display-lift-animation-with-golden-border-glow",
+      "featureTitle": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
       "files": [
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/pages/HomeSection.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -58,16 +58,16 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-3"
+        "REQ-20"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-a-maximum-of-3-resend-attempts-within-a-10-minute-window-using-localstorage-to-track-timer-state-and-attempt-count-if-the-user-exceeds-3-resends-display-the-message-too-many-attempts-try-again-after-10-minutes-and-disable-the-resend-button-until-the-10-minute-window-expires",
-      "featureTitle": "Implement a maximum of 3 resend attempts within a 10-minute window using localStorage to track timer state and attempt count. If the user exceeds 3 resends, display the message 'Too many attempts. Try again after 10 minutes' and disable the resend button until the 10-minute window expires.",
+      "featureId": "feature-add-an-optional-hero-banner-section-at-the-top-of-the-product-grid-with-full-width-saree-showcase-image-and-overlay-text-reading-new-arrivals-flat-60-off",
+      "featureTitle": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
       "files": [
-        "frontend/src/hooks/useOtpResendAttempts.ts",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/components/HeroBanner.tsx",
+        "frontend/src/pages/HomeSection.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -79,15 +79,16 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-4"
+        "REQ-21"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-on-successful-otp-resend-display-a-toast-notification-with-the-message-new-otp-sent-using-gold-border-and-pearl-off-white-text-f5f5f0-consistent-with-the-premium-dark-luxury-theme",
-      "featureTitle": "On successful OTP resend, display a toast notification with the message 'New OTP sent!' using gold border and pearl off-white text (#F5F5F0), consistent with the premium dark luxury theme.",
+      "featureId": "feature-create-a-user-dashboard-page-accessible-via-the-profile-icon-with-three-tabs-profile-orders-and-addresses-display-user-profile-information-including-name-email-and-phone-number-with-a-save-button-to-update-the-data",
+      "featureTitle": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
       "files": [
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/pages/DashboardPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -99,15 +100,19 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-5"
+        "REQ-22"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-do-not-modify-any-existing-functionality-for-send-otp-otp-verification-internet-identity-integration-or-other-parts-of-the-login-flow-only-add-the-resend-otp-feature-with-timer-and-attempt-limit",
-      "featureTitle": "Do not modify any existing functionality for Send OTP, OTP verification, Internet Identity integration, or other parts of the login flow. Only add the Resend OTP feature with timer and attempt limit.",
+      "featureId": "feature-add-a-theme-switcher-section-in-the-user-dashboard-with-three-theme-options-dark-current-0b0e0c-background-with-white-text-light-white-light-gray-f8f9fa-background-with-dark-1a1a1a-text-and-system-follows-os-prefers-color-scheme-save-the-user-s-theme-choice-in-localstorage-and-apply-it-on-page-load",
+      "featureTitle": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
       "files": [
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/components/ThemeSwitcher.tsx",
+        "frontend/src/hooks/useTheme.ts",
+        "frontend/src/index.css",
+        "frontend/src/pages/DashboardPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -119,7 +124,132 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-6"
+        "REQ-23"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-light-theme-maintains-clean-readability-with-proper-contrast-ratios-for-all-text-buttons-and-interactive-elements-while-preserving-the-premium-luxury-aesthetic",
+      "featureTitle": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
+      "files": [
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-24"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-golden-hover-glow-effects-consistently-across-all-buttons-icons-and-interactive-elements-in-both-dark-and-light-themes",
+      "featureTitle": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
+      "files": [
+        "frontend/src/components/CategoryNavigationBar.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-25"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-the-entire-interface-is-fully-responsive-on-mobile-devices-categories-scroll-horizontally-logo-remains-centered-and-product-grid-adjusts-to-single-or-two-column-layout",
+      "featureTitle": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
+      "files": [
+        "frontend/src/components/CategoryNavigationBar.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/HomeSection.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-26"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-require-user-authentication-to-access-the-dashboard-and-perform-cart-actions-display-a-login-prompt-or-redirect-to-login-page-when-unauthenticated-users-attempt-to-access-protected-features",
+      "featureTitle": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
+      "files": [
+        "frontend/src/pages/DashboardPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-preserve-all-existing-functionality-including-internet-identity-authentication-otp-login-flows-shopping-cart-operations-and-category-carousel-features-without-introducing-regressions-or-bugs",
+      "featureTitle": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/HomeSection.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-28"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-five-generated-product-images-showing-sarees-on-models-for-use-in-the-product-grid-each-with-dimensions-800x1000-pixels-and-visually-distinct-styles",
+      "featureTitle": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
+      "files": [
+        "frontend/src/pages/HomeSection.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-29"
       ],
       "confidence": "high"
     }

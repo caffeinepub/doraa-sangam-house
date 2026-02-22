@@ -57,9 +57,15 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
 
   if (isLoading) {
     return (
-      <Card className="overflow-hidden rounded-[28px] bg-card/50 backdrop-blur-sm border-border/30">
+      <Card 
+        className="overflow-hidden rounded-[28px] backdrop-blur-sm"
+        style={{ 
+          backgroundColor: 'rgba(46, 26, 71, 0.6)',
+          borderColor: 'rgba(201, 169, 110, 0.3)'
+        }}
+      >
         <div className="aspect-[3/4] shimmer-skeleton" />
-        <CardContent className="p-4 space-y-2">
+        <CardContent className="p-6 space-y-3">
           <div className="h-4 shimmer-skeleton rounded" />
           <div className="h-4 shimmer-skeleton rounded w-2/3" />
         </CardContent>
@@ -116,45 +122,49 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   return (
     <Card
       ref={cardRef}
-      className="group relative overflow-hidden rounded-[28px] bg-gradient-to-br from-black via-slate-950 to-blue-950/30 backdrop-blur-sm border-border/30 transition-all duration-400 hover:border-primary/50 cursor-pointer product-card-hover-phase2 shadow-lg"
-      style={
-        {
-          '--mouse-x': `${mousePos.x}%`,
-          '--mouse-y': `${mousePos.y}%`,
-        } as React.CSSProperties
-      }
+      className="group relative overflow-hidden rounded-[28px] backdrop-blur-sm transition-all duration-400 cursor-pointer product-card-hover shadow-lg"
+      style={{
+        background: 'rgba(46, 26, 71, 0.6)',
+        borderColor: 'rgba(201, 169, 110, 0.3)',
+        borderWidth: '2px',
+        '--mouse-x': `${mousePos.x}%`,
+        '--mouse-y': `${mousePos.y}%`,
+      } as React.CSSProperties}
       onMouseEnter={() => !prefersReducedMotion && setShowQuickDetails(true)}
       onMouseLeave={() => setShowQuickDetails(false)}
       onClick={() => onViewDetail(productId)}
     >
-      {/* Micro ripple layer */}
-      <div className="micro-ripple-layer" />
+      {/* Fabric ripple overlay */}
+      <div className="fabric-ripple-effect" />
 
       {/* Image container with zoom effect */}
-      <div ref={imageRef} className="relative aspect-[3/4] overflow-hidden bg-muted/20">
+      <div ref={imageRef} className="relative aspect-[3/4] overflow-hidden">
         <img
           src={primaryImage}
           alt={product.name}
           loading="lazy"
           decoding="async"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.12]"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.12] product-card-image-zoom"
         />
 
-        {/* Fabric ripple overlay - CSS only */}
-        <div className="fabric-ripple-hover-phase2 absolute inset-0" />
-
-        {/* Top badges - Premium Myntra/Flipkart style */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+        {/* Top badges */}
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
           {product.rating >= 4.5 && (
-            <Badge className="bg-accent/95 text-accent-foreground backdrop-blur-sm border-0 text-xs font-semibold px-2 py-1 shadow-md">
+            <Badge 
+              className="backdrop-blur-sm border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
+              style={{ backgroundColor: 'rgba(201, 169, 110, 0.95)', color: '#2E1A47' }}
+            >
               <Award className="w-3 h-3 mr-1" />
               Top Rated
             </Badge>
           )}
           {discount >= 20 && (
-            <Badge className="bg-primary/95 text-primary-foreground backdrop-blur-sm border-0 text-xs font-semibold px-2 py-1 shadow-md">
+            <Badge 
+              className="backdrop-blur-sm border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
+              style={{ backgroundColor: 'rgba(201, 169, 110, 0.95)', color: '#2E1A47' }}
+            >
               <Tag className="w-3 h-3 mr-1" />
-              Best Price with coupon
+              Best Price
             </Badge>
           )}
         </div>
@@ -163,7 +173,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
         <Button
           size="sm"
           variant="secondary"
-          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 hidden md:flex shadow-lg"
+          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 hidden md:flex shadow-lg button-luxury"
           onClick={handleQuickView}
         >
           <Eye className="w-4 h-4" />
@@ -171,76 +181,72 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
       </div>
 
       {/* Product details */}
-      <CardContent className="p-4 space-y-3">
-        {/* Product name - Serif font, pearl off-white */}
-        <h3 className="font-serif text-foreground/95 text-base line-clamp-2 leading-snug min-h-[2.5rem]">
+      <CardContent className="p-6 space-y-4">
+        {/* Product name - Lora font, warm beige */}
+        <h3 
+          className="font-sans text-base line-clamp-2 leading-relaxed min-h-[3rem]"
+          style={{ color: '#D4C9B0' }}
+        >
           {product.name}
         </h3>
 
-        {/* Pricing row - Gold price, gray MRP strike-through, pearl blue discount */}
+        {/* Pricing row - Gold price, gray MRP strike-through, gold discount */}
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-xl font-bold" style={{ color: '#D4AF37' }}>
+          <span className="text-xl font-bold" style={{ color: '#C9A96E' }}>
             {formatPrice(product.price)}
           </span>
-          <span className="text-sm text-muted-foreground line-through">{formatPrice(mrp)}</span>
-          <span className="text-sm font-semibold text-primary">({discount}% off)</span>
+          <span className="text-sm line-through" style={{ color: '#A68A9A' }}>
+            {formatPrice(mrp)}
+          </span>
+          <span className="text-sm font-semibold" style={{ color: '#C9A96E' }}>
+            ({discount}% off)
+          </span>
         </div>
 
-        {/* Rating and reviews - Gold stars, formatted rating */}
+        {/* Rating and reviews - Gold stars */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-accent text-accent" />
-            <span className="text-sm font-semibold" style={{ color: '#D4AF37' }}>
+            <Star className="w-4 h-4 fill-current" style={{ color: '#C9A96E' }} />
+            <span className="text-sm font-semibold" style={{ color: '#C9A96E' }}>
               {formatRating(product.rating)}
             </span>
           </div>
-          <span className="text-xs text-muted-foreground">({formatReviewCount(product.reviewCount)})</span>
+          <span className="text-xs" style={{ color: '#A68A9A' }}>
+            ({formatReviewCount(product.reviewCount)})
+          </span>
         </div>
 
-        {/* Feature badges - Premium Myntra/Flipkart style */}
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="text-xs border-primary/40 text-primary/90 bg-primary/5 px-2 py-0.5">
-            <Truck className="w-3 h-3 mr-1" />
-            Express Delivery
-          </Badge>
-          {product.fabric && (
-            <Badge variant="outline" className="text-xs border-border/50 text-muted-foreground bg-muted/10 px-2 py-0.5">
-              <Package className="w-3 h-3 mr-1" />
-              {product.fabric}
-            </Badge>
-          )}
-        </div>
-
-        {/* Action buttons - Heart (wishlist) + Cart with gold/pearl blue glow pulse - mobile friendly */}
-        <div className="flex gap-2 pt-2">
+        {/* Action buttons */}
+        <div className="flex items-center gap-3 pt-2">
           <Button
             size="sm"
-            variant="outline"
-            className={`flex-1 action-icon-glow transition-all min-h-[44px] ${
-              inWishlist ? 'bg-primary/10 border-primary/50 text-primary' : ''
-            }`}
-            onClick={handleWishlistToggle}
-          >
-            <Heart className={`w-4 h-4 ${inWishlist ? 'fill-current' : ''}`} />
-          </Button>
-          <Button
-            size="sm"
-            className={`flex-1 action-icon-glow transition-all min-h-[44px] ${
-              inCart
-                ? 'bg-accent/90 hover:bg-accent text-accent-foreground'
-                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
-            }`}
+            className="flex-1 font-button font-bold uppercase button-luxury"
             onClick={handleAddToCart}
             disabled={inCart}
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
             {inCart ? 'In Cart' : 'Add'}
           </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            className="transition-all duration-300 hover:scale-105"
+            style={{ 
+              borderColor: 'rgba(201, 169, 110, 0.6)',
+              color: inWishlist ? '#C9A96E' : '#D4C9B0'
+            }}
+            onClick={handleWishlistToggle}
+          >
+            <Heart className={`w-4 h-4 ${inWishlist ? 'fill-current' : ''}`} />
+          </Button>
         </div>
       </CardContent>
 
-      {/* Quick details overlay - Shows on hover with dummy values */}
-      <BanarasiQuickDetailsOverlay productId={productId} isVisible={showQuickDetails} />
+      {/* Quick details overlay (desktop only) */}
+      <BanarasiQuickDetailsOverlay
+        productId={productId}
+        isVisible={showQuickDetails}
+      />
     </Card>
   );
 }

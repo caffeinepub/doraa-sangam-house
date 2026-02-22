@@ -1,96 +1,214 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T08:35:09.124Z",
+  "generatedAt": "2026-02-22T11:32:52.245Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 6,
+    "total": 13,
+    "implemented": 12,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "After clicking 'Send OTP' button, display a 'Resend OTP' button/link below the 6-digit OTP input fields with pearl blue text color (#7FB3D5). Initially disable the button for 60 seconds with a countdown timer showing 'Resend in 60s', 'Resend in 59s', etc., counting down to 'Resend OTP' when the timer ends.",
+        "id": "REQ-17",
+        "summary": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useOtpResendTimer.ts",
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/pages/HomeSection.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useOtpResendTimer.ts",
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/pages/HomeSection.tsx"
         ]
       },
       {
-        "id": "REQ-2",
-        "summary": "When the 60-second timer expires and the user clicks the enabled 'Resend OTP' button, send a new OTP to the same mobile number and reset the countdown timer to 60 seconds again.",
+        "id": "REQ-18",
+        "summary": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/pages/HomeSection.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/pages/HomeSection.tsx"
         ]
       },
       {
-        "id": "REQ-3",
-        "summary": "Style the 'Resend OTP' button with pearl blue text (#7FB3D5), gold underline/glow effect on hover, and subtle pulse animation when enabled. Display timer text in small pearl off-white color (#F5F5F0) with gold accent on the countdown number. Maintain the dark luxury theme with black background and pearl blue/gold accents. Ensure responsive design for mobile devices.",
+        "id": "REQ-19",
+        "summary": "Add a user profile/dashboard icon (circle avatar or icon) in the top right corner of the navigation bar that opens the user dashboard when clicked",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/components/Header.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-20",
+        "summary": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx",
+          "frontend/src/components/ProductCard.tsx",
+          "frontend/src/pages/HomeSection.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomeSection.tsx"
+        ]
+      },
+      {
+        "id": "REQ-21",
+        "summary": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/HeroBanner.tsx",
+          "frontend/src/pages/HomeSection.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/HeroBanner.tsx",
+          "frontend/src/pages/HomeSection.tsx"
+        ]
+      },
+      {
+        "id": "REQ-22",
+        "summary": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-23",
+        "summary": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useTheme.ts",
+          "frontend/src/components/ThemeSwitcher.tsx",
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/index.css",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useTheme.ts",
+          "frontend/src/components/ThemeSwitcher.tsx",
+          "frontend/src/pages/DashboardPage.tsx",
+          "frontend/src/index.css",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-24",
+        "summary": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
+        ]
+      },
+      {
+        "id": "REQ-25",
+        "summary": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/components/ProductCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/components/CategoryNavigationBar.tsx"
+        ]
+      },
+      {
+        "id": "REQ-26",
+        "summary": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/pages/HomeSection.tsx",
           "frontend/src/index.css"
         ],
         "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/pages/HomeSection.tsx",
+          "frontend/src/index.css"
         ]
       },
       {
-        "id": "REQ-4",
-        "summary": "Implement a maximum of 3 resend attempts within a 10-minute window using localStorage to track timer state and attempt count. If the user exceeds 3 resends, display the message 'Too many attempts. Try again after 10 minutes' and disable the resend button until the 10-minute window expires.",
+        "id": "REQ-27",
+        "summary": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useOtpResendAttempts.ts",
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/ProductCard.tsx",
+          "frontend/src/pages/DashboardPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useOtpResendAttempts.ts",
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/pages/DashboardPage.tsx"
         ]
       },
       {
-        "id": "REQ-5",
-        "summary": "On successful OTP resend, display a toast notification with the message 'New OTP sent!' using gold border and pearl off-white text (#F5F5F0), consistent with the premium dark luxury theme.",
+        "id": "REQ-28",
+        "summary": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/HomeSection.tsx",
+          "frontend/src/commerce/CommerceProvider.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/HomeSection.tsx"
         ]
       },
       {
-        "id": "REQ-6",
-        "summary": "Do not modify any existing functionality for Send OTP, OTP verification, Internet Identity integration, or other parts of the login flow. Only add the Resend OTP feature with timer and attempt limit.",
+        "id": "REQ-29",
+        "summary": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/pages/HomeSection.tsx",
+          "frontend/src/components/ProductCard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/LoginPage.tsx"
+          "frontend/src/pages/HomeSection.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/hooks/useOtpResendAttempts.ts",
-    "frontend/src/hooks/useOtpResendTimer.ts",
-    "frontend/src/pages/LoginPage.tsx",
+    "frontend/public/assets/generated/product-banarasi.dim_800x1000.png",
+    "frontend/public/assets/generated/product-georgette.dim_800x1000.png",
+    "frontend/public/assets/generated/product-kalamkari.dim_800x1000.png",
+    "frontend/public/assets/generated/product-organza.dim_800x1000.png",
+    "frontend/public/assets/generated/product-silk.dim_800x1000.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/CategoryNavigationBar.tsx",
+    "frontend/src/components/HeroBanner.tsx",
+    "frontend/src/components/ThemeSwitcher.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useTheme.ts",
+    "frontend/src/index.css",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/HomeSection.tsx",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

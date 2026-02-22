@@ -1,146 +1,299 @@
 {
   "kind": "build_request",
-  "title": "Add Resend OTP Feature with Timer and Attempt Limit to Login Page",
+  "title": "Transform to Vastrado-style e-commerce with theme switcher",
   "projectName": "DoRaa Sangam House",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "After clicking 'Send OTP' button, display a 'Resend OTP' button/link below the 6-digit OTP input fields with pearl blue text color (#7FB3D5). Initially disable the button for 60 seconds with a countdown timer showing 'Resend in 60s', 'Resend in 59s', etc., counting down to 'Resend OTP' when the timer ends.",
+      "id": "REQ-17",
+      "text": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "After clicking 'Send OTP' button: Show 6-digit OTP input fields. Add 'Resend OTP' text/button/link below OTP input (pearl blue text, gold hover/glow). Initially disabled for 60 seconds. Show countdown timer next to it: 'Resend in 60s' → 'Resend in 59s' → ... → 'Resend OTP' when timer ends."
+          "Center top: large DoRaa Sangam House logo (use existing luxury logo or text in elegant gold font on dark bg)"
         ]
       },
       "acceptanceCriteria": [
-        "After 'Send OTP' is clicked, 6-digit OTP input fields are displayed",
-        "'Resend OTP' button appears below OTP input fields",
-        "Button displays pearl blue text (#7FB3D5)",
-        "Button is disabled for 60 seconds with countdown timer visible",
-        "Timer text shows 'Resend in Xs' format, counting down from 60 to 0",
-        "When timer reaches 0, button text changes to 'Resend OTP' and button becomes enabled"
+        "Logo is centered horizontally at the top of the page",
+        "Logo uses elegant gold color (#D4AF37 or antique gold from theme) on dark background",
+        "Logo is prominently sized and visible on all viewport sizes"
       ]
     },
     {
-      "id": "REQ-2",
-      "text": "When the 60-second timer expires and the user clicks the enabled 'Resend OTP' button, send a new OTP to the same mobile number and reset the countdown timer to 60 seconds again.",
+      "id": "REQ-18",
+      "text": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "Timer ends pe button enable ho, click pe new OTP send ho (same mobile number pe). Each resend reset timer to 60 seconds again."
+          "horizontal category navigation bar (responsive, scrollable on mobile): Categories: Shirts, Kurta, Bottoms, Sarees, Shop All (cyan/teal buttons, hover glow)"
         ]
       },
       "acceptanceCriteria": [
-        "When button is enabled and clicked, a new OTP is sent to the same mobile number",
-        "Timer resets to 60 seconds and counts down again",
-        "Button becomes disabled again during the new countdown period"
+        "Five category buttons are displayed in a horizontal row below the logo",
+        "Buttons use cyan/teal color (#14b8a6 or similar)",
+        "Buttons display golden glow effect on hover",
+        "On mobile viewports, the category bar scrolls horizontally",
+        "All categories are visible and clickable"
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Style the 'Resend OTP' button with pearl blue text (#7FB3D5), gold underline/glow effect on hover, and subtle pulse animation when enabled. Display timer text in small pearl off-white color (#F5F5F0) with gold accent on the countdown number. Maintain the dark luxury theme with black background and pearl blue/gold accents. Ensure responsive design for mobile devices.",
+      "id": "REQ-19",
+      "text": "Add a user profile/dashboard icon (circle avatar or icon) in the top right corner of the navigation bar that opens the user dashboard when clicked",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "'Resend OTP' button: pearl blue text (#7FB3D5), gold underline/glow on hover, subtle pulse when enabled. Timer text: small pearl off-white (#F5F5F0), gold accent on number. Keep dark luxury theme (black bg, pearl blue/gold accents). Responsive, mobile-friendly."
+          "Right side: user profile/dashboard icon (circle avatar or icon, click opens dashboard)"
         ]
       },
       "acceptanceCriteria": [
-        "Button text is pearl blue (#7FB3D5)",
-        "Gold underline/glow effect appears on hover when button is enabled",
-        "Subtle pulse animation plays when button is enabled",
-        "Timer text uses pearl off-white (#F5F5F0)",
-        "Countdown number has gold accent color",
-        "Design maintains dark luxury theme with black background",
-        "UI is responsive and mobile-friendly"
+        "Profile icon is positioned in the top right corner of the navigation area",
+        "Icon is circular and styled consistently with the luxury theme",
+        "Clicking the icon opens the user dashboard",
+        "Icon has golden hover glow effect matching other interactive elements"
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Implement a maximum of 3 resend attempts within a 10-minute window using localStorage to track timer state and attempt count. If the user exceeds 3 resends, display the message 'Too many attempts. Try again after 10 minutes' and disable the resend button until the 10-minute window expires.",
+      "id": "REQ-20",
+      "text": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "Max 3 resends allowed in 10 minutes (if exceeded, show message: 'Too many attempts. Try again after 10 minutes' and disable resend). Use localStorage to track timer and attempt count."
+          "grid of saree/product cards (on-model images, name, price, discount % badge, 'Add to Cart' button)",
+          "Cards: curved corners (16px), subtle shadow, hover lift + gold border glow"
         ]
       },
       "acceptanceCriteria": [
-        "Maximum of 3 resend attempts allowed within 10 minutes",
-        "Attempt count and window start time are stored in localStorage",
-        "After 3 attempts, message 'Too many attempts. Try again after 10 minutes' is displayed",
-        "Resend button is disabled when attempt limit is reached",
-        "After 10-minute window expires, attempt count resets and resend becomes available again"
+        "Product cards are displayed in a responsive grid layout below the category navigation",
+        "Each card shows product image, name, price, discount badge, and Add to Cart button",
+        "Cards have 16px border radius and subtle box shadow",
+        "On hover, cards animate with a lift effect and golden border glow",
+        "Product images show sarees on models",
+        "Grid is responsive and adjusts column count based on viewport width"
       ]
     },
     {
-      "id": "REQ-5",
-      "text": "On successful OTP resend, display a toast notification with the message 'New OTP sent!' using gold border and pearl off-white text (#F5F5F0), consistent with the premium dark luxury theme.",
+      "id": "REQ-21",
+      "text": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "On successful resend: show toast 'New OTP sent!' (gold border, pearl off-white text)."
+          "Hero banner (optional): full-width saree showcase with overlay text 'New Arrivals - Flat 60% Off'"
         ]
       },
       "acceptanceCriteria": [
-        "Toast notification appears after successful OTP resend",
-        "Toast message reads 'New OTP sent!'",
-        "Toast has gold border",
-        "Toast text is pearl off-white (#F5F5F0)",
-        "Toast styling matches premium dark luxury theme"
+        "Hero banner spans full width above the product grid",
+        "Banner displays a saree showcase image",
+        "Text overlay reads 'New Arrivals - Flat 60% Off'",
+        "Text is readable with proper contrast against the background",
+        "Banner is responsive on all device sizes"
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Do not modify any existing functionality for Send OTP, OTP verification, Internet Identity integration, or other parts of the login flow. Only add the Resend OTP feature with timer and attempt limit.",
-      "target": "frontend",
+      "id": "REQ-22",
+      "text": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-11"
         ],
         "quotes": [
-          "No changes to other parts (Send OTP, OTP verification, Internet Identity, etc.)."
+          "Clean page with tabs: Profile, Orders, Addresses",
+          "Preserve user details (name, email, phone, save button)"
         ]
       },
       "acceptanceCriteria": [
-        "Existing 'Send OTP' functionality remains unchanged",
-        "OTP verification logic remains unchanged",
-        "Internet Identity integration remains unchanged",
-        "No other login flow components are modified"
+        "Dashboard opens when profile icon is clicked",
+        "Three tabs are visible and selectable: Profile, Orders, Addresses",
+        "Profile tab displays editable fields for name, email, and phone",
+        "Save button updates user profile data in the backend",
+        "Dashboard page uses clean, premium styling consistent with the luxury theme"
+      ]
+    },
+    {
+      "id": "REQ-23",
+      "text": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "Add Theme Switcher section: 3 options (Dark, Light, System)",
+          "Dark: current dark theme (#0B0E0C bg, white text)",
+          "Light: white/light gray bg (#F8F9FA), dark text (#1A1A1A)",
+          "System: follow user's OS preference (prefers-color-scheme)",
+          "Use localStorage to save theme choice, apply on load"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Theme switcher is visible in the user dashboard",
+        "Three selectable options are displayed: Dark, Light, System",
+        "Dark theme uses #0B0E0C background with white text",
+        "Light theme uses #F8F9FA background with #1A1A1A text",
+        "System option detects and follows OS prefers-color-scheme setting",
+        "Selected theme is saved to localStorage",
+        "Theme is applied immediately on selection",
+        "Theme persists across page reloads and sessions"
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "text": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "Keep dark luxury base, but make light theme clean & readable"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All text in light theme has sufficient contrast (WCAG AA minimum)",
+        "Buttons and interactive elements are clearly visible in light theme",
+        "Golden hover effects are visible against light backgrounds",
+        "Light theme maintains premium, luxury visual styling",
+        "No readability issues or visual glitches in light mode"
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "text": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "Golden hover/glow on all buttons/icons"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All buttons display golden glow on hover",
+        "All icons display golden glow on hover",
+        "Hover effects work in both dark and light themes",
+        "Glow effect is smooth and consistent across all interactive elements"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "text": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "Responsive: mobile pe categories horizontal scroll, logo center"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On mobile viewports (< 768px), category navigation scrolls horizontally",
+        "Logo remains centered on all screen sizes",
+        "Product grid displays 1-2 columns on mobile devices",
+        "All elements are usable and properly sized on mobile",
+        "No horizontal overflow or layout breakage on small screens"
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "Login required for dashboard & certain actions (show login prompt if not logged in)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Unauthenticated users cannot access the dashboard",
+        "Clicking profile icon when not logged in shows login prompt or redirects to login",
+        "Cart actions require authentication",
+        "After successful login, users are redirected to their intended destination",
+        "Login prompt is clear and user-friendly"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ],
+        "quotes": [
+          "No other changes: preserve login/OTP, Internet Identity, cart, category carousel if present",
+          "No blank screen or bugs"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Internet Identity login flow works without issues",
+        "OTP authentication flow remains functional",
+        "Shopping cart add/update/remove operations work correctly",
+        "Existing category carousel (if present) continues to function",
+        "No blank screens or JavaScript errors occur",
+        "All existing features remain operational after the transformation"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "text": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-11"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Five product images are generated and placed in frontend/public/assets/generated",
+        "Each image shows a saree worn by a model",
+        "Images have 800x1000 pixel dimensions",
+        "Images represent visually distinct saree styles (Banarasi, silk, organza, etc.)",
+        "Images are used in product cards on the home page grid"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing 'Send OTP' button functionality or OTP verification logic",
-    "Do not change Internet Identity integration",
-    "Maintain the existing dark luxury theme with pearl blue (#7FB3D5) and gold accents",
-    "Use only localStorage for tracking timer and attempt count (no backend changes)",
-    "Preserve existing mobile responsiveness and UI consistency"
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useInternetIdentity.tsx",
+    "Do not modify frontend/src/hooks/useActor.ts",
+    "Do not modify frontend/src/main.tsx",
+    "Do not edit any files in frontend/src/components/ui",
+    "Preserve the royal Banarasi-Kanpur luxury color scheme (deep plum #4A1942, antique gold #D4AF37, warm ivory #F8F4E3)",
+    "Maintain single-actor Motoko backend architecture in backend/main.mo"
   ],
   "nonGoals": [
-    "Backend modifications for OTP generation or sending",
-    "Changes to Internet Identity authentication flow",
-    "Modifications to other authentication methods",
-    "Changes to dashboard or other pages",
-    "Email-based OTP resend functionality"
+    "Changing the backend data schema or storage structure",
+    "Adding real-time features like WebSockets or live chat",
+    "Integrating third-party payment processors beyond Razorpay",
+    "Implementing admin product management features (already exists)",
+    "Adding social media integration or sharing features",
+    "Creating a mobile app version"
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Elegant saree on model with Banarasi zari work, rich red and gold colors (product-banarasi.dim_800x1000.png)",
+      "Luxurious silk saree on model with flowing drape, deep purple and silver (product-silk.dim_800x1000.png)",
+      "Lightweight organza saree on model with subtle patterns, pastel pink and gold (product-organza.dim_800x1000.png)",
+      "Traditional georgette saree on model with embroidery, teal and gold accents (product-georgette.dim_800x1000.png)",
+      "Kalamkari print saree on model with artistic motifs, cream and brown tones (product-kalamkari.dim_800x1000.png)"
+    ],
     "edits": []
   }
 }

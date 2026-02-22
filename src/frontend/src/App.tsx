@@ -1,9 +1,9 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { useActor } from './hooks/useActor';
 import { CommerceProvider } from './commerce/CommerceProvider';
 import { useSpaLocation } from './hooks/useSpaLocation';
+import { useTheme } from './hooks/useTheme';
 import OceanBackground from './components/OceanBackground';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -41,6 +41,9 @@ function App() {
   const [location, navigate] = useSpaLocation();
   const { isAuthenticated, logout, setFlashMessage } = useStorefrontAuth();
   const { clear: clearII } = useInternetIdentity();
+  
+  // Initialize theme on app load
+  useTheme();
 
   useEffect(() => {
     if (actor) {
@@ -76,57 +79,51 @@ function App() {
   // Handle size chart route
   if (location.pathname === '/size-chart') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <Header />
-              <SizeChartPage />
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <Header />
+            <SizeChartPage />
+            <Footer />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
   // Handle trending collections route (protected)
   if (location.pathname === '/collections/trending') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <Header />
-              <TrendingCollectionsPage />
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <Header />
+            <TrendingCollectionsPage />
+            <Footer />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
   // Handle categories main page route (protected)
   if (location.pathname === '/categories') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <Header />
-              <CategoriesMainPage />
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <Header />
+            <CategoriesMainPage />
+            <Footer />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
@@ -135,22 +132,20 @@ function App() {
   if (collectionMatch) {
     const slug = collectionMatch[1];
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <Header />
-              <StyleCollectionsPage
-                slug={slug}
-                onClose={() => navigate('/')}
-              />
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <Header />
+            <StyleCollectionsPage
+              slug={slug}
+              onClose={() => navigate('/')}
+            />
+            <Footer />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
@@ -159,199 +154,179 @@ function App() {
   if (productMatch) {
     const productId = productMatch[1];
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <Header />
-              <ProductDetailView
-                productId={productId}
-                onClose={() => navigate('/')}
-              />
-              <Footer />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <Header />
+            <ProductDetailView
+              productId={productId}
+              onClose={() => navigate('/')}
+            />
+            <Footer />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
   // Hidden admin bot route (no links to this anywhere)
   if (location.pathname === '/admin-bot') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminBotPage />
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminBotPage />
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // Hidden admin login route (no links to this anywhere)
   if (location.pathname === '/admin-login') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminLoginHiddenPage navigate={navigate} />
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminLoginHiddenPage navigate={navigate} />
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // OTP-protected /admin route (exact match only)
   if (location.pathname === '/admin') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminOtpProtectedPage navigate={navigate} />
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminOtpProtectedPage navigate={navigate} />
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // OTP-protected /admin-dashboard route (exact match only)
   if (location.pathname === '/admin-dashboard') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminOtpDashboardPage navigate={navigate} />
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminOtpDashboardPage navigate={navigate} />
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // Internet Identity admin login route
   if (location.pathname === ADMIN_ROUTES.LOGIN) {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminLoginPage navigate={navigate} />
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminLoginPage navigate={navigate} />
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // Internet Identity admin panel routes (starts with /admin/ but not exact /admin)
   if (location.pathname.startsWith('/admin/')) {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          <div className="relative z-10">
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
-              <AdminGate navigate={navigate}>
-                <AdminArea currentPath={location.pathname} navigate={navigate} />
-              </AdminGate>
-            </Suspense>
-          </div>
-          <Toaster position="top-right" />
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        <div className="relative z-10">
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
+            <AdminGate navigate={navigate}>
+              <AdminArea currentPath={location.pathname} navigate={navigate} />
+            </AdminGate>
+          </Suspense>
         </div>
-      </ThemeProvider>
+        <Toaster position="top-right" />
+      </div>
     );
   }
 
   // Storefront login page (with query string support)
   if (location.pathname === '/login') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <div className="relative min-h-screen bg-black">
-            <OceanBackground />
-            <div className="relative z-10">
-              <LoginPage navigate={navigate} />
-            </div>
-            <Toaster position="top-right" />
+      <CommerceProvider>
+        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <OceanBackground />
+          <div className="relative z-10">
+            <LoginPage navigate={navigate} />
           </div>
-        </CommerceProvider>
-      </ThemeProvider>
+          <Toaster position="top-right" />
+        </div>
+      </CommerceProvider>
     );
   }
 
   // Storefront dashboard (protected)
   if (location.pathname === '/dashboard' || location.pathname === '/profile') {
     return (
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-        <CommerceProvider>
-          <ProtectedRoute navigate={navigate}>
-            <div className="relative min-h-screen bg-black">
-              <OceanBackground />
-              <div className="relative z-10 dashboard-route-transition">
-                <Header />
-                <DashboardPage navigate={navigate} />
-                <Footer />
-              </div>
-              <Toaster position="top-right" />
+      <CommerceProvider>
+        <ProtectedRoute navigate={navigate}>
+          <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+            <OceanBackground />
+            <div className="relative z-10 dashboard-route-transition">
+              <Header />
+              <DashboardPage navigate={navigate} />
+              <Footer />
             </div>
-          </ProtectedRoute>
-        </CommerceProvider>
-      </ThemeProvider>
+            <Toaster position="top-right" />
+          </div>
+        </ProtectedRoute>
+      </CommerceProvider>
     );
   }
 
   // Storefront (default)
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <CommerceProvider>
-        <div className="relative min-h-screen bg-black">
-          <OceanBackground />
-          
-          {/* Cinematic vignette overlay */}
-          <div className="fixed inset-0 pointer-events-none z-[5]">
-            <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/60" />
-          </div>
-
-          <div className="relative z-10">
-            <Header />
-            <main className="min-h-screen">
-              <HomeSection />
-              <ProductsPage />
-              <ProductSection />
-              <CheckoutSection />
-              <FaqSection />
-              <AboutSection />
-            </main>
-            <Footer />
-          </div>
-          
-          {/* RaaHi Chat Widget - Global */}
-          <RaaHiChatWidget />
-          
-          <Toaster position="top-right" />
+    <CommerceProvider>
+      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <OceanBackground />
+        
+        {/* Cinematic vignette overlay */}
+        <div className="fixed inset-0 pointer-events-none z-[5]">
+          <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/60" />
         </div>
-      </CommerceProvider>
-    </ThemeProvider>
+
+        <div className="relative z-10">
+          <Header />
+          <main className="min-h-screen">
+            <HomeSection />
+            <ProductsPage />
+            <ProductSection />
+            <CheckoutSection />
+            <FaqSection />
+            <AboutSection />
+          </main>
+          <Footer />
+        </div>
+        
+        {/* RaaHi Chat Widget - Global */}
+        <RaaHiChatWidget />
+        
+        <Toaster position="top-right" />
+      </div>
+    </CommerceProvider>
   );
 }
 

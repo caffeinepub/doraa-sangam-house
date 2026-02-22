@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { BRAND_ASSETS, BRAND_NAME } from '../assets/branding';
 import { useState } from 'react';
 import { useGoldRipple } from '../hooks/useGoldRipple';
 import { useCommerce } from '../hooks/useCommerce';
@@ -88,19 +87,67 @@ export default function Header() {
     }
   };
 
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigate('/');
+  };
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-black/80 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60">
-        <div className="container flex h-20 items-center justify-between">
-          <a href="#home" className="flex items-center gap-3 group">
+      <header 
+        className="sticky top-0 z-50 w-full border-b backdrop-blur-xl supports-[backdrop-filter]:bg-plum/60"
+        style={{
+          background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
+          borderColor: 'rgba(201, 169, 110, 0.3)',
+        }}
+      >
+        {/* Faint gold zari pattern overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 40px,
+                rgba(201, 169, 110, 0.15) 40px,
+                rgba(201, 169, 110, 0.15) 41px
+              ),
+              repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 40px,
+                rgba(201, 169, 110, 0.15) 40px,
+                rgba(201, 169, 110, 0.15) 41px
+              )
+            `,
+          }}
+        />
+        
+        <div className="container flex h-24 items-center justify-between relative z-10 px-6 md:px-8">
+          {/* Clickable Luxury Logo with Premium Hover Effects */}
+          <a
+            href="/"
+            onClick={handleLogoClick}
+            className="flex items-center gap-4 group cursor-pointer transition-all duration-400"
+            aria-label="DoRaa Sangam House - Home"
+          >
             <img
-              src={BRAND_ASSETS.logoMark}
-              alt={`${BRAND_NAME} Logo`}
-              className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110"
+              src="/assets/Whisk_ymy3edohztmmjty10syzewotqdzyqtljzwnz0so-1.jpeg"
+              alt="DoRaa Sangam House - Luxury Logo"
+              className="h-12 w-auto md:h-14 lg:h-16 object-contain transition-all duration-400 group-hover:scale-105 group-hover:drop-shadow-[0_0_16px_rgba(201,169,110,0.7)]"
+              style={{ maxWidth: '180px' }}
             />
-            <h1 className="text-xl md:text-2xl font-serif font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-              {BRAND_NAME}
-            </h1>
+            <span 
+              className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-wider brand-name heading-gradient-hover"
+              style={{ 
+                color: '#C9A96E', 
+                textShadow: '0 0 12px rgba(201,169,110,0.6)',
+                letterSpacing: '0.25em'
+              }}
+            >
+              DoRaa Sangam House
+            </span>
           </a>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -108,25 +155,33 @@ export default function Header() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-300 relative group"
+                className="text-sm font-button font-bold uppercase tracking-wider transition-colors duration-300 relative group"
+                style={{ color: '#C9A96E' }}
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+                <span 
+                  className="absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300" 
+                  style={{ backgroundColor: '#C9A96E', boxShadow: '0 0 8px rgba(201,169,110,0.6)' }} 
+                />
               </a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Button
               data-cart-button
               variant="ghost"
               size="icon"
-              className="ripple-container relative hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px]"
+              className="ripple-container relative transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
+              style={{ color: '#C9A96E' }}
               onClick={handleCartClick}
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-accent text-accent-foreground border-0">
+                <Badge 
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs border-0" 
+                  style={{ backgroundColor: '#C9A96E', color: '#2E1A47' }}
+                >
                   {cartItemCount}
                 </Badge>
               )}
@@ -137,7 +192,8 @@ export default function Header() {
               onClick={handleProfileIconClick}
               variant="ghost"
               size="icon"
-              className="hover:bg-primary/10 hover:text-primary transition-all duration-300 gold-pulse-glow min-h-[44px] min-w-[44px]"
+              className="transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
+              style={{ color: '#C9A96E' }}
               title={isAuthenticated ? 'View Dashboard' : 'Login to view profile'}
             >
               <User className="h-5 w-5" />
@@ -148,7 +204,8 @@ export default function Header() {
                 onClick={handleLogout}
                 size="sm"
                 variant="ghost"
-                className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] hover:scale-105"
+                style={{ color: '#C9A96E' }}
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -159,14 +216,15 @@ export default function Header() {
                   onClick={handleSignInClick}
                   size="sm"
                   variant="ghost"
-                  className="hidden md:inline-flex text-primary hover:text-accent hover:bg-accent/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                  className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] hover:scale-105"
+                  style={{ color: '#C9A96E' }}
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={handleSignUpClick}
                   size="sm"
-                  className="hidden md:inline-flex bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                  className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] button-luxury"
                 >
                   Sign Up
                 </Button>
@@ -178,46 +236,44 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden hover:bg-primary/10 hover:text-primary transition-all duration-300 min-h-[44px] min-w-[44px]"
+                  className="lg:hidden transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
+                  style={{ color: '#C9A96E' }}
                 >
-                  {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="bg-black/95 backdrop-blur-xl border-border/40 w-[280px]">
-                <nav className="flex flex-col gap-6 mt-8">
+              <SheetContent 
+                side="right" 
+                className="w-[300px] sm:w-[400px]" 
+                style={{ 
+                  background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
+                  borderLeft: '2px solid rgba(201, 169, 110, 0.3)',
+                  boxShadow: 'inset 0 0 20px rgba(201, 169, 110, 0.2)'
+                }}
+              >
+                <nav className="flex flex-col gap-8 mt-12">
                   {navLinks.map((link) => (
                     <a
                       key={link.href}
                       href={link.href}
+                      className="text-lg font-button font-bold uppercase tracking-wider transition-colors duration-300"
+                      style={{ color: '#D4C9B0' }}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-base font-medium text-muted-foreground hover:text-primary transition-colors duration-300 py-2 min-h-[44px] flex items-center"
                     >
                       {link.label}
                     </a>
                   ))}
                   {isAuthenticated ? (
-                    <>
-                      <Button
-                        onClick={() => {
-                          navigate('/dashboard');
-                          setMobileMenuOpen(false);
-                        }}
-                        className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
-                      >
-                        Dashboard
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleLogout();
-                          setMobileMenuOpen(false);
-                        }}
-                        variant="outline"
-                        className="text-primary border-primary hover:bg-primary/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Logout
-                      </Button>
-                    </>
+                    <Button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full font-button font-bold uppercase button-luxury mt-4"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </Button>
                   ) : (
                     <>
                       <Button
@@ -226,7 +282,8 @@ export default function Header() {
                           setMobileMenuOpen(false);
                         }}
                         variant="outline"
-                        className="mt-4 text-primary border-primary hover:bg-primary/10 transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                        className="w-full font-button font-bold uppercase mt-4"
+                        style={{ borderColor: 'rgba(201, 169, 110, 0.6)', color: '#C9A96E' }}
                       >
                         Sign In
                       </Button>
@@ -235,7 +292,7 @@ export default function Header() {
                           handleSignUpClick();
                           setMobileMenuOpen(false);
                         }}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow-pearl hover:shadow-glow-gold transition-all duration-300 gold-pulse-glow min-h-[44px]"
+                        className="w-full font-button font-bold uppercase button-luxury"
                       >
                         Sign Up
                       </Button>

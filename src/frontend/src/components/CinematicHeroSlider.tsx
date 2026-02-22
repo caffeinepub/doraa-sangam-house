@@ -1,26 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import CinematicHeroSlide from './CinematicHeroSlide';
-import ScrollHintArrow from './hero/ScrollHintArrow';
 import GoldWaveWipeTransition from './hero/GoldWaveWipeTransition';
-import useCinematicSlider from '@/hooks/useCinematicSlider';
-import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion';
+import ScrollHintArrow from './hero/ScrollHintArrow';
+import useCinematicSlider from '../hooks/useCinematicSlider';
+import usePrefersReducedMotion from '../hooks/usePrefersReducedMotion';
 
 const slides = [
   {
     id: 1,
-    title: 'Crafted for You',
-    subtitle: 'Delivered with Care',
+    title: 'Timeless Elegance',
+    subtitle: 'Discover the Art of Banarasi Silk',
   },
   {
     id: 2,
-    title: 'Heritage Meets Elegance',
-    subtitle: 'Delivered with Care',
+    title: 'Heritage Redefined',
+    subtitle: 'Curated for the Modern Woman',
   },
   {
     id: 3,
-    title: 'Timeless Traditions',
-    subtitle: 'Delivered with Care',
+    title: 'Luxury Unveiled',
+    subtitle: 'Where Tradition Meets Sophistication',
   },
 ];
 
@@ -33,52 +34,74 @@ export default function CinematicHeroSlider() {
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
-    pauseAutoplay,
-    resumeAutoplay,
-  } = useCinematicSlider(slides.length, 5000);
+  } = useCinematicSlider(slides.length);
 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  const handleSlideChange = (newIndex: number) => {
-    if (newIndex === activeIndex) return;
-    setIsTransitioning(true);
-    goToSlide(newIndex);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, prefersReducedMotion ? 300 : 800);
-  };
-
-  const handleNext = () => {
-    setIsTransitioning(true);
-    nextSlide();
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, prefersReducedMotion ? 300 : 800);
-  };
-
-  const handlePrev = () => {
-    setIsTransitioning(true);
-    prevSlide();
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, prefersReducedMotion ? 300 : 800);
-  };
+  const handleSlideChange = useCallback(
+    (direction: 'next' | 'prev') => {
+      if (!prefersReducedMotion) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          if (direction === 'next') {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+          setTimeout(() => setIsTransitioning(false), 100);
+        }, 400);
+      } else {
+        if (direction === 'next') {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    },
+    [nextSlide, prevSlide, prefersReducedMotion]
+  );
 
   return (
-    <div
-      className="relative w-full min-h-screen overflow-hidden bg-black"
+    <section
+      id="home"
+      className="relative min-h-screen w-full overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      onMouseEnter={pauseAutoplay}
-      onMouseLeave={resumeAutoplay}
-      onTouchStart={pauseAutoplay}
-      onTouchEnd={resumeAutoplay}
+      onPointerCancel={handlePointerUp}
     >
+      {/* Faint gold zari pattern overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.08] z-0"
+        style={{
+          backgroundImage: `
+            repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 40px,
+              rgba(201, 169, 110, 0.15) 40px,
+              rgba(201, 169, 110, 0.15) 41px
+            ),
+            repeating-linear-gradient(
+              -45deg,
+              transparent,
+              transparent 40px,
+              rgba(201, 169, 110, 0.15) 40px,
+              rgba(201, 169, 110, 0.15) 41px
+            )
+          `,
+        }}
+      />
+
+      {/* Gold wave wipe transition */}
+      <GoldWaveWipeTransition isTransitioning={isTransitioning} />
+
       {/* Slides */}
-      <div className="relative w-full h-screen">
+      <div className="relative h-screen">
         {slides.map((slide, index) => (
           <CinematicHeroSlide
             key={slide.id}
@@ -89,43 +112,62 @@ export default function CinematicHeroSlider() {
         ))}
       </div>
 
-      {/* Gold Wave Wipe Transition */}
-      <GoldWaveWipeTransition isTransitioning={isTransitioning} />
-
-      {/* Navigation Arrows */}
-      <button
-        onClick={handlePrev}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/30 backdrop-blur-sm border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary hover:shadow-glow-pearl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
+      {/* Navigation arrows */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-30 h-14 w-14 rounded-full transition-all duration-300 hover:scale-110"
+        style={{ 
+          backgroundColor: 'rgba(201, 169, 110, 0.2)',
+          color: '#C9A96E',
+          backdropFilter: 'blur(8px)'
+        }}
+        onClick={() => handleSlideChange('prev')}
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-      <button
-        onClick={handleNext}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/30 backdrop-blur-sm border border-primary/30 text-primary hover:bg-primary/20 hover:border-primary hover:shadow-glow-pearl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary"
+        <ChevronLeft className="h-8 w-8" />
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-30 h-14 w-14 rounded-full transition-all duration-300 hover:scale-110"
+        style={{ 
+          backgroundColor: 'rgba(201, 169, 110, 0.2)',
+          color: '#C9A96E',
+          backdropFilter: 'blur(8px)'
+        }}
+        onClick={() => handleSlideChange('next')}
         aria-label="Next slide"
       >
-        <ChevronRight className="w-6 h-6" />
-      </button>
+        <ChevronRight className="h-8 w-8" />
+      </Button>
 
-      {/* Dot Navigation */}
+      {/* Dot indicators */}
       <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30 flex gap-3">
         {slides.map((_, index) => (
           <button
             key={index}
-            onClick={() => handleSlideChange(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary ${
-              index === activeIndex
-                ? 'bg-primary shadow-glow-pearl scale-125'
-                : 'bg-white/30 hover:bg-white/50'
-            }`}
+            onClick={() => goToSlide(index)}
+            className="group relative h-3 w-3 rounded-full transition-all duration-300"
+            style={{
+              backgroundColor: index === activeIndex ? '#C9A96E' : 'rgba(201, 169, 110, 0.3)',
+              boxShadow: index === activeIndex ? '0 0 12px rgba(201, 169, 110, 0.6)' : 'none',
+            }}
             aria-label={`Go to slide ${index + 1}`}
-          />
+          >
+            {index === activeIndex && (
+              <span 
+                className="absolute inset-0 rounded-full animate-pulse-glow"
+                style={{ backgroundColor: '#C9A96E' }}
+              />
+            )}
+          </button>
         ))}
       </div>
 
-      {/* Scroll Hint Arrow */}
+      {/* Scroll hint */}
       <ScrollHintArrow />
-    </div>
+    </section>
   );
 }

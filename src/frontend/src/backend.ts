@@ -89,6 +89,28 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface UserProfile {
+    name: string;
+    email: string;
+    addresses: Array<Address>;
+    phone: string;
+}
+export interface OrderRecord {
+    status: string;
+    orderId: string;
+    paymentId: string;
+    timestamp: bigint;
+    shippingAddress: ShippingAddress;
+}
+export interface ShippingAddress {
+    street: string;
+    country: string;
+    city: string;
+    postalCode: string;
+    name: string;
+    state: string;
+    phone: string;
+}
 export interface Variant {
     color: string;
     size: string;
@@ -104,25 +126,14 @@ export interface Product {
     fabric: string;
     images: Array<string>;
 }
-export interface OrderRecord {
-    status: string;
-    orderId: string;
-    paymentId: string;
-    timestamp: bigint;
-    shippingAddress: ShippingAddress;
-}
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone: string;
-}
-export interface ShippingAddress {
+export interface Address {
     street: string;
     country: string;
     city: string;
     postalCode: string;
-    name: string;
     state: string;
+    addressLabel: string;
+    isDefault: boolean;
     phone: string;
 }
 export enum UserRole {
@@ -132,6 +143,7 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addAddress(address: Address): Promise<void>;
     adminAddProduct(name: string, price: bigint, description: string, images: Array<string>, fabric: string, variants: Array<Variant>, blousePair: string, category: string): Promise<string>;
     adminBulkImportProducts(productForms: Array<Product>): Promise<bigint>;
     adminDeleteProduct(productId: string): Promise<void>;
@@ -141,6 +153,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
     createOrder(orderId: string, paymentId: string, shippingAddress: ShippingAddress): Promise<void>;
+    getAddresses(): Promise<Array<Address>>;
     getAdminBotLog(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
@@ -172,6 +185,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async addAddress(arg0: Address): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAddress(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAddress(arg0);
             return result;
         }
     }
@@ -298,6 +325,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.createOrder(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async getAddresses(): Promise<Array<Address>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAddresses();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAddresses();
             return result;
         }
     }

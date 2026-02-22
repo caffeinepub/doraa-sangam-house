@@ -36,27 +36,37 @@ export default function ShopByStyleBlock() {
   };
 
   return (
-    <div className="w-full py-8">
+    <div className="w-full py-10">
       {/* Horizontal Scrollable Container */}
       <div className="overflow-x-auto scrollbar-hide">
-        <div className="flex gap-6 px-4 min-w-max justify-center">
+        <div className="flex gap-8 px-4 min-w-max justify-center">
           {categories.map((category) => (
             <button
               key={category.slug}
               onClick={() => handleCategoryClick(category.slug)}
-              className="group flex flex-col items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-2"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-105 hover:-translate-y-2 explore-style-badge"
             >
               {/* Circular Badge */}
-              <div className="w-32 h-32 rounded-full bg-pearl-blue/20 border-2 border-pearl-blue/40 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] group-hover:border-gold/60 group-hover:bg-pearl-blue/30">
+              <div 
+                className="w-36 h-36 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300"
+                style={{
+                  backgroundColor: 'rgba(127, 179, 213, 0.2)',
+                  border: '2px solid rgba(127, 179, 213, 0.4)',
+                  boxShadow: '0 4px 12px rgba(127, 179, 213, 0.2)',
+                }}
+              >
                 <img
                   src={category.icon}
                   alt={category.name}
-                  className="w-20 h-20 object-contain transition-transform duration-300 group-hover:scale-110"
+                  className="w-24 h-24 object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
 
               {/* Category Name */}
-              <span className="text-gold font-semibold text-lg transition-colors duration-300 group-hover:text-gold/90 whitespace-nowrap">
+              <span 
+                className="font-button font-bold text-lg uppercase tracking-wider transition-colors duration-300 whitespace-nowrap"
+                style={{ color: '#D4AF37' }}
+              >
                 {category.name}
               </span>
             </button>

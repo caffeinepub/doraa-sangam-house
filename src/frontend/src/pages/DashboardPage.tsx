@@ -16,6 +16,7 @@ import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetOrdersByYearMonth } from '../hooks/useQueries';
 import type { OrderRecord } from '../backend';
 import { useQueryClient } from '@tanstack/react-query';
+import ThemeSwitcher from '../components/ThemeSwitcher';
 
 interface DashboardPageProps {
   navigate: (path: string) => void;
@@ -117,12 +118,12 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
         name: fullName,
         email: email,
         phone: phone,
+        addresses: [], // Include empty addresses array to match UserProfile type
       });
       showProfileSaveSuccessToast();
     } catch (error) {
-      console.error('Profile save error:', error);
+      console.error('Failed to save profile:', error);
       showProfileSaveErrorToast();
-      showBasicErrorToast('Error: Failed to save profile');
     }
   };
 
@@ -142,20 +143,37 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
   };
 
   const handleSaveAddress = () => {
-    if (editingAddress) {
-      if (isAddingAddress) {
-        setAddresses([...addresses, editingAddress]);
-      } else {
-        setAddresses(addresses.map((a) => (a.id === editingAddress.id ? editingAddress : a)));
-      }
-      setEditingAddress(null);
-      setIsAddingAddress(false);
+    if (!editingAddress) return;
+
+    if (isAddingAddress) {
+      setAddresses([...addresses, editingAddress]);
+    } else {
+      setAddresses(addresses.map((addr) => (addr.id === editingAddress.id ? editingAddress : addr)));
     }
+
+    setEditingAddress(null);
+    setIsAddingAddress(false);
   };
 
   const handleDeleteAddress = (id: string) => {
-    setAddresses(addresses.filter((a) => a.id !== id));
+    setAddresses(addresses.filter((addr) => addr.id !== id));
   };
+
+  const handleSetDefaultAddress = (id: string) => {
+    setAddresses(
+      addresses.map((addr) => ({
+        ...addr,
+        isDefault: addr.id === id,
+      }))
+    );
+  };
+
+  const filterOptions: FilterOption[] = [
+    { value: 'all', label: 'All Orders' },
+    { value: '2024-01', label: 'January 2024' },
+    { value: '2024-02', label: 'February 2024' },
+    { value: '2024-03', label: 'March 2024' },
+  ];
 
   const handleFilterChange = (value: string) => {
     if (value === 'all') {
@@ -168,362 +186,461 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
     }
   };
 
-  const formatOrderDate = (timestamp: bigint) => {
-    const date = new Date(Number(timestamp));
-    return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'paid':
-        return 'text-green-500 bg-green-500/10';
-      case 'pending':
-        return 'text-yellow-500 bg-yellow-500/10';
-      case 'shipped':
-        return 'text-blue-500 bg-blue-500/10';
-      case 'delivered':
-        return 'text-primary bg-primary/10';
-      default:
-        return 'text-muted-foreground bg-muted/10';
-    }
-  };
-
-  // Generate year/month filter options (last 12 months)
-  const filterOptions: FilterOption[] = [];
-  const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    filterOptions.push({
-      value: `${year}-${month}`,
-      label: date.toLocaleDateString('en-IN', { year: 'numeric', month: 'long' }),
-    });
-  }
-
   return (
-    <div className="min-h-screen dashboard-scope">
-      {/* Dashboard Content */}
-      <div className="container py-12">
-        <div className="max-w-6xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-serif font-bold mb-2 text-pearl-off-white">My Dashboard</h1>
-              <p className="text-pearl-off-white/70">Manage your account and orders</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {returnPath && (
-                <Button
-                  onClick={handleContinueShopping}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 dashboard-interactive-glow min-h-[44px]"
-                >
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Continue Shopping
-                </Button>
-              )}
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="text-gold border-gold hover:bg-gold/10 gold-pulse-glow min-h-[44px]"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
-            </div>
+    <div className="min-h-screen py-12 px-4">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold" style={{ color: 'var(--heading-color)' }}>
+              My Account
+            </h1>
+            <p className="text-sm mt-2" style={{ color: 'var(--muted-text)' }}>
+              Manage your profile, orders, and preferences
+            </p>
           </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleContinueShopping}
+              variant="outline"
+              className="font-button font-bold uppercase"
+              style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+            >
+              <ArrowRight className="w-4 h-4 mr-2" />
+              Continue Shopping
+            </Button>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="font-button font-bold uppercase"
+              style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
 
-          <Separator className="bg-pearl-blue/20" />
+        {/* Tabs */}
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList
+            className="grid w-full grid-cols-3 mb-8 p-1 rounded-2xl"
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--gold-border)',
+              borderWidth: '2px',
+            }}
+          >
+            <TabsTrigger
+              value="profile"
+              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
+              style={{
+                color: 'var(--text-color)',
+              }}
+            >
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger
+              value="orders"
+              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
+              style={{
+                color: 'var(--text-color)',
+              }}
+            >
+              <Package className="w-4 h-4 mr-2" />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger
+              value="addresses"
+              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
+              style={{
+                color: 'var(--text-color)',
+              }}
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Addresses
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Dashboard Tabs */}
-          <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 bg-pearl-blue/10 rounded-3xl p-2">
-              <TabsTrigger 
-                value="profile" 
-                className="rounded-2xl data-[state=active]:bg-pearl-blue/30 data-[state=active]:text-pearl-off-white min-h-[44px]"
-              >
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </TabsTrigger>
-              <TabsTrigger 
-                value="orders" 
-                className="rounded-2xl data-[state=active]:bg-pearl-blue/30 data-[state=active]:text-pearl-off-white min-h-[44px]"
-              >
-                <Package className="mr-2 h-4 w-4" />
-                Orders
-              </TabsTrigger>
-              <TabsTrigger 
-                value="addresses" 
-                className="rounded-2xl data-[state=active]:bg-pearl-blue/30 data-[state=active]:text-pearl-off-white min-h-[44px]"
-              >
-                <MapPin className="mr-2 h-4 w-4" />
-                Addresses
-              </TabsTrigger>
-            </TabsList>
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            {/* Theme Switcher */}
+            <ThemeSwitcher />
 
-            {/* Profile Tab */}
-            <TabsContent value="profile" className="space-y-6">
-              <Card className="bg-card/50 backdrop-blur border-pearl-blue/20 rounded-3xl">
-                <CardHeader>
-                  <CardTitle className="font-serif text-pearl-off-white">Profile Information</CardTitle>
-                  <CardDescription className="text-pearl-off-white/60">Update your personal details</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {profileLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="name" className="text-pearl-off-white/80">Full Name</Label>
-                          <Input
-                            id="name"
-                            placeholder="Enter your name"
-                            className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            disabled={isSaving}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="email" className="text-pearl-off-white/80">Email</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="Enter your email"
-                            className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isSaving}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone" className="text-pearl-off-white/80">Phone</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="+91XXXXXXXXXX"
-                            className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            disabled={isSaving}
-                          />
-                        </div>
-                      </div>
-                      <Button 
-                        onClick={handleSaveProfile} 
-                        disabled={isSaving} 
-                        className="bg-pearl-blue hover:bg-pearl-blue/90 text-black font-semibold min-h-[44px] transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.6)]"
-                      >
-                        {isSaving ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          'Save Changes'
-                        )}
-                      </Button>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Orders Tab */}
-            <TabsContent value="orders" className="space-y-6">
-              <Card className="bg-card/50 backdrop-blur border-pearl-blue/20 rounded-3xl">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-serif text-pearl-off-white">Order History</CardTitle>
-                      <CardDescription className="text-pearl-off-white/60">View and track your orders</CardDescription>
-                    </div>
-                    <Select
-                      value={orderFilterYear && orderFilterMonth ? `${orderFilterYear}-${orderFilterMonth}` : 'all'}
-                      onValueChange={handleFilterChange}
-                    >
-                      <SelectTrigger className="w-[200px] bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]">
-                        <SelectValue placeholder="Filter by date" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Orders</SelectItem>
-                        {filterOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+            {/* Profile Information */}
+            <Card
+              className="border-2 backdrop-blur-sm"
+              style={{
+                backgroundColor: 'var(--card-bg)',
+                borderColor: 'var(--gold-border)',
+              }}
+            >
+              <CardHeader>
+                <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                  Profile Information
+                </CardTitle>
+                <CardDescription style={{ color: 'var(--muted-text)' }}>
+                  Update your personal details
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {profileLoading ? (
+                  <div className="space-y-4">
+                    <div className="shimmer-skeleton h-10 rounded" />
+                    <div className="shimmer-skeleton h-10 rounded" />
+                    <div className="shimmer-skeleton h-10 rounded" />
                   </div>
-                </CardHeader>
-                <CardContent>
-                  {ordersLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName" style={{ color: 'var(--text-color)' }}>
+                        Full Name
+                      </Label>
+                      <Input
+                        id="fullName"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Enter your full name"
+                        className="border-2"
+                        style={{
+                          backgroundColor: 'var(--input-bg)',
+                          borderColor: 'var(--input-border)',
+                          color: 'var(--text-color)',
+                        }}
+                      />
                     </div>
-                  ) : orders.length === 0 ? (
-                    <div className="text-center py-12 text-pearl-off-white/60">
-                      <Package className="h-16 w-16 mx-auto mb-4 opacity-30" />
-                      <p>No orders yet</p>
-                      <Button
-                        onClick={handleContinueShopping}
-                        variant="link"
-                        className="text-gold hover:text-gold/80 mt-2 min-h-[44px]"
-                      >
-                        Start Shopping
-                      </Button>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" style={{ color: 'var(--text-color)' }}>
+                        Email
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        className="border-2"
+                        style={{
+                          backgroundColor: 'var(--input-bg)',
+                          borderColor: 'var(--input-border)',
+                          color: 'var(--text-color)',
+                        }}
+                      />
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {orders.map((order) => (
-                        <Card
-                          key={order.orderId}
-                          className="bg-background/50 border-pearl-blue/30 hover:border-gold/40 transition-all cursor-pointer rounded-2xl"
-                          onClick={() => setSelectedOrder(order)}
-                        >
-                          <CardContent className="pt-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <h4 className="font-semibold font-mono text-sm text-pearl-off-white">{order.orderId}</h4>
-                                  <span className={`text-xs px-2 py-1 rounded ${getStatusColor(order.status)}`}>
-                                    {order.status}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-pearl-off-white/60 flex items-center gap-1">
-                                  <Calendar className="h-3 w-3" />
-                                  {formatOrderDate(order.timestamp)}
-                                </p>
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-pearl-blue/30 text-pearl-off-white hover:bg-pearl-blue/10 min-h-[44px]"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedOrder(order);
-                                }}
-                              >
-                                View Details
-                              </Button>
-                            </div>
-                            <Separator className="my-3 bg-pearl-blue/20" />
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2 text-sm text-pearl-off-white/60">
-                                <CreditCard className="h-4 w-4" />
-                                <span>Payment ID: {order.paymentId.slice(0, 20)}...</span>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Addresses Tab */}
-            <TabsContent value="addresses" className="space-y-6">
-              <Card className="bg-card/50 backdrop-blur border-pearl-blue/20 rounded-3xl">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="font-serif text-pearl-off-white">Saved Addresses</CardTitle>
-                      <CardDescription className="text-pearl-off-white/60">Manage your delivery addresses</CardDescription>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" style={{ color: 'var(--text-color)' }}>
+                        Phone
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="Enter your phone number"
+                        className="border-2"
+                        style={{
+                          backgroundColor: 'var(--input-bg)',
+                          borderColor: 'var(--input-border)',
+                          color: 'var(--text-color)',
+                        }}
+                      />
                     </div>
                     <Button
-                      onClick={handleAddAddress}
-                      className="bg-pearl-blue hover:bg-pearl-blue/90 text-black font-semibold min-h-[44px]"
+                      onClick={handleSaveProfile}
+                      disabled={isSaving}
+                      className="w-full font-button font-bold uppercase button-luxury mt-4"
                     >
-                      Add New Address
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save Profile'
+                      )}
                     </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Orders Tab */}
+          <TabsContent value="orders" className="space-y-6">
+            <Card
+              className="border-2 backdrop-blur-sm"
+              style={{
+                backgroundColor: 'var(--card-bg)',
+                borderColor: 'var(--gold-border)',
+              }}
+            >
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                      Order History
+                    </CardTitle>
+                    <CardDescription style={{ color: 'var(--muted-text)' }}>
+                      View and track your orders
+                    </CardDescription>
                   </div>
-                </CardHeader>
-                <CardContent>
+                  <Select onValueChange={handleFilterChange} defaultValue="all">
+                    <SelectTrigger
+                      className="w-[200px] border-2"
+                      style={{
+                        backgroundColor: 'var(--input-bg)',
+                        borderColor: 'var(--input-border)',
+                        color: 'var(--text-color)',
+                      }}
+                    >
+                      <SelectValue placeholder="Filter by month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filterOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {ordersLoading ? (
                   <div className="space-y-4">
-                    {addresses.map((address) => (
-                      <Card key={address.id} className="bg-background/50 border-pearl-blue/30 rounded-2xl">
-                        <CardContent className="pt-6">
-                          <div className="flex items-start justify-between">
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-pearl-off-white">{address.name}</h4>
-                                {address.isDefault && (
-                                  <span className="text-xs px-2 py-1 rounded bg-gold/20 text-gold">Default</span>
-                                )}
-                              </div>
-                              <p className="text-sm text-pearl-off-white/70">
-                                {address.line1}
-                                {address.line2 && `, ${address.line2}`}
-                              </p>
-                              <p className="text-sm text-pearl-off-white/70">
-                                {address.city}, {address.state} {address.pincode}
-                              </p>
-                              <p className="text-sm text-pearl-off-white/70">{address.phone}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-pearl-blue/30 text-pearl-off-white hover:bg-pearl-blue/10 min-h-[44px]"
-                                onClick={() => {
-                                  setEditingAddress(address);
-                                  setIsAddingAddress(false);
-                                }}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-red-500/30 text-red-500 hover:bg-red-500/10 min-h-[44px]"
-                                onClick={() => handleDeleteAddress(address.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="shimmer-skeleton h-24 rounded" />
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                ) : orders.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--muted-text)' }} />
+                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
+                      No orders yet
+                    </p>
+                    <p className="text-sm mb-6" style={{ color: 'var(--muted-text)' }}>
+                      Start shopping to see your orders here
+                    </p>
+                    <Button onClick={handleContinueShopping} className="button-luxury">
+                      Start Shopping
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div
+                        key={order.orderId}
+                        className="p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-gold-glow"
+                        style={{
+                          backgroundColor: 'var(--option-bg)',
+                          borderColor: 'var(--input-border)',
+                        }}
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <CreditCard className="w-4 h-4" style={{ color: 'var(--gold-accent)' }} />
+                              <span className="font-semibold" style={{ color: 'var(--text-color)' }}>
+                                {order.orderId}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--muted-text)' }}>
+                              <Calendar className="w-4 h-4" />
+                              <span>{new Date(Number(order.timestamp)).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--muted-text)' }}>
+                              <MapPinIcon className="w-4 h-4" />
+                              <span>
+                                {order.shippingAddress.city}, {order.shippingAddress.state}
+                              </span>
+                            </div>
+                          </div>
+                          <div
+                            className="px-3 py-1 rounded-full text-xs font-semibold"
+                            style={{
+                              backgroundColor: 'var(--gold-accent)',
+                              color: 'var(--card-bg)',
+                            }}
+                          >
+                            {order.status}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Addresses Tab */}
+          <TabsContent value="addresses" className="space-y-6">
+            <Card
+              className="border-2 backdrop-blur-sm"
+              style={{
+                backgroundColor: 'var(--card-bg)',
+                borderColor: 'var(--gold-border)',
+              }}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                      Saved Addresses
+                    </CardTitle>
+                    <CardDescription style={{ color: 'var(--muted-text)' }}>
+                      Manage your delivery addresses
+                    </CardDescription>
+                  </div>
+                  <Button onClick={handleAddAddress} className="button-luxury">
+                    Add Address
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {addresses.length === 0 ? (
+                  <div className="text-center py-12">
+                    <MapPin className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--muted-text)' }} />
+                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
+                      No addresses saved
+                    </p>
+                    <p className="text-sm mb-6" style={{ color: 'var(--muted-text)' }}>
+                      Add an address for faster checkout
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {addresses.map((address) => (
+                      <div
+                        key={address.id}
+                        className="p-4 rounded-xl border-2 relative"
+                        style={{
+                          backgroundColor: 'var(--option-bg)',
+                          borderColor: address.isDefault ? 'var(--gold-accent)' : 'var(--input-border)',
+                        }}
+                      >
+                        {address.isDefault && (
+                          <div
+                            className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold"
+                            style={{
+                              backgroundColor: 'var(--gold-accent)',
+                              color: 'var(--card-bg)',
+                            }}
+                          >
+                            Default
+                          </div>
+                        )}
+                        <div className="space-y-2 mb-4">
+                          <p className="font-semibold" style={{ color: 'var(--text-color)' }}>
+                            {address.name}
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                            {address.line1}
+                          </p>
+                          {address.line2 && (
+                            <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                              {address.line2}
+                            </p>
+                          )}
+                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                            {address.city}, {address.state} {address.pincode}
+                          </p>
+                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                            {address.phone}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingAddress(address);
+                              setIsAddingAddress(false);
+                            }}
+                            style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+                          >
+                            <Edit className="w-3 h-3 mr-1" />
+                            Edit
+                          </Button>
+                          {!address.isDefault && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleSetDefaultAddress(address.id)}
+                                style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+                              >
+                                Set Default
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteAddress(address.id)}
+                                style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent className="bg-black/95 border-pearl-blue/30 text-pearl-off-white">
+        <DialogContent
+          className="max-w-2xl"
+          style={{
+            backgroundColor: 'var(--card-bg)',
+            borderColor: 'var(--gold-border)',
+          }}
+        >
           <DialogHeader>
-            <DialogTitle className="font-serif">Order Details</DialogTitle>
-            <DialogDescription className="text-pearl-off-white/60">
-              Order ID: {selectedOrder?.orderId}
+            <DialogTitle style={{ color: 'var(--heading-color)' }}>Order Details</DialogTitle>
+            <DialogDescription style={{ color: 'var(--muted-text)' }}>
+              {selectedOrder?.orderId}
             </DialogDescription>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2 text-pearl-off-white">Shipping Address</h4>
-                <p className="text-sm text-pearl-off-white/70">{selectedOrder.shippingAddress.name}</p>
-                <p className="text-sm text-pearl-off-white/70">{selectedOrder.shippingAddress.street}</p>
-                <p className="text-sm text-pearl-off-white/70">
+                <h4 className="font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
+                  Shipping Address
+                </h4>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                  {selectedOrder.shippingAddress.name}
+                </p>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                  {selectedOrder.shippingAddress.street}
+                </p>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
                   {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state}{' '}
                   {selectedOrder.shippingAddress.postalCode}
                 </p>
-                <p className="text-sm text-pearl-off-white/70">{selectedOrder.shippingAddress.phone}</p>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                  {selectedOrder.shippingAddress.phone}
+                </p>
               </div>
-              <Separator className="bg-pearl-blue/20" />
+              <Separator />
               <div>
-                <h4 className="font-semibold mb-2 text-pearl-off-white">Payment Information</h4>
-                <p className="text-sm text-pearl-off-white/70">Payment ID: {selectedOrder.paymentId}</p>
-                <p className="text-sm text-pearl-off-white/70">Status: {selectedOrder.status}</p>
+                <h4 className="font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
+                  Payment Information
+                </h4>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                  Payment ID: {selectedOrder.paymentId}
+                </p>
+                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
+                  Status: {selectedOrder.status}
+                </p>
               </div>
             </div>
           )}
@@ -532,78 +649,137 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
 
       {/* Address Edit Dialog */}
       <Dialog open={!!editingAddress} onOpenChange={() => setEditingAddress(null)}>
-        <DialogContent className="bg-black/95 border-pearl-blue/30 text-pearl-off-white">
+        <DialogContent
+          className="max-w-2xl"
+          style={{
+            backgroundColor: 'var(--card-bg)',
+            borderColor: 'var(--gold-border)',
+          }}
+        >
           <DialogHeader>
-            <DialogTitle className="font-serif">{isAddingAddress ? 'Add New Address' : 'Edit Address'}</DialogTitle>
+            <DialogTitle style={{ color: 'var(--heading-color)' }}>
+              {isAddingAddress ? 'Add New Address' : 'Edit Address'}
+            </DialogTitle>
           </DialogHeader>
           {editingAddress && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-pearl-off-white/80">Address Name</Label>
+                <Label htmlFor="addressName" style={{ color: 'var(--text-color)' }}>
+                  Address Name
+                </Label>
                 <Input
+                  id="addressName"
                   value={editingAddress.name}
                   onChange={(e) => setEditingAddress({ ...editingAddress, name: e.target.value })}
                   placeholder="e.g., Home, Office"
-                  className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
+                  style={{
+                    backgroundColor: 'var(--input-bg)',
+                    borderColor: 'var(--input-border)',
+                    color: 'var(--text-color)',
+                  }}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-pearl-off-white/80">Phone</Label>
+                <Label htmlFor="addressLine1" style={{ color: 'var(--text-color)' }}>
+                  Address Line 1
+                </Label>
                 <Input
-                  value={editingAddress.phone}
-                  onChange={(e) => setEditingAddress({ ...editingAddress, phone: e.target.value })}
-                  placeholder="+91XXXXXXXXXX"
-                  className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-pearl-off-white/80">Address Line 1</Label>
-                <Input
+                  id="addressLine1"
                   value={editingAddress.line1}
                   onChange={(e) => setEditingAddress({ ...editingAddress, line1: e.target.value })}
                   placeholder="Street address"
-                  className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
+                  style={{
+                    backgroundColor: 'var(--input-bg)',
+                    borderColor: 'var(--input-border)',
+                    color: 'var(--text-color)',
+                  }}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-pearl-off-white/80">Address Line 2</Label>
+                <Label htmlFor="addressLine2" style={{ color: 'var(--text-color)' }}>
+                  Address Line 2
+                </Label>
                 <Input
+                  id="addressLine2"
                   value={editingAddress.line2}
                   onChange={(e) => setEditingAddress({ ...editingAddress, line2: e.target.value })}
-                  placeholder="Apartment, suite, etc."
-                  className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
+                  placeholder="Apartment, suite, etc. (optional)"
+                  style={{
+                    backgroundColor: 'var(--input-bg)',
+                    borderColor: 'var(--input-border)',
+                    color: 'var(--text-color)',
+                  }}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-pearl-off-white/80">City</Label>
+                  <Label htmlFor="city" style={{ color: 'var(--text-color)' }}>
+                    City
+                  </Label>
                   <Input
+                    id="city"
                     value={editingAddress.city}
                     onChange={(e) => setEditingAddress({ ...editingAddress, city: e.target.value })}
-                    className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
+                    placeholder="City"
+                    style={{
+                      backgroundColor: 'var(--input-bg)',
+                      borderColor: 'var(--input-border)',
+                      color: 'var(--text-color)',
+                    }}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-pearl-off-white/80">State</Label>
+                  <Label htmlFor="state" style={{ color: 'var(--text-color)' }}>
+                    State
+                  </Label>
                   <Input
+                    id="state"
                     value={editingAddress.state}
                     onChange={(e) => setEditingAddress({ ...editingAddress, state: e.target.value })}
-                    className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
+                    placeholder="State"
+                    style={{
+                      backgroundColor: 'var(--input-bg)',
+                      borderColor: 'var(--input-border)',
+                      color: 'var(--text-color)',
+                    }}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-pearl-off-white/80">Pincode</Label>
-                <Input
-                  value={editingAddress.pincode}
-                  onChange={(e) => setEditingAddress({ ...editingAddress, pincode: e.target.value })}
-                  className="bg-background/50 border-pearl-blue/30 text-pearl-off-white min-h-[44px]"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pincode" style={{ color: 'var(--text-color)' }}>
+                    Pincode
+                  </Label>
+                  <Input
+                    id="pincode"
+                    value={editingAddress.pincode}
+                    onChange={(e) => setEditingAddress({ ...editingAddress, pincode: e.target.value })}
+                    placeholder="Pincode"
+                    style={{
+                      backgroundColor: 'var(--input-bg)',
+                      borderColor: 'var(--input-border)',
+                      color: 'var(--text-color)',
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressPhone" style={{ color: 'var(--text-color)' }}>
+                    Phone
+                  </Label>
+                  <Input
+                    id="addressPhone"
+                    value={editingAddress.phone}
+                    onChange={(e) => setEditingAddress({ ...editingAddress, phone: e.target.value })}
+                    placeholder="Phone number"
+                    style={{
+                      backgroundColor: 'var(--input-bg)',
+                      borderColor: 'var(--input-border)',
+                      color: 'var(--text-color)',
+                    }}
+                  />
+                </div>
               </div>
-              <Button 
-                onClick={handleSaveAddress} 
-                className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-semibold min-h-[44px]"
-              >
+              <Button onClick={handleSaveAddress} className="w-full button-luxury">
                 Save Address
               </Button>
             </div>

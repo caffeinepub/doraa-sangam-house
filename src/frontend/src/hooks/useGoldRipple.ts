@@ -19,7 +19,7 @@ export function useGoldRipple() {
         y = event.clientY - rect.top;
       }
 
-      // Create ripple element
+      // Create ripple element with antique gold color
       const ripple = document.createElement('span');
       ripple.className = 'gold-ripple-effect';
       ripple.style.cssText = `
@@ -29,7 +29,7 @@ export function useGoldRipple() {
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: oklch(var(--accent) / 0.4);
+        background: radial-gradient(circle, rgba(201, 169, 110, 0.6) 0%, transparent 70%);
         transform: translate(-50%, -50%);
         pointer-events: none;
       `;

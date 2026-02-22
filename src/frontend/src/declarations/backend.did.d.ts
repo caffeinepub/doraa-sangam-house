@@ -10,6 +10,16 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Address {
+  'street' : string,
+  'country' : string,
+  'city' : string,
+  'postalCode' : string,
+  'state' : string,
+  'addressLabel' : string,
+  'isDefault' : boolean,
+  'phone' : string,
+}
 export interface OrderRecord {
   'status' : string,
   'orderId' : string,
@@ -40,6 +50,7 @@ export interface ShippingAddress {
 export interface UserProfile {
   'name' : string,
   'email' : string,
+  'addresses' : Array<Address>,
   'phone' : string,
 }
 export type UserRole = { 'admin' : null } |
@@ -48,6 +59,7 @@ export type UserRole = { 'admin' : null } |
 export interface Variant { 'color' : string, 'size' : string }
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAddress' : ActorMethod<[Address], undefined>,
   'adminAddProduct' : ActorMethod<
     [
       string,
@@ -82,6 +94,7 @@ export interface _SERVICE {
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'confirmDeploymentChecks' : ActorMethod<[], string>,
   'createOrder' : ActorMethod<[string, string, ShippingAddress], undefined>,
+  'getAddresses' : ActorMethod<[], Array<Address>>,
   'getAdminBotLog' : ActorMethod<[], Array<string>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,

@@ -7,6 +7,28 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface UserProfile {
+    name: string;
+    email: string;
+    addresses: Array<Address>;
+    phone: string;
+}
+export interface OrderRecord {
+    status: string;
+    orderId: string;
+    paymentId: string;
+    timestamp: bigint;
+    shippingAddress: ShippingAddress;
+}
+export interface ShippingAddress {
+    street: string;
+    country: string;
+    city: string;
+    postalCode: string;
+    name: string;
+    state: string;
+    phone: string;
+}
 export interface Variant {
     color: string;
     size: string;
@@ -22,25 +44,14 @@ export interface Product {
     fabric: string;
     images: Array<string>;
 }
-export interface OrderRecord {
-    status: string;
-    orderId: string;
-    paymentId: string;
-    timestamp: bigint;
-    shippingAddress: ShippingAddress;
-}
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone: string;
-}
-export interface ShippingAddress {
+export interface Address {
     street: string;
     country: string;
     city: string;
     postalCode: string;
-    name: string;
     state: string;
+    addressLabel: string;
+    isDefault: boolean;
     phone: string;
 }
 export enum UserRole {
@@ -49,6 +60,7 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addAddress(address: Address): Promise<void>;
     adminAddProduct(name: string, price: bigint, description: string, images: Array<string>, fabric: string, variants: Array<Variant>, blousePair: string, category: string): Promise<string>;
     adminBulkImportProducts(productForms: Array<Product>): Promise<bigint>;
     adminDeleteProduct(productId: string): Promise<void>;
@@ -58,6 +70,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     confirmDeploymentChecks(): Promise<string>;
     createOrder(orderId: string, paymentId: string, shippingAddress: ShippingAddress): Promise<void>;
+    getAddresses(): Promise<Array<Address>>;
     getAdminBotLog(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
