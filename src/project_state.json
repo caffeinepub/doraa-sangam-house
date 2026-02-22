@@ -1,115 +1,62 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "DoRaa Sangam House - Premium e-commerce website with Vastrado-style layout, featuring centered logo, horizontal category navigation, product grid, user dashboard with theme switcher (Dark/Light/System), and Internet Identity authentication",
+  "summary": "DoRaa Sangam House e-commerce website with premium light theme (Banarasi/Kanpur heritage aesthetic), Vastrado-style layout, and luxury typography",
   "architectural_notes": [
-    "Dark luxury theme (#0B0E0C bg, white text) as default with Light theme option (#F8F9FA bg, #1A1A1A text)",
-    "localStorage used for theme persistence across sessions",
-    "System theme mode follows OS preference using prefers-color-scheme media query",
-    "Golden hover effects (#FFD700) and glow animations on interactive elements",
-    "16px curved corners on product cards with subtle shadows and hover lift effects",
-    "Cyan/teal buttons for category navigation with hover glow",
-    "Internet Identity authentication system with login/OTP flow",
-    "Protected routes requiring authentication for dashboard and cart actions",
-    "Mock product data with placeholder images for initial deployment"
+    "Global light theme: ivory backgrounds (#F8F5F0), antique gold accents (#C9A96E), blush rose gold (#E8C0C8), charcoal text (#1A1A1A)",
+    "Typography stack: Playfair Display ExtraBold (headings), Great Vibes (category script), Lora Regular (body), Montserrat/Raleway Bold (buttons)",
+    "Product cards: white background with 1px gold border, warm gold glow on hover (box-shadow: 0 0 18px rgba(201,169,110,0.45))",
+    "Responsive design using rem units and clamp() for consistent cross-device appearance"
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Elegant saree on model with Banarasi zari work, rich red and gold colors (product-banarasi.dim_800x1000.png)\n- Luxurious silk saree on model with flowing drape, deep purple and silver (product-silk.dim_800x1000.png)\n- Lightweight organza saree on model with subtle patterns, pastel pink and gold (product-organza.dim_800x1000.png)\n- Traditional georgette saree on model with embroidery, teal and gold accents (product-georgette.dim_800x1000.png)\n- Kalamkari print saree on model with artistic motifs, cream and brown tones (product-kalamkari.dim_800x1000.png)",
+  "imageRequirements": "## Required Images\n- Gold luxury version of DoRaa Sangam House logo with antique gold coloring and premium Banarasi aesthetic suitable for center header placement (doraa-logo-gold.dim_400x120.png)",
   "existing_features": [
     {
-      "id": "feature-transform-the-home-page-post-login-layout-to-display-a-large-centered-doraa-sangam-house-logo-in-elegant-gold-font-on-dark-background-at-the-top-center-of-the-page",
-      "title": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
+      "id": "feature-replace-all-dark-theme-colors-navy-blue-black-backgrounds-throughout-the-entire-application-with-a-premium-light-theme-palette-soft-warm-ivory-pearl-cream-f8f5f0-for-primary-backgrounds-very-light-beige-gradient-f8f5f0-f5f0e6-for-secondary-backgrounds-sections-antique-gold-warm-gold-c9a96e-or-d4b37d-for-primary-accents-representing-zari-gold-shine-muted-blush-rose-gold-e8c0c8-for-secondary-accents-deep-charcoal-gray-1a1a1a-for-primary-text-ensuring-perfect-readability-warm-taupe-gray-5c4b51-for-secondary-muted-text-antique-gold-background-c9a96e-with-dark-text-1a1a1a-for-buttons-ctas-with-hover-effects-deeper-gold-scale-glow-pure-white-ffffff-cards-product-tiles-with-subtle-1px-gold-border-c9a96e-and-soft-shadow-and-warm-gold-box-shadow-0-0-18px-rgba-201-169-110-0-45-for-hover-active-glow-effects",
+      "title": "Replace all dark theme colors (navy blue, black backgrounds) throughout the entire application with a premium light theme palette: soft warm ivory/pearl cream (#F8F5F0) for primary backgrounds, very light beige gradient (#F8F5F0 → #F5F0E6) for secondary backgrounds/sections, antique gold/warm gold (#C9A96E or #D4B37D) for primary accents representing zari/gold shine, muted blush rose gold (#E8C0C8) for secondary accents, deep charcoal gray (#1A1A1A) for primary text ensuring perfect readability, warm taupe gray (#5C4B51) for secondary/muted text, antique gold background (#C9A96E) with dark text (#1A1A1A) for buttons/CTAs with hover effects (deeper gold + scale + glow), pure white (#FFFFFF) cards/product tiles with subtle 1px gold border (#C9A96E) and soft shadow, and warm gold box-shadow (0 0 18px rgba(201,169,110,0.45)) for hover/active glow effects",
       "reqIds": [
-        "REQ-17"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-horizontal-category-navigation-bar-below-the-logo-with-five-categories-shirts-kurta-bottoms-sarees-shop-all-style-buttons-with-cyan-teal-colors-and-golden-hover-glow-effects-make-the-navigation-horizontally-scrollable-on-mobile-devices",
-      "title": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
+      "id": "feature-update-typography-throughout-the-application-to-use-premium-luxury-fonts-playfair-display-extrabold-for-all-headings-and-brand-name-doraa-sangam-house-with-antique-gold-color-c9a96e-and-letter-spacing-of-2-4px-great-vibes-regular-script-font-for-category-names-and-special-titles-like-zari-royalty-with-blush-rose-gold-e8c0c8-or-antique-gold-c9a96e-color-at-size-2-8-3-8rem-lora-regular-400-for-all-body-text-and-descriptions-with-deep-charcoal-color-1a1a1a-and-line-height-1-9-2-1-and-montserrat-bold-or-raleway-extrabold-for-buttons-ctas-in-all-caps-with-dark-text-on-gold-background",
+      "title": "Update typography throughout the application to use premium luxury fonts: Playfair Display ExtraBold for all headings and brand name 'DoRaa Sangam House' with antique gold color (#C9A96E) and letter-spacing of 2-4px, Great Vibes Regular script font for category names and special titles (like 'Zari Royalty') with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color at size 2.8-3.8rem, Lora Regular 400 for all body text and descriptions with deep charcoal color (#1A1A1A) and line-height 1.9-2.1, and Montserrat Bold or Raleway ExtraBold for buttons/CTAs in all caps with dark text on gold background",
       "reqIds": [
-        "REQ-18"
+        "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-display-a-grid-of-product-cards-below-the-navigation-showing-saree-products-with-on-model-images-product-name-price-discount-percentage-badge-and-add-to-cart-button-cards-should-have-16px-curved-corners-subtle-shadows-and-on-hover-display-lift-animation-with-golden-border-glow",
-      "title": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
+      "id": "feature-implement-vastrado-style-home-page-layout-after-login-with-large-doraa-sangam-house-logo-gold-luxury-version-centered-at-the-top-horizontal-category-navigation-bar-below-the-logo-displaying-categories-shirts-kurta-bottoms-sarees-shop-all-that-is-scrollable-on-mobile-user-profile-dashboard-icon-positioned-on-the-right-side-below-navigation-display-a-grid-of-saree-product-cards-showing-on-model-images-with-product-name-price-discount-badge-and-add-to-cart-button-cards-styled-with-curved-corners-white-background-and-gold-hover-border-with-lift-effect",
+      "title": "Implement Vastrado-style home page layout after login with: large DoRaa Sangam House logo (gold luxury version) centered at the top, horizontal category navigation bar below the logo displaying categories (Shirts, Kurta, Bottoms, Sarees, Shop All) that is scrollable on mobile, user profile/dashboard icon positioned on the right side, below navigation display a grid of saree/product cards showing on-model images with product name, price, discount badge, and 'Add to Cart' button, cards styled with curved corners, white background, and gold hover border with lift effect",
       "reqIds": [
-        "REQ-20"
+        "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-an-optional-hero-banner-section-at-the-top-of-the-product-grid-with-full-width-saree-showcase-image-and-overlay-text-reading-new-arrivals-flat-60-off",
-      "title": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
+      "id": "feature-update-dashboard-accessed-via-profile-icon-click-to-include-tabs-for-profile-orders-and-addresses-add-an-appearance-section-with-theme-switcher-buttons-showing-light-default-and-only-active-option-with-dark-and-system-options-disabled-or-hidden-since-only-light-theme-is-required-user-details-section-displaying-name-email-phone-with-save-changes-button",
+      "title": "Update dashboard (accessed via profile icon click) to include: tabs for Profile, Orders, and Addresses, add an 'Appearance' section with theme switcher buttons showing Light (default and only active option), with Dark and System options disabled or hidden since only light theme is required, user details section displaying name, email, phone with 'Save Changes' button",
       "reqIds": [
-        "REQ-21"
+        "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-a-user-dashboard-page-accessible-via-the-profile-icon-with-three-tabs-profile-orders-and-addresses-display-user-profile-information-including-name-email-and-phone-number-with-a-save-button-to-update-the-data",
-      "title": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
+      "id": "feature-ensure-100-consistent-appearance-across-laptop-mobile-and-tablet-devices-with-no-media-query-overrides-for-colors-fonts-or-backgrounds-using-rem-units-and-clamp-for-responsive-scaling-ensuring-all-premium-hover-animations-glow-lift-scale-are-smooth-and-work-across-devices-while-respecting-reduced-motion-preferences",
+      "title": "Ensure 100% consistent appearance across laptop, mobile, and tablet devices with no media-query overrides for colors, fonts, or backgrounds, using rem units and clamp() for responsive scaling, ensuring all premium hover animations (glow, lift, scale) are smooth and work across devices while respecting reduced motion preferences",
       "reqIds": [
-        "REQ-22"
+        "REQ-5"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-theme-switcher-section-in-the-user-dashboard-with-three-theme-options-dark-current-0b0e0c-background-with-white-text-light-white-light-gray-f8f9fa-background-with-dark-1a1a1a-text-and-system-follows-os-prefers-color-scheme-save-the-user-s-theme-choice-in-localstorage-and-apply-it-on-page-load",
-      "title": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
+      "id": "feature-update-css-variables-in-frontend-index-css-and-tailwind-configuration-in-frontend-tailwind-config-js-to-reflect-the-new-light-theme-color-palette-ensuring-all-component-styles-reference-these-new-variables-consistently",
+      "title": "Update CSS variables in frontend/index.css and Tailwind configuration in frontend/tailwind.config.js to reflect the new light theme color palette, ensuring all component styles reference these new variables consistently",
       "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-light-theme-maintains-clean-readability-with-proper-contrast-ratios-for-all-text-buttons-and-interactive-elements-while-preserving-the-premium-luxury-aesthetic",
-      "title": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-golden-hover-glow-effects-consistently-across-all-buttons-icons-and-interactive-elements-in-both-dark-and-light-themes",
-      "title": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-entire-interface-is-fully-responsive-on-mobile-devices-categories-scroll-horizontally-logo-remains-centered-and-product-grid-adjusts-to-single-or-two-column-layout",
-      "title": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-require-user-authentication-to-access-the-dashboard-and-perform-cart-actions-display-a-login-prompt-or-redirect-to-login-page-when-unauthenticated-users-attempt-to-access-protected-features",
-      "title": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-preserve-all-existing-functionality-including-internet-identity-authentication-otp-login-flows-shopping-cart-operations-and-category-carousel-features-without-introducing-regressions-or-bugs",
-      "title": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-generate-five-generated-product-images-showing-sarees-on-models-for-use-in-the-product-grid-each-with-dimensions-800x1000-pixels-and-visually-distinct-styles",
-      "title": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
-      "reqIds": [
-        "REQ-29"
+        "REQ-6"
       ],
       "version": 1
     }
@@ -117,56 +64,35 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Home page with centered DoRaa Sangam House logo, horizontal category navigation bar (Shirts, Kurta, Bottoms, Sarees, Shop All), and profile icon",
+      "summary": "Complete light theme transformation with ivory/gold/rose gold color palette, removing all dark elements",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Product grid with saree cards featuring images, names, prices, discount badges, and Add to Cart buttons with hover effects",
+      "summary": "Premium typography with Playfair Display, Great Vibes, Lora, and Montserrat/Raleway fonts",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-3",
-      "summary": "User dashboard with Profile, Orders, and Addresses tabs, accessible via profile icon click",
+      "summary": "Vastrado-style home layout with center logo, horizontal category navigation, and product grid",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-4",
-      "summary": "Theme switcher in dashboard with Dark, Light, and System modes, saved in localStorage",
+      "summary": "Dashboard with Profile/Orders/Addresses tabs and Appearance section with theme switcher",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-5",
-      "summary": "Internet Identity authentication with login/OTP flow, login required for dashboard and cart",
+      "summary": "100% consistent responsive design across laptop, mobile, and tablet using rem/clamp units",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Hero banner with 'New Arrivals - Flat 60% Off' text overlay",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Responsive design with horizontal scrolling categories and centered logo on mobile",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Add a user profile/dashboard icon (circle avatar or icon) in the top right corner of the navigation bar that opens the user dashboard when clicked",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "status": "pending"
+      "status": "in_progress"
     }
   ],
-  "gameProjectType": "none",
   "projectName": "DoRaa Sangam House",
   "clarification_mode": "instant",
   "clarification_rounds": 0

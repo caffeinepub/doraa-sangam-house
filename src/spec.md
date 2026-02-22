@@ -1,21 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Transform the home page into a Vastrado-style e-commerce layout with centered logo, horizontal category navigation, product grid with on-model saree images, user dashboard with theme switcher (Dark/Light/System), and maintain luxury aesthetics across both themes.
+**Goal:** Transform the entire application from dark theme to a premium light theme with Banarasi saree aesthetics, featuring ivory/pearl backgrounds, antique gold accents, luxury typography, and a Vastrado-style home page layout.
 
 **Planned changes:**
-- Center DoRaa Sangam House logo at top in elegant gold font on dark background
-- Add horizontal category navigation bar below logo with Shirts, Kurta, Bottoms, Sarees, Shop All (cyan/teal buttons, golden hover glow, horizontally scrollable on mobile)
-- Add user profile icon in top right that opens dashboard
-- Display product grid with saree cards showing on-model images, name, price, discount badge, Add to Cart button (16px curved corners, hover lift + golden border glow)
-- Add optional hero banner above product grid with "New Arrivals - Flat 60% Off" text overlay
-- Create user dashboard with Profile, Orders, Addresses tabs displaying user details (name, email, phone, save button)
-- Add Theme Switcher in dashboard with three options: Dark (#0B0E0C bg, white text), Light (#F8F9FA bg, #1A1A1A text), System (follows OS preference)
-- Save theme choice in localStorage and apply on page load
-- Ensure light theme maintains clean readability with proper contrast while preserving luxury aesthetic
-- Apply golden hover glow consistently across all buttons and icons in both themes
-- Make interface fully responsive (horizontal scroll categories on mobile, centered logo, 1-2 column product grid)
-- Require authentication for dashboard and cart actions with login prompt for unauthenticated users
-- Preserve all existing functionality including Internet Identity, OTP login, shopping cart, and category carousel
+- Replace all dark theme colors (navy blue, black backgrounds) with soft warm ivory (#F8F5F0) backgrounds, antique gold (#C9A96E) accents, blush rose gold (#E8C0C8) secondary accents, and deep charcoal (#1A1A1A) text
+- Update typography to use Playfair Display ExtraBold for headings, Great Vibes script for category names, Lora Regular for body text, and Montserrat Bold/Raleway ExtraBold for buttons
+- Implement Vastrado-style home page with centered gold logo, horizontal category navigation (Shirts, Kurta, Bottoms, Sarees, Shop All), profile icon on right, and product card grid below
+- Add dashboard with Profile/Orders/Addresses tabs and Appearance section showing Light theme as default and only active option
+- Update CSS variables and Tailwind configuration to reflect new light theme palette
+- Ensure 100% consistent appearance across laptop, mobile, and tablet with responsive scaling using rem units and clamp()
+- Apply premium hover effects (warm gold glow, lift, scale) consistently across all interactive elements
 
-**User-visible outcome:** Users see a premium e-commerce home page with centered branding, easy category navigation, beautiful product cards with saree images, can access their dashboard to view profile/orders/addresses, can switch between Dark/Light/System themes with the choice persisting across sessions, and experience consistent luxury styling with golden hover effects in both themes.
+**User-visible outcome:** Users will experience a premium light-themed luxury saree shopping interface with ivory backgrounds, antique gold accents, elegant typography, Vastrado-style navigation, and smooth responsive design across all devices.

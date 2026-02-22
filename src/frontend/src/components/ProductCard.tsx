@@ -1,8 +1,8 @@
-import { ShoppingCart, Heart, Eye, Star, Package, Truck, Award, Tag } from 'lucide-react';
+import { ShoppingCart, Heart, Eye, Star, Award, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useAddToCart, useGetProduct } from '../hooks/useQueries';
+import { useGetProduct } from '../hooks/useQueries';
 import { toast } from 'sonner';
 import { useAddToCartAnimation } from '../hooks/useAddToCartAnimation';
 import { useGoldRipple } from '../hooks/useGoldRipple';
@@ -26,7 +26,6 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   const { data: product, isLoading } = useGetProduct(productId);
   const { addToCart, cart } = useCommerce();
   const { isInWishlist, toggleWishlist } = useWishlist();
-  const addToCartMutation = useAddToCart();
   const { animate } = useAddToCartAnimation();
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -58,10 +57,11 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   if (isLoading) {
     return (
       <Card 
-        className="overflow-hidden rounded-[28px] backdrop-blur-sm"
+        className="overflow-hidden rounded-[28px]"
         style={{ 
-          backgroundColor: 'rgba(46, 26, 71, 0.6)',
-          borderColor: 'rgba(201, 169, 110, 0.3)'
+          backgroundColor: '#FFFFFF',
+          borderColor: '#C9A96E',
+          borderWidth: '1px'
         }}
       >
         <div className="aspect-[3/4] shimmer-skeleton" />
@@ -122,11 +122,11 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
   return (
     <Card
       ref={cardRef}
-      className="group relative overflow-hidden rounded-[28px] backdrop-blur-sm transition-all duration-400 cursor-pointer product-card-hover shadow-lg"
+      className="group relative overflow-hidden rounded-[28px] transition-all duration-400 cursor-pointer product-card-hover shadow-md"
       style={{
-        background: 'rgba(46, 26, 71, 0.6)',
-        borderColor: 'rgba(201, 169, 110, 0.3)',
-        borderWidth: '2px',
+        backgroundColor: '#FFFFFF',
+        borderColor: '#C9A96E',
+        borderWidth: '1px',
         '--mouse-x': `${mousePos.x}%`,
         '--mouse-y': `${mousePos.y}%`,
       } as React.CSSProperties}
@@ -151,8 +151,8 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
           {product.rating >= 4.5 && (
             <Badge 
-              className="backdrop-blur-sm border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
-              style={{ backgroundColor: 'rgba(201, 169, 110, 0.95)', color: '#2E1A47' }}
+              className="border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
+              style={{ backgroundColor: '#C9A96E', color: '#1A1A1A' }}
             >
               <Award className="w-3 h-3 mr-1" />
               Top Rated
@@ -160,11 +160,11 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
           )}
           {discount >= 20 && (
             <Badge 
-              className="backdrop-blur-sm border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
-              style={{ backgroundColor: 'rgba(201, 169, 110, 0.95)', color: '#2E1A47' }}
+              className="border-0 text-xs font-semibold px-3 py-1.5 shadow-md"
+              style={{ backgroundColor: '#E8C0C8', color: '#1A1A1A' }}
             >
               <Tag className="w-3 h-3 mr-1" />
-              Best Price
+              {discount}% Off
             </Badge>
           )}
         </div>
@@ -182,20 +182,20 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
 
       {/* Product details */}
       <CardContent className="p-6 space-y-4">
-        {/* Product name - Lora font, warm beige */}
+        {/* Product name - Lora font */}
         <h3 
-          className="font-sans text-base line-clamp-2 leading-relaxed min-h-[3rem]"
-          style={{ color: '#D4C9B0' }}
+          className="font-lora text-base line-clamp-2 leading-relaxed min-h-[3rem]"
+          style={{ color: '#1A1A1A', lineHeight: '1.9' }}
         >
           {product.name}
         </h3>
 
-        {/* Pricing row - Gold price, gray MRP strike-through, gold discount */}
+        {/* Pricing row */}
         <div className="flex items-baseline gap-2 flex-wrap">
           <span className="text-xl font-bold" style={{ color: '#C9A96E' }}>
             {formatPrice(product.price)}
           </span>
-          <span className="text-sm line-through" style={{ color: '#A68A9A' }}>
+          <span className="text-sm line-through" style={{ color: '#5C4B51' }}>
             {formatPrice(mrp)}
           </span>
           <span className="text-sm font-semibold" style={{ color: '#C9A96E' }}>
@@ -203,7 +203,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
           </span>
         </div>
 
-        {/* Rating and reviews - Gold stars */}
+        {/* Rating and reviews */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 fill-current" style={{ color: '#C9A96E' }} />
@@ -211,7 +211,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
               {formatRating(product.rating)}
             </span>
           </div>
-          <span className="text-xs" style={{ color: '#A68A9A' }}>
+          <span className="text-xs" style={{ color: '#5C4B51' }}>
             ({formatReviewCount(product.reviewCount)})
           </span>
         </div>
@@ -220,7 +220,7 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
         <div className="flex items-center gap-3 pt-2">
           <Button
             size="sm"
-            className="flex-1 font-button font-bold uppercase button-luxury"
+            className="flex-1 font-montserrat font-bold uppercase button-luxury"
             onClick={handleAddToCart}
             disabled={inCart}
           >
@@ -232,8 +232,8 @@ export default function ProductCard({ productId, onQuickView, onViewDetail }: Pr
             variant="outline"
             className="transition-all duration-300 hover:scale-105"
             style={{ 
-              borderColor: 'rgba(201, 169, 110, 0.6)',
-              color: inWishlist ? '#C9A96E' : '#D4C9B0'
+              borderColor: '#C9A96E',
+              color: inWishlist ? '#C9A96E' : '#1A1A1A'
             }}
             onClick={handleWishlistToggle}
           >

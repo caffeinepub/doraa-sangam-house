@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { useSpaLocation } from '../hooks/useSpaLocation';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
@@ -47,10 +47,20 @@ export default function CategoryNavigationBar() {
           <button
             key={category.id}
             onClick={() => handleCategoryClick(category.slug)}
-            className="flex-shrink-0 snap-start px-8 py-3 rounded-full font-button font-bold uppercase text-sm tracking-wider transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(212,175,55,0.7)] whitespace-nowrap"
+            className="flex-shrink-0 snap-start px-8 py-3 rounded-full font-vibes text-script-sm tracking-wider transition-all duration-300 hover:scale-105 whitespace-nowrap"
             style={{
-              backgroundColor: '#14b8a6',
-              color: '#ffffff',
+              color: '#E8C0C8',
+              backgroundColor: 'transparent',
+              border: '2px solid #C9A96E',
+              boxShadow: '0 0 0 rgba(201, 169, 110, 0)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 18px rgba(201, 169, 110, 0.45)';
+              e.currentTarget.style.backgroundColor = 'rgba(201, 169, 110, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 0 rgba(201, 169, 110, 0)';
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
             {category.label}

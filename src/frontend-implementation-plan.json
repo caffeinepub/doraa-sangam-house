@@ -1,335 +1,370 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Transform to Vastrado-style e-commerce with theme switcher",
+  "title": "Complete Light Theme Transformation with Premium Banarasi Aesthetics",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Display large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the post-login home page",
+      "id": "REQ-1",
+      "summary": "Replace all dark theme colors throughout the application with premium light theme palette including soft warm ivory backgrounds, antique gold accents, deep charcoal text, and pure white cards with gold borders",
       "acceptanceCriteria": [
-        "Logo is centered horizontally at the top of the page",
-        "Logo uses elegant gold color (#D4AF37 or antique gold from theme) on dark background",
-        "Logo is prominently sized and visible on all viewport sizes"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Add a large centered DoRaa Sangam House logo at the top of the page using the generated logo image from frontend/public/assets/generated/logo-doraa-sangam.dim_1200x400.png. Style with prominent size, elegant gold coloring, and centered horizontal alignment. Ensure visibility across all viewport sizes with responsive sizing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-18",
-      "summary": "Add horizontal category navigation bar with Shirts, Kurta, Bottoms, Sarees, Shop All categories styled with cyan/teal buttons and golden hover glow, scrollable on mobile",
-      "acceptanceCriteria": [
-        "Five category buttons are displayed in a horizontal row below the logo",
-        "Buttons use cyan/teal color (#14b8a6 or similar)",
-        "Buttons display golden glow effect on hover",
-        "On mobile viewports, the category bar scrolls horizontally",
-        "All categories are visible and clickable"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/CategoryNavigationBar.tsx",
-          "operation": "create",
-          "description": "Create a horizontal category navigation component displaying five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal background (#14b8a6), apply golden glow hover effects using existing useGoldRipple hook or CSS box-shadow. Implement horizontal scroll on mobile using overflow-x-scroll with hidden scrollbar. Make buttons accessible and keyboard-navigable."
-        },
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Import and render CategoryNavigationBar component below the DoRaa Sangam House logo. Position it prominently in the layout hierarchy before the product grid section."
-        }
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "summary": "Add user profile/dashboard icon in top right corner that opens user dashboard when clicked",
-      "acceptanceCriteria": [
-        "Profile icon is positioned in the top right corner of the navigation area",
-        "Icon is circular and styled consistently with the luxury theme",
-        "Clicking the icon opens the user dashboard",
-        "Icon has golden hover glow effect matching other interactive elements"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Header.tsx",
-          "operation": "modify",
-          "description": "Add a circular profile/dashboard icon button in the top right area of the header navigation. Style with luxury theme colors and apply golden hover glow effect. Wire the icon to navigate to /dashboard using the existing navigation system. Ensure the icon is visible and accessible on all viewport sizes."
-        }
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "summary": "Display product grid with saree cards showing on-model images, name, price, discount badge, Add to Cart button with 16px curved corners and hover lift animation with golden border glow",
-      "acceptanceCriteria": [
-        "Product cards are displayed in a responsive grid layout below the category navigation",
-        "Each card shows product image, name, price, discount badge, and Add to Cart button",
-        "Cards have 16px border radius and subtle box shadow",
-        "On hover, cards animate with a lift effect and golden border glow",
-        "Product images show sarees on models",
-        "Grid is responsive and adjusts column count based on viewport width"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "modify",
-          "description": "Update ProductCard component to display 16px border radius, subtle box-shadow, and hover lift animation with golden border glow effect. Ensure card shows product image with on-model sarees, product name, price, discount percentage badge (calculated using existing formatters), and Add to Cart button. Verify animation respects reduced motion preferences."
-        },
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Add a responsive product grid below the CategoryNavigationBar displaying product cards using the existing ProductCard component. Use grid layout with responsive column counts (1 column mobile, 2 columns tablet, 3-4 columns desktop). Fetch products using existing useQueries hooks and display them in the grid with proper loading and error states."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Add optional hero banner with full-width saree showcase image and overlay text 'New Arrivals - Flat 60% Off'",
-      "acceptanceCriteria": [
-        "Hero banner spans full width above the product grid",
-        "Banner displays a saree showcase image",
-        "Text overlay reads 'New Arrivals - Flat 60% Off'",
-        "Text is readable with proper contrast against the background",
-        "Banner is responsive on all device sizes"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/HeroBanner.tsx",
-          "operation": "create",
-          "description": "Create a full-width hero banner component displaying a saree showcase image as background with text overlay reading 'New Arrivals - Flat 60% Off'. Use one of the generated product images (frontend/public/assets/generated/product-banarasi.dim_800x1000.png or similar) as the showcase background. Ensure text has proper contrast with backdrop blur or gradient overlay. Make banner responsive with adjusted height and text size on mobile."
-        },
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Import and render HeroBanner component at the top of the product grid section, positioned after CategoryNavigationBar and before the product cards grid."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Create user dashboard page with Profile, Orders, Addresses tabs and editable profile information with save functionality",
-      "acceptanceCriteria": [
-        "Dashboard opens when profile icon is clicked",
-        "Three tabs are visible and selectable: Profile, Orders, Addresses",
-        "Profile tab displays editable fields for name, email, and phone",
-        "Save button updates user profile data in the backend",
-        "Dashboard page uses clean, premium styling consistent with the luxury theme"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Ensure DashboardPage component has three clearly visible and selectable tabs: Profile, Orders, and Addresses. Verify the Profile tab displays editable input fields for name, email, and phone number with a save button that calls the existing saveCallerUserProfile backend function. Apply clean premium styling consistent with the royal Banarasi luxury theme using existing theme colors and shadows."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify that the /dashboard route is properly registered and navigable. Ensure that clicking the profile icon in the Header component navigates to this route."
-        }
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "summary": "Add Theme Switcher in dashboard with Dark, Light, System options saving choice to localStorage and applying on page load",
-      "acceptanceCriteria": [
-        "Theme switcher is visible in the user dashboard",
-        "Three selectable options are displayed: Dark, Light, System",
-        "Dark theme uses #0B0E0C background with white text",
-        "Light theme uses #F8F9FA background with #1A1A1A text",
-        "System option detects and follows OS prefers-color-scheme setting",
-        "Selected theme is saved to localStorage",
-        "Theme is applied immediately on selection",
-        "Theme persists across page reloads and sessions"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useTheme.ts",
-          "operation": "create",
-          "description": "Create a custom hook using useLocalStorageState to manage theme state with three options: 'dark', 'light', 'system'. Implement logic to detect system theme using window.matchMedia('(prefers-color-scheme: dark)') when 'system' is selected. Return current effective theme, setTheme function, and selected theme preference. Apply theme by adding/removing CSS classes or data attributes on document root element."
-        },
-        {
-          "path": "frontend/src/components/ThemeSwitcher.tsx",
-          "operation": "create",
-          "description": "Create a theme switcher component that displays three selectable options (Dark, Light, System) using radio buttons or segmented control. Wire to useTheme hook to read and update theme preference. Style with premium luxury aesthetic using existing theme colors and provide clear visual feedback for the selected option."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Import and render ThemeSwitcher component within the Profile tab or as a dedicated Theme section in the dashboard. Position it prominently so users can easily find and interact with theme settings."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Add CSS variable definitions for light theme colors: --background: #F8F9FA, --foreground: #1A1A1A for light mode. Define theme-specific color variables under [data-theme='light'] or .light-theme selector. Ensure dark theme maintains existing colors with --background: #0B0E0C and --foreground: white. Apply these variables throughout the stylesheet for backgrounds, text, borders, and UI elements."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Import and initialize useTheme hook at the App component level to apply theme on initial load. Ensure theme class or data attribute is applied to the root element so CSS variables take effect globally across the entire application."
-        }
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "summary": "Ensure light theme maintains clean readability with proper contrast ratios while preserving premium luxury aesthetic",
-      "acceptanceCriteria": [
-        "All text in light theme has sufficient contrast (WCAG AA minimum)",
-        "Buttons and interactive elements are clearly visible in light theme",
-        "Golden hover effects are visible against light backgrounds",
-        "Light theme maintains premium, luxury visual styling",
-        "No readability issues or visual glitches in light mode"
+        "No navy blue or black backgrounds visible anywhere in the application",
+        "All backgrounds use ivory (#F8F5F0) or beige gradient (#F8F5F0 → #F5F0E6)",
+        "Primary text is deep charcoal gray (#1A1A1A) with excellent contrast",
+        "All buttons use antique gold background (#C9A96E) with dark text",
+        "Product cards are pure white (#FFFFFF) with 1px gold borders",
+        "Hover effects show warm gold glow (box-shadow with rgba(201,169,110,0.45))"
       ],
       "file_operations": [
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Review and adjust light theme color variables to ensure WCAG AA contrast ratios for all text and interactive elements. Define light-theme-specific variants for gold hover effects that remain visible on light backgrounds (darker gold or gold with increased opacity). Test button, link, and card styles for proper visibility and contrast in light mode. Preserve luxury aesthetic by using refined color palettes and maintaining elegant spacing and shadows."
+          "description": "Replace all dark theme CSS variables with light theme palette: set --background to #F8F5F0 (soft warm ivory), --foreground to #1A1A1A (deep charcoal), --primary to #C9A96E (antique gold), --primary-foreground to #1A1A1A, --secondary to #E8C0C8 (muted blush rose gold), --secondary-foreground to #1A1A1A, --accent to #C9A96E, --accent-foreground to #1A1A1A, --card to #FFFFFF (pure white), --card-foreground to #1A1A1A, --muted to #F5F0E6 (very light beige), --muted-foreground to #5C4B51 (warm taupe gray), --border to #C9A96E, and remove all dark mode @media (prefers-color-scheme: dark) blocks. Update global body styles to use the ivory background. Ensure all theme variables reference the new light palette consistently."
         },
         {
           "path": "frontend/tailwind.config.js",
           "operation": "modify",
-          "description": "Add or adjust Tailwind theme configuration to support light theme variants for custom colors, shadows, and effects. Ensure golden hover effects (box-shadow, border-color) have sufficient contrast against light backgrounds by defining theme-specific variants."
-        }
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "summary": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both themes",
-      "acceptanceCriteria": [
-        "All buttons display golden glow on hover",
-        "All icons display golden glow on hover",
-        "Hover effects work in both dark and light themes",
-        "Glow effect is smooth and consistent across all interactive elements"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Define global CSS classes for golden hover glow effects that work in both dark and light themes. Use box-shadow with gold color (#D4AF37 or theme variable) and adjust opacity/color for light theme visibility. Apply transition properties for smooth hover animations. Create reusable utility classes like .gold-hover-glow that can be applied to buttons and icons throughout the app."
+          "description": "Update Tailwind theme configuration to reflect the new light theme color palette: replace existing plum/navy values with ivory (#F8F5F0), antique gold (#C9A96E, #D4B37D), blush rose gold (#E8C0C8), deep charcoal (#1A1A1A), warm taupe (#5C4B51), very light beige (#F5F0E6), and pure white (#FFFFFF). Remove any dark mode variants or extend configuration with light-only colors. Update boxShadow utilities to include warm gold glow effects using rgba(201,169,110,0.45) for hover states."
         },
         {
           "path": "frontend/src/components/Header.tsx",
           "operation": "modify",
-          "description": "Apply golden hover glow effects to all interactive elements in the header including navigation links, profile icon, cart icon, and authentication buttons. Use existing useGoldRipple hook or apply CSS classes for consistent hover styling."
-        },
-        {
-          "path": "frontend/src/components/CategoryNavigationBar.tsx",
-          "operation": "modify",
-          "description": "Ensure all category navigation buttons have golden hover glow effects applied consistently. Verify effects work smoothly in both dark and light themes."
+          "description": "Replace purple gradient background with soft warm ivory (#F8F5F0) background. Update text colors to deep charcoal (#1A1A1A) for excellent readability. Replace gold zari pattern overlay with subtle warm beige gradient or remove if not needed. Update navigation link hover states to show antique gold (#C9A96E) color and warm gold glow effect. Ensure cart badge uses antique gold background with dark text."
         },
         {
           "path": "frontend/src/components/ProductCard.tsx",
           "operation": "modify",
-          "description": "Apply golden hover glow to product card borders and action buttons (Add to Cart, wishlist, quick view). Ensure hover effects are smooth and consistent across all interactive elements within the card."
-        }
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "summary": "Ensure full responsive design with horizontal scrolling categories on mobile and adaptive product grid layout",
-      "acceptanceCriteria": [
-        "On mobile viewports (< 768px), category navigation scrolls horizontally",
-        "Logo remains centered on all screen sizes",
-        "Product grid displays 1-2 columns on mobile devices",
-        "All elements are usable and properly sized on mobile",
-        "No horizontal overflow or layout breakage on small screens"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/CategoryNavigationBar.tsx",
-          "operation": "modify",
-          "description": "Implement horizontal scroll behavior for mobile viewports using overflow-x-scroll with snap-scroll functionality. Hide scrollbar visually while maintaining functionality. Test on mobile breakpoints (< 768px) to ensure smooth scrolling and proper touch interaction."
+          "description": "Update product cards to use pure white (#FFFFFF) background with 1px solid gold border (#C9A96E). Add soft shadow effect. On hover, add warm gold box-shadow (0 0 18px rgba(201,169,110,0.45)) for glow effect with lift transform. Update text colors to deep charcoal (#1A1A1A) for product names and prices. Update 'Add to Cart' button background to antique gold (#C9A96E) with dark text (#1A1A1A) and hover effects (deeper gold, scale, glow)."
         },
         {
           "path": "frontend/src/pages/HomeSection.tsx",
           "operation": "modify",
-          "description": "Ensure logo remains centered using flex or grid centering techniques across all viewport sizes. Adjust logo size responsively (larger on desktop, smaller on mobile). Configure product grid with responsive column counts: grid-cols-1 on mobile, grid-cols-2 on small tablets, grid-cols-3 on tablets, grid-cols-4 on desktop. Test for horizontal overflow and fix any layout breakage on small screens."
+          "description": "Replace any dark backgrounds with soft warm ivory (#F8F5F0). Update section backgrounds to use very light beige gradient (#F8F5F0 → #F5F0E6) where applicable. Ensure all text uses deep charcoal (#1A1A1A) for readability. Update the generated logo reference to use frontend/public/assets/generated/doraa-logo-gold.dim_400x120.png centered at the top. Verify all child components inherit the light theme styling."
         },
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/src/components/CategoryNavigationBar.tsx",
           "operation": "modify",
-          "description": "Add responsive utility classes and media queries to support mobile-first design. Ensure base font sizes, spacing, and component dimensions scale appropriately across breakpoints. Add overflow-hidden to body if necessary to prevent horizontal scrolling issues."
-        }
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "summary": "Require authentication for dashboard and cart actions with login prompt for unauthenticated users",
-      "acceptanceCriteria": [
-        "Unauthenticated users cannot access the dashboard",
-        "Clicking profile icon when not logged in shows login prompt or redirects to login",
-        "Cart actions require authentication",
-        "After successful login, users are redirected to their intended destination",
-        "Login prompt is clear and user-friendly"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Header.tsx",
-          "operation": "modify",
-          "description": "Update profile icon click handler to check authentication status using existing useInternetIdentity hook. If user is not authenticated, redirect to /login with return path set to /dashboard using existing flash message and return path utilities. Display clear messaging indicating login is required."
+          "description": "Update category navigation bar background to soft warm ivory (#F8F5F0) or transparent. Update category text colors to deep charcoal (#1A1A1A). Add hover effects with antique gold (#C9A96E) background and warm gold glow. Ensure scrollable behavior on mobile remains intact with light theme styling."
         },
         {
-          "path": "frontend/src/components/ProductCard.tsx",
+          "path": "frontend/src/components/CinematicHeroSlider.tsx",
           "operation": "modify",
-          "description": "Add authentication check before executing Add to Cart action. If user is not authenticated, display login prompt using existing toast system or redirect to login page with appropriate return path. Ensure cart actions are gated by authentication status."
+          "description": "Replace purple gradient background with soft warm ivory (#F8F5F0) or very light beige gradient (#F8F5F0 → #F5F0E6). Update gold wave transitions to use antique gold (#C9A96E) tones. Remove any dark overlays or replace with subtle light overlays. Ensure text visibility with deep charcoal (#1A1A1A) color and proper contrast."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Replace any dark backgrounds with soft warm ivory (#F8F5F0) or very light beige gradient. Update all text to deep charcoal (#1A1A1A) for primary text and warm taupe gray (#5C4B51) for secondary text. Update link hover states to antique gold (#C9A96E) with warm glow effect."
         },
         {
           "path": "frontend/src/pages/DashboardPage.tsx",
           "operation": "modify",
-          "description": "Verify existing ProtectedRoute wrapper or add authentication guard at component level. Redirect unauthenticated users to /login with return path set to /dashboard. Use existing useAuthRedirect or useInternetIdentity hooks for authentication checks."
+          "description": "Update dashboard background to soft warm ivory (#F8F5F0). Update card backgrounds to pure white (#FFFFFF) with 1px gold borders. Update tab styling to use antique gold (#C9A96E) for active tabs. Update all text to deep charcoal (#1A1A1A) for headings and primary text, warm taupe (#5C4B51) for secondary text. Update 'Save Changes' button to antique gold background with dark text and hover effects."
+        },
+        {
+          "path": "frontend/src/components/cart/CartPanel.tsx",
+          "operation": "modify",
+          "description": "Update cart panel background to pure white (#FFFFFF) or soft warm ivory (#F8F5F0). Update item cards to pure white with 1px gold borders. Update text colors to deep charcoal (#1A1A1A). Update checkout button to antique gold background (#C9A96E) with dark text and hover effects (deeper gold, scale, warm glow)."
+        },
+        {
+          "path": "frontend/src/components/checkout/CheckoutPanel.tsx",
+          "operation": "modify",
+          "description": "Update checkout form background to soft warm ivory (#F8F5F0). Update input field backgrounds to pure white (#FFFFFF) with 1px gold borders (#C9A96E). Update label text to deep charcoal (#1A1A1A). Update submit button to antique gold background with dark text and premium hover effects."
+        },
+        {
+          "path": "frontend/src/components/QuickViewSheet.tsx",
+          "operation": "modify",
+          "description": "Update quick view sheet background to pure white (#FFFFFF) or soft warm ivory (#F8F5F0). Update text colors to deep charcoal (#1A1A1A). Update action buttons to antique gold background with dark text and hover effects. Ensure gold borders and warm glow effects are consistent with the light theme."
+        },
+        {
+          "path": "frontend/src/pages/ProductDetailView.tsx",
+          "operation": "modify",
+          "description": "Update product detail modal background to soft warm ivory (#F8F5F0). Update product information card to pure white (#FFFFFF) with 1px gold border. Update all text to deep charcoal (#1A1A1A). Update 'Add to Cart' and wishlist buttons to antique gold styling with dark text and hover effects."
+        },
+        {
+          "path": "frontend/src/pages/ProductsPage.tsx",
+          "operation": "modify",
+          "description": "Update products page background to soft warm ivory (#F8F5F0). Update product grid container styling. Ensure all ProductCard components render with light theme styling (pure white cards, gold borders, warm glow on hover). Update loading skeleton colors to match light theme palette."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Update login page background to soft warm ivory (#F8F5F0). Update form card background to pure white (#FFFFFF) with 1px gold border. Update input fields to white background with gold borders. Update all text to deep charcoal (#1A1A1A). Update submit buttons to antique gold background with dark text and hover effects. Ensure OTP input fields and tab styling match the light theme."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
+          "operation": "modify",
+          "description": "Update Banarasi collection section background to very light beige gradient (#F8F5F0 → #F5F0E6). Update decorative header text to antique gold (#C9A96E). Update product cards to pure white with gold borders. Ensure carousel navigation controls use antique gold styling with hover effects."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
+          "operation": "modify",
+          "description": "Update quick details overlay background to pure white (#FFFFFF) with subtle shadow. Update text colors to deep charcoal (#1A1A1A) for primary info and warm taupe (#5C4B51) for secondary details. Update accent colors to antique gold (#C9A96E) and blush rose gold (#E8C0C8)."
+        },
+        {
+          "path": "frontend/src/components/dashboard/TrendingCategoriesSection.tsx",
+          "operation": "modify",
+          "description": "Update trending categories section background to soft warm ivory (#F8F5F0). Update category cards to pure white with 1px gold borders. Update text to deep charcoal (#1A1A1A). Add warm gold glow hover effects to category cards."
+        },
+        {
+          "path": "frontend/src/admin/pages/AdminDashboard.tsx",
+          "operation": "modify",
+          "description": "Update admin dashboard background to soft warm ivory (#F8F5F0). Update metrics cards to pure white (#FFFFFF) with 1px gold borders. Update text to deep charcoal (#1A1A1A). Update accent colors to antique gold (#C9A96E)."
+        },
+        {
+          "path": "frontend/src/admin/components/AdminLayout.tsx",
+          "operation": "modify",
+          "description": "Update admin layout background to soft warm ivory (#F8F5F0). Update sidebar background to very light beige (#F5F0E6). Update navigation link styling to use antique gold for active states. Update header text to deep charcoal (#1A1A1A)."
+        },
+        {
+          "path": "frontend/src/admin/pages/AdminProductsPage.tsx",
+          "operation": "modify",
+          "description": "Update admin products page background to soft warm ivory (#F8F5F0). Update product list cards to pure white with gold borders. Update action buttons to antique gold background with dark text and hover effects."
+        },
+        {
+          "path": "frontend/src/components/OceanBackground.tsx",
+          "operation": "modify",
+          "description": "Replace dark ocean animation with a light-themed ambient background. Use soft warm ivory tones, pearl shimmer effects, and subtle beige gradients. Adjust wave colors to light gold and cream hues. Ensure the animation respects reduced motion preferences and complements the light theme palette."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+          "operation": "modify",
+          "description": "Update pearl shimmer particles to use antique gold (#C9A96E) and blush rose gold (#E8C0C8) colors with glow effects that complement the light theme background. Ensure particles are visible against soft warm ivory backgrounds."
+        },
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "operation": "modify",
+          "description": "Update empty state background to soft warm ivory (#F8F5F0). Update text colors to deep charcoal (#1A1A1A) for primary messages and warm taupe (#5C4B51) for secondary text. Update CTA buttons to antique gold background with dark text and hover effects."
+        },
+        {
+          "path": "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+          "operation": "modify",
+          "description": "Update error state background to soft warm ivory (#F8F5F0). Update text colors to deep charcoal (#1A1A1A). Update retry button to antique gold background with dark text and hover effects."
         }
       ]
     },
     {
-      "id": "REQ-28",
-      "summary": "Preserve all existing functionality including Internet Identity, OTP login, cart operations, and category carousel without regressions",
+      "id": "REQ-2",
+      "summary": "Update typography throughout the application to use premium luxury fonts: Playfair Display ExtraBold for headings with antique gold color and letter-spacing, Great Vibes script for category names, Lora Regular for body text, and Montserrat Bold for buttons",
       "acceptanceCriteria": [
-        "Internet Identity login flow works without issues",
-        "OTP authentication flow remains functional",
-        "Shopping cart add/update/remove operations work correctly",
-        "Existing category carousel (if present) continues to function",
-        "No blank screens or JavaScript errors occur",
-        "All existing features remain operational after the transformation"
+        "All headings and 'DoRaa Sangam House' brand name use Playfair Display ExtraBold in antique gold",
+        "Category names use Great Vibes script font at 2.8-3.8rem size",
+        "All body text uses Lora Regular with line-height 1.9-2.1",
+        "All buttons use Montserrat Bold or Raleway ExtraBold in all caps",
+        "Letter-spacing on headings is 2-4px",
+        "Typography renders consistently on all devices"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Ensure all existing routes and authentication flows remain intact. Verify Internet Identity provider wrapper, OTP login routes, and cart-related routes are not disrupted by the new home page layout changes. Test for JavaScript errors and blank screens during navigation between old and new features."
+          "description": "Verify and ensure Google Fonts preconnect links include Playfair Display (weight 800), Great Vibes (Regular), Lora (Regular 400), Montserrat (Bold 700), and Raleway (ExtraBold 800). Update existing links if necessary to include all required font weights."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Define @font-face or @import rules for Playfair Display ExtraBold (800), Great Vibes Regular, Lora Regular (400), Montserrat Bold (700), and Raleway ExtraBold (800) if not already present. Update global heading styles (h1, h2, h3, h4, h5, h6) to use Playfair Display ExtraBold with color #C9A96E (antique gold) and letter-spacing of 2-4px. Update body text to use Lora Regular with line-height 1.9-2.1 and color #1A1A1A. Create utility classes for script font (Great Vibes) and button font (Montserrat Bold or Raleway ExtraBold) in all caps."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Update fontFamily configuration to define 'playfair': ['Playfair Display', 'serif'], 'vibes': ['Great Vibes', 'cursive'], 'lora': ['Lora', 'serif'], 'montserrat': ['Montserrat', 'sans-serif'], and 'raleway': ['Raleway', 'sans-serif']. Set default sans-serif to Lora for body text. Update fontSize configuration to include script font sizes (2.8rem, 3rem, 3.8rem). Add letterSpacing utilities for 2px, 3px, and 4px."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Update 'DoRaa Sangam House' brand name to use Playfair Display ExtraBold (font-playfair font-extrabold) with antique gold color (#C9A96E) and letter-spacing of 2-4px. Update navigation link font to Montserrat Bold or Raleway ExtraBold if applicable. Ensure text sizing uses clamp() for responsive scaling."
         },
         {
           "path": "frontend/src/pages/HomeSection.tsx",
           "operation": "modify",
-          "description": "Preserve any existing category carousel components by ensuring they coexist with the new CategoryNavigationBar without conflicts. If an existing carousel is present, determine if it should remain or be replaced based on the new design requirements. Ensure no functionality is lost during the layout transformation."
+          "description": "Update main headings to use Playfair Display ExtraBold with antique gold color and letter-spacing 2-4px. Update body text to Lora Regular with line-height 1.9-2.1 and deep charcoal color. Update generated logo reference (frontend/public/assets/generated/doraa-logo-gold.dim_400x120.png) and ensure it displays prominently centered at the top. If there are section headings, apply Great Vibes script font for special titles at 2.8-3.8rem size with blush rose gold or antique gold color."
         },
         {
-          "path": "frontend/src/commerce/CommerceProvider.tsx",
+          "path": "frontend/src/components/CategoryNavigationBar.tsx",
           "operation": "modify",
-          "description": "Verify that cart operations (add, update, remove) remain functional and that localStorage persistence continues to work correctly. Ensure no regressions are introduced by new authentication guards or layout changes."
-        }
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "summary": "Use five generated product images showing sarees on models in the product grid with 800x1000 dimensions",
-      "acceptanceCriteria": [
-        "Five product images are generated and placed in frontend/public/assets/generated",
-        "Each image shows a saree worn by a model",
-        "Images have 800x1000 pixel dimensions",
-        "Images represent visually distinct saree styles (Banarasi, silk, organza, etc.)",
-        "Images are used in product cards on the home page grid"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomeSection.tsx",
-          "operation": "modify",
-          "description": "Wire the five generated product images into the product grid by referencing their workspace file paths: frontend/public/assets/generated/product-banarasi.dim_800x1000.png, frontend/public/assets/generated/product-silk.dim_800x1000.png, frontend/public/assets/generated/product-organza.dim_800x1000.png, frontend/public/assets/generated/product-georgette.dim_800x1000.png, and frontend/public/assets/generated/product-kalamkari.dim_800x1000.png. These images should be displayed in the product cards grid as static assets representing different saree styles on models."
+          "description": "Update category names (Shirts, Kurta, Bottoms, Sarees, Shop All) to use Great Vibes script font at 2.8-3.8rem size with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color. Ensure text is responsive using clamp() and remains readable on mobile with proper spacing."
         },
         {
           "path": "frontend/src/components/ProductCard.tsx",
           "operation": "modify",
-          "description": "Ensure ProductCard component can display product images from the frontend/public/assets/generated directory using the correct relative paths. Verify image aspect ratio handling for 800x1000 pixel dimensions and apply appropriate object-fit styling for consistent card appearance."
+          "description": "Update product name to use Lora Regular with deep charcoal color (#1A1A1A) and line-height 1.9-2.1. Update product description/details to use Lora Regular. Update 'Add to Cart' button text to use Montserrat Bold or Raleway ExtraBold in all caps (text-transform: uppercase) with dark text on antique gold background."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Update page headings to use Playfair Display ExtraBold with antique gold color and letter-spacing 2-4px. Update body text (user details, labels) to use Lora Regular with line-height 1.9-2.1 and deep charcoal color. Update 'Save Changes' button text to use Montserrat Bold or Raleway ExtraBold in all caps."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Update footer headings to use Playfair Display ExtraBold with antique gold color if applicable. Update body text and links to use Lora Regular with line-height 1.9-2.1 and appropriate colors (deep charcoal for primary, warm taupe for secondary)."
+        },
+        {
+          "path": "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
+          "operation": "modify",
+          "description": "Update category names and special titles to use Great Vibes script font at 2.8-3.8rem size with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color. Update section headings to use Playfair Display ExtraBold with letter-spacing 2-4px. Update product descriptions to use Lora Regular."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Update page heading to use Playfair Display ExtraBold with antique gold color and letter-spacing 2-4px. Update form labels and body text to use Lora Regular with line-height 1.9-2.1. Update button text to use Montserrat Bold or Raleway ExtraBold in all caps."
+        },
+        {
+          "path": "frontend/src/pages/ProductDetailView.tsx",
+          "operation": "modify",
+          "description": "Update product name heading to use Playfair Display ExtraBold with antique gold color and letter-spacing 2-4px. Update product description to use Lora Regular with line-height 1.9-2.1 and deep charcoal color. Update button text to use Montserrat Bold or Raleway ExtraBold in all caps."
+        },
+        {
+          "path": "frontend/src/components/QuickViewSheet.tsx",
+          "operation": "modify",
+          "description": "Update product name to use Playfair Display ExtraBold or Lora Regular based on hierarchy. Update description text to use Lora Regular with line-height 1.9-2.1. Update button text to use Montserrat Bold or Raleway ExtraBold in all caps."
+        },
+        {
+          "path": "frontend/src/admin/components/AdminLayout.tsx",
+          "operation": "modify",
+          "description": "Update admin panel headings to use Playfair Display ExtraBold with antique gold color and letter-spacing 2-4px. Update navigation text and body content to use Lora Regular. Update button text to use Montserrat Bold or Raleway ExtraBold in all caps."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement Vastrado-style home page layout with centered gold luxury DoRaa Sangam House logo at top, horizontal category navigation bar below logo, user profile/dashboard icon on right, and product grid below navigation with on-model images and styled cards",
+      "acceptanceCriteria": [
+        "Logo is centered at top in gold luxury styling",
+        "Horizontal category bar displays all specified categories",
+        "Category navigation scrolls smoothly on mobile",
+        "Profile/dashboard icon is visible on the right",
+        "Product grid displays below navigation",
+        "Product cards show image, name, price, discount badge, and Add to Cart button",
+        "Cards have curved corners, white background, and lift on hover",
+        "Gold border appears on card hover"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomeSection.tsx",
+          "operation": "modify",
+          "description": "Restructure home page layout to implement Vastrado-style design. At the top center, display the generated gold luxury logo (frontend/public/assets/generated/doraa-logo-gold.dim_400x120.png) with proper sizing and responsive behavior. Below the logo, integrate the CategoryNavigationBar component displaying categories (Shirts, Kurta, Bottoms, Sarees, Shop All) in a horizontal scrollable layout. Position the user profile/dashboard icon on the right side of the navigation bar or header. Below the navigation, display a grid of product cards showing on-model images (use existing product data with images from assets), product name, price, discount badge, and 'Add to Cart' button. Ensure proper spacing and alignment with the light theme palette."
+        },
+        {
+          "path": "frontend/src/components/CategoryNavigationBar.tsx",
+          "operation": "modify",
+          "description": "Ensure CategoryNavigationBar displays all specified categories (Shirts, Kurta, Bottoms, Sarees, Shop All) in a horizontal layout with smooth scrolling on mobile. Update styling to match the light theme with Great Vibes script font for category names at 2.8-3.8rem size. Add overflow-x-auto for mobile scrollability. Ensure hover effects show antique gold color and warm glow."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Add or ensure the user profile/dashboard icon is positioned on the right side of the header. Icon should be visible and clickable, opening the dashboard or user menu. Use antique gold color for the icon with hover effects. Ensure proper spacing and alignment with the logo and navigation elements."
+        },
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Ensure product cards display on-model images (from assets), product name, price, discount badge, and 'Add to Cart' button. Apply curved corners (border-radius), pure white background (#FFFFFF), and 1px gold border (#C9A96E). Add hover effect with lift transform (translateY) and warm gold box-shadow glow (0 0 18px rgba(201,169,110,0.45)). Ensure all text uses the correct typography (Lora for names/descriptions, Montserrat Bold for buttons). Discount badge should use antique gold or blush rose gold styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Update dashboard with Profile, Orders, and Addresses tabs, add Appearance section with theme switcher showing Light as default and only active option, and display user details with Save Changes button",
+      "acceptanceCriteria": [
+        "Dashboard has Profile, Orders, and Addresses tabs",
+        "Appearance section is visible with theme switcher",
+        "Light theme option is active and selected by default",
+        "Dark and System options are disabled or hidden",
+        "User details form shows name, email, and phone fields",
+        "Save Changes button is present and functional"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Ensure dashboard displays three tabs: Profile, Orders, and Addresses. Under the Profile tab, add an 'Appearance' section with theme switcher buttons. Display Light theme option as active and selected by default with antique gold styling. Disable or hide Dark and System options (gray out or remove from UI). Below the Appearance section, display user details form with fields for name, email, and phone. Add a 'Save Changes' button styled with antique gold background, dark text, and hover effects. Ensure all styling matches the light theme palette with Playfair Display for headings, Lora for body text, and Montserrat Bold for buttons."
+        },
+        {
+          "path": "frontend/src/components/ThemeSwitcher.tsx",
+          "operation": "modify",
+          "description": "Update ThemeSwitcher component to show Light theme option as active and selected by default with antique gold highlighting. Disable or hide Dark and System options (apply disabled styling or remove buttons entirely). Ensure the component respects the light-only theme requirement and does not allow switching to dark mode. Update styling to match the light theme palette with pure white card background and gold accents."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Ensure 100% consistent appearance across laptop, mobile, and tablet devices with no media-query overrides for colors, fonts, or backgrounds, using rem units and clamp() for responsive scaling, and smooth premium hover animations",
+      "acceptanceCriteria": [
+        "Colors, fonts, and backgrounds are identical on laptop, mobile, and tablet",
+        "No media queries override the light theme colors or typography",
+        "All spacing uses rem units",
+        "Font sizes use clamp() for fluid responsive scaling",
+        "Hover animations work smoothly with warm gold glow and lift effects",
+        "Reduced motion preferences are respected",
+        "No responsiveness issues or layout breaks on any device"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Remove all @media (prefers-color-scheme: dark) blocks and any media query overrides that change colors, fonts, or backgrounds for different screen sizes. Ensure all color variables remain consistent across all devices. Update spacing to use rem units throughout. Add @media (prefers-reduced-motion: reduce) rules to disable or simplify animations for users who prefer reduced motion. Verify that CSS variables are device-agnostic and maintain the light theme palette across all viewports."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Ensure no responsive variants override light theme colors or typography. Update fontSize configuration to use clamp() for fluid responsive scaling (e.g., clamp(1rem, 2vw, 1.5rem)). Ensure spacing utilities use rem units. Add motion-safe and motion-reduce variants for animations to respect user preferences. Verify that all theme colors remain consistent across breakpoints."
+        },
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Ensure hover animations (warm gold glow, lift effect, scale) work smoothly across all devices. Use CSS transitions with appropriate timing functions (ease-out). Wrap animations in @media (prefers-reduced-motion: no-preference) to respect reduced motion preferences. Use rem units for padding and margins. Use clamp() for responsive font sizes."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Use rem units for all spacing and sizing. Use clamp() for responsive font sizes in brand name and navigation links. Ensure hover effects (antique gold color, warm glow) use transitions that respect reduced motion preferences. Remove any media queries that override light theme colors."
+        },
+        {
+          "path": "frontend/src/components/CategoryNavigationBar.tsx",
+          "operation": "modify",
+          "description": "Use clamp() for responsive font sizes in category names (2.8rem to 3.8rem range). Use rem units for spacing and padding. Ensure smooth scrolling behavior on mobile without media query color overrides. Hover effects should respect reduced motion preferences."
+        },
+        {
+          "path": "frontend/src/pages/HomeSection.tsx",
+          "operation": "modify",
+          "description": "Use rem units for all spacing, margins, and padding. Use clamp() for responsive typography. Ensure grid layout uses responsive units (fr, %, rem) without media query overrides for colors or fonts. Verify animations respect reduced motion preferences."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Use rem units for all spacing. Use clamp() for responsive font sizes in headings and body text. Ensure tabs, forms, and buttons scale properly across devices without media query overrides for light theme colors. Button hover effects should respect reduced motion preferences."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Use rem units for spacing and typography. Use clamp() for responsive font sizes. Ensure three-column grid layout adapts responsively using CSS Grid with fr units. Remove any media queries that override light theme colors or fonts."
+        },
+        {
+          "path": "frontend/src/hooks/usePrefersReducedMotion.ts",
+          "operation": "modify",
+          "description": "Verify this hook correctly detects prefers-reduced-motion media query and returns a boolean. Ensure it is imported and used in all animation-heavy components (ProductCard, CinematicHeroSlider, BanarasiShowcaseAmbience, OceanBackground, etc.) to conditionally disable or simplify animations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Update CSS variables in frontend/index.css and Tailwind configuration to reflect the new light theme color palette, ensuring all component styles reference these variables consistently",
+      "acceptanceCriteria": [
+        "CSS variables updated with ivory, antique gold, rose gold, and charcoal values",
+        "Tailwind config includes new color palette",
+        "All components use the updated CSS variables",
+        "Theme system no longer references dark/navy blue colors"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Update :root CSS variables to reflect the complete light theme palette: --background: #F8F5F0 (soft warm ivory), --foreground: #1A1A1A (deep charcoal), --primary: #C9A96E (antique gold), --primary-foreground: #1A1A1A, --secondary: #E8C0C8 (muted blush rose gold), --secondary-foreground: #1A1A1A, --accent: #C9A96E, --accent-foreground: #1A1A1A, --card: #FFFFFF (pure white), --card-foreground: #1A1A1A, --muted: #F5F0E6 (very light beige), --muted-foreground: #5C4B51 (warm taupe gray), --border: #C9A96E, --input: #C9A96E, --ring: #C9A96E. Remove all dark mode variables and @media (prefers-color-scheme: dark) blocks. Ensure no navy blue, black, or dark purple values remain in the CSS."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Update extend.colors configuration to include: ivory: '#F8F5F0', beigeGradientStart: '#F8F5F0', beigeGradientEnd: '#F5F0E6', antiqueGold: '#C9A96E', warmGold: '#D4B37D', blushRoseGold: '#E8C0C8', deepCharcoal: '#1A1A1A', warmTaupe: '#5C4B51', pureWhite: '#FFFFFF'. Remove any existing plum, navy, or dark purple color definitions. Ensure all color references in components now use these new variables. Update boxShadow utilities to include warmGoldGlow: '0 0 18px rgba(201,169,110,0.45)' for hover effects."
         }
       ]
     }

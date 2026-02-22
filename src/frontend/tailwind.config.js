@@ -5,28 +5,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Royal Banarasi-Kanpur luxury palette
-        plum: {
-          DEFAULT: '#2E1A47',
-          dark: '#1A0F2E',
-          light: '#3C1F5B',
-        },
-        gold: {
-          DEFAULT: '#C9A96E',
-          dark: '#B08B4F',
-          light: '#E0C89A',
-        },
-        copper: '#B87333',
-        ivory: '#F8F1E9',
-        beige: '#D4C9B0',
-        rose: '#A68A9A',
-        'pearl-off-white': '#F5F5F0',
-        // Light theme specific
-        'light-bg': '#F8F9FA',
-        'light-text': '#1A1A1A',
-        'light-muted': '#6B6B6B',
-        'light-gold': '#B8860B',
-        'light-gold-dark': '#8B6914',
+        // Premium Light Theme - Banarasi/Kanpur Heritage
+        ivory: '#F8F5F0',
+        'beige-gradient-start': '#F8F5F0',
+        'beige-gradient-end': '#F5F0E6',
+        'antique-gold': '#C9A96E',
+        'warm-gold': '#D4B37D',
+        'blush-rose-gold': '#E8C0C8',
+        'deep-charcoal': '#1A1A1A',
+        'warm-taupe': '#5C4B51',
+        'pure-white': '#FFFFFF',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -69,6 +57,11 @@ export default {
         },
       },
       fontFamily: {
+        playfair: ['Playfair Display', 'serif'],
+        vibes: ['Great Vibes', 'cursive'],
+        lora: ['Lora', 'serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+        raleway: ['Raleway', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
         script: ['Great Vibes', 'cursive'],
         sans: ['Lora', 'serif'],
@@ -86,9 +79,19 @@ export default {
         2.0: '2.0',
         2.1: '2.1',
       },
+      letterSpacing: {
+        '2px': '0.125rem',
+        '3px': '0.1875rem',
+        '4px': '0.25rem',
+      },
+      fontSize: {
+        'script-sm': 'clamp(2.8rem, 4vw, 3.2rem)',
+        'script-md': 'clamp(3rem, 5vw, 3.5rem)',
+        'script-lg': 'clamp(3.2rem, 6vw, 3.8rem)',
+      },
       boxShadow: {
-        'gold-glow': '0 0 20px rgba(212, 175, 55, 0.6)',
-        'gold-inner': 'inset 0 0 20px rgba(201, 169, 110, 0.2)',
+        'warm-gold-glow': '0 0 18px rgba(201, 169, 110, 0.45)',
+        'gold-inner': 'inset 0 0 20px rgba(201, 169, 110, 0.15)',
       },
       animation: {
         'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -97,10 +100,10 @@ export default {
       keyframes: {
         pulseGlow: {
           '0%, 100%': {
-            boxShadow: '0 0 20px rgba(201, 169, 110, 0.4)',
+            boxShadow: '0 0 18px rgba(201, 169, 110, 0.35)',
           },
           '50%': {
-            boxShadow: '0 0 30px rgba(201, 169, 110, 0.8)',
+            boxShadow: '0 0 24px rgba(201, 169, 110, 0.55)',
           },
         },
         scriptEntrance: {

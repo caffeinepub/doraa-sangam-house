@@ -95,35 +95,12 @@ export default function Header() {
   return (
     <>
       <header 
-        className="sticky top-0 z-50 w-full border-b backdrop-blur-xl supports-[backdrop-filter]:bg-plum/60"
+        className="sticky top-0 z-50 w-full border-b backdrop-blur-xl"
         style={{
-          background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
+          backgroundColor: '#F8F5F0',
           borderColor: 'rgba(201, 169, 110, 0.3)',
         }}
       >
-        {/* Faint gold zari pattern overlay */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-[0.08]"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 40px,
-                rgba(201, 169, 110, 0.15) 40px,
-                rgba(201, 169, 110, 0.15) 41px
-              ),
-              repeating-linear-gradient(
-                -45deg,
-                transparent,
-                transparent 40px,
-                rgba(201, 169, 110, 0.15) 40px,
-                rgba(201, 169, 110, 0.15) 41px
-              )
-            `,
-          }}
-        />
-        
         <div className="container flex h-24 items-center justify-between relative z-10 px-6 md:px-8">
           {/* Clickable Luxury Logo with Premium Hover Effects */}
           <a
@@ -139,10 +116,10 @@ export default function Header() {
               style={{ maxWidth: '180px' }}
             />
             <span 
-              className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-wider brand-name heading-gradient-hover"
+              className="text-xl md:text-2xl lg:text-3xl font-playfair font-extrabold tracking-wider brand-name heading-gradient-hover"
               style={{ 
                 color: '#C9A96E', 
-                textShadow: '0 0 12px rgba(201,169,110,0.6)',
+                textShadow: '0 0 12px rgba(201,169,110,0.4)',
                 letterSpacing: '0.25em'
               }}
             >
@@ -160,144 +137,181 @@ export default function Header() {
               >
                 {link.label}
                 <span 
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300" 
-                  style={{ backgroundColor: '#C9A96E', boxShadow: '0 0 8px rgba(201,169,110,0.6)' }} 
+                  className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                  style={{ backgroundColor: '#C9A96E' }}
                 />
               </a>
             ))}
           </nav>
 
           <div className="flex items-center gap-4">
+            {/* Profile/Dashboard Icon */}
             <Button
-              data-cart-button
               variant="ghost"
               size="icon"
-              className="ripple-container relative transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
+              onClick={handleProfileIconClick}
+              className="relative transition-all duration-300 hover:scale-110"
               style={{ color: '#C9A96E' }}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+
+            {/* Cart Button */}
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleCartClick}
+              className="relative transition-all duration-300 hover:scale-110"
+              style={{ color: '#C9A96E' }}
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <Badge 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs border-0" 
-                  style={{ backgroundColor: '#C9A96E', color: '#2E1A47' }}
+                <Badge
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs font-bold border-0"
+                  style={{ backgroundColor: '#C9A96E', color: '#1A1A1A' }}
                 >
                   {cartItemCount}
                 </Badge>
               )}
             </Button>
 
-            {/* Profile Icon - Always visible - mobile friendly */}
-            <Button
-              onClick={handleProfileIconClick}
-              variant="ghost"
-              size="icon"
-              className="transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
-              style={{ color: '#C9A96E' }}
-              title={isAuthenticated ? 'View Dashboard' : 'Login to view profile'}
-            >
-              <User className="h-5 w-5" />
-            </Button>
+            {/* Auth Buttons (Desktop) */}
+            <div className="hidden lg:flex items-center gap-3">
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="font-button font-bold uppercase"
+                      style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                    >
+                      Account
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-48"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E' }}
+                  >
+                    <DropdownMenuItem
+                      onClick={() => navigate('/dashboard')}
+                      style={{ color: '#1A1A1A' }}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      style={{ color: '#1A1A1A' }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={handleSignInClick}
+                    className="font-button font-bold uppercase"
+                    style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    onClick={handleSignUpClick}
+                    className="button-luxury font-button font-bold uppercase"
+                  >
+                    Sign Up
+                  </Button>
+                </>
+              )}
+            </div>
 
-            {isAuthenticated ? (
-              <Button
-                onClick={handleLogout}
-                size="sm"
-                variant="ghost"
-                className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] hover:scale-105"
-                style={{ color: '#C9A96E' }}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            ) : (
-              <>
-                <Button
-                  onClick={handleSignInClick}
-                  size="sm"
-                  variant="ghost"
-                  className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] hover:scale-105"
-                  style={{ color: '#C9A96E' }}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  onClick={handleSignUpClick}
-                  size="sm"
-                  className="hidden md:inline-flex font-button font-bold uppercase transition-all duration-300 min-h-[44px] button-luxury"
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
-
+            {/* Mobile Menu Toggle */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="lg:hidden transition-all duration-300 min-h-[44px] min-w-[44px] hover:scale-105"
+                  className="lg:hidden"
                   style={{ color: '#C9A96E' }}
                 >
-                  {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent 
-                side="right" 
-                className="w-[300px] sm:w-[400px]" 
-                style={{ 
-                  background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
-                  borderLeft: '2px solid rgba(201, 169, 110, 0.3)',
-                  boxShadow: 'inset 0 0 20px rgba(201, 169, 110, 0.2)'
+              <SheetContent
+                side="right"
+                className="w-[300px] sm:w-[400px]"
+                style={{
+                  backgroundColor: '#F8F5F0',
+                  borderColor: '#C9A96E',
                 }}
               >
-                <nav className="flex flex-col gap-8 mt-12">
+                <nav className="flex flex-col gap-6 mt-8">
                   {navLinks.map((link) => (
                     <a
                       key={link.href}
                       href={link.href}
-                      className="text-lg font-button font-bold uppercase tracking-wider transition-colors duration-300"
-                      style={{ color: '#D4C9B0' }}
                       onClick={() => setMobileMenuOpen(false)}
+                      className="text-lg font-button font-bold uppercase tracking-wider transition-colors duration-300"
+                      style={{ color: '#C9A96E' }}
                     >
                       {link.label}
                     </a>
                   ))}
-                  {isAuthenticated ? (
-                    <Button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full font-button font-bold uppercase button-luxury mt-4"
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </Button>
-                  ) : (
-                    <>
-                      <Button
-                        onClick={() => {
-                          handleSignInClick();
-                          setMobileMenuOpen(false);
-                        }}
-                        variant="outline"
-                        className="w-full font-button font-bold uppercase mt-4"
-                        style={{ borderColor: 'rgba(201, 169, 110, 0.6)', color: '#C9A96E' }}
-                      >
-                        Sign In
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleSignUpClick();
-                          setMobileMenuOpen(false);
-                        }}
-                        className="w-full font-button font-bold uppercase button-luxury"
-                      >
-                        Sign Up
-                      </Button>
-                    </>
-                  )}
+                  <div className="flex flex-col gap-3 mt-6 pt-6 border-t" style={{ borderColor: '#C9A96E' }}>
+                    {isAuthenticated ? (
+                      <>
+                        <Button
+                          onClick={() => {
+                            navigate('/dashboard');
+                            setMobileMenuOpen(false);
+                          }}
+                          variant="outline"
+                          className="w-full font-button font-bold uppercase"
+                          style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                        >
+                          Dashboard
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleLogout();
+                            setMobileMenuOpen(false);
+                          }}
+                          variant="outline"
+                          className="w-full font-button font-bold uppercase"
+                          style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => {
+                            handleSignInClick();
+                            setMobileMenuOpen(false);
+                          }}
+                          variant="outline"
+                          className="w-full font-button font-bold uppercase"
+                          style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                        >
+                          Sign In
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleSignUpClick();
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full button-luxury font-button font-bold uppercase"
+                        >
+                          Sign Up
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -305,8 +319,18 @@ export default function Header() {
         </div>
       </header>
 
-      <CartSheet open={cartOpen} onOpenChange={setCartOpen} onCheckout={handleCheckout} />
-      <CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} />
+      {/* Cart Sheet */}
+      <CartSheet
+        open={cartOpen}
+        onOpenChange={setCartOpen}
+        onCheckout={handleCheckout}
+      />
+
+      {/* Checkout Sheet */}
+      <CheckoutSheet
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+      />
     </>
   );
 }

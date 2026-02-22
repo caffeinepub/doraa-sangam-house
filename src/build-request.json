@@ -1,298 +1,165 @@
 {
   "kind": "build_request",
-  "title": "Transform to Vastrado-style e-commerce with theme switcher",
+  "title": "Complete Light Theme Transformation with Premium Banarasi Aesthetics",
   "projectName": "DoRaa Sangam House",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Transform the home page post-login layout to display a large centered DoRaa Sangam House logo in elegant gold font on dark background at the top center of the page",
+      "id": "REQ-1",
+      "text": "Replace all dark theme colors (navy blue, black backgrounds) throughout the entire application with a premium light theme palette: soft warm ivory/pearl cream (#F8F5F0) for primary backgrounds, very light beige gradient (#F8F5F0 → #F5F0E6) for secondary backgrounds/sections, antique gold/warm gold (#C9A96E or #D4B37D) for primary accents representing zari/gold shine, muted blush rose gold (#E8C0C8) for secondary accents, deep charcoal gray (#1A1A1A) for primary text ensuring perfect readability, warm taupe gray (#5C4B51) for secondary/muted text, antique gold background (#C9A96E) with dark text (#1A1A1A) for buttons/CTAs with hover effects (deeper gold + scale + glow), pure white (#FFFFFF) cards/product tiles with subtle 1px gold border (#C9A96E) and soft shadow, and warm gold box-shadow (0 0 18px rgba(201,169,110,0.45)) for hover/active glow effects",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
+          "msg-5"
         ],
         "quotes": [
-          "Center top: large DoRaa Sangam House logo (use existing luxury logo or text in elegant gold font on dark bg)"
+          "Completely remove all dark themes (no navy blue, no black backgrounds)",
+          "Background primary: soft warm ivory / pearl cream #F8F5F0",
+          "Primary accent (zari / gold shine): antique gold / warm gold #C9A96E or #D4B37D"
         ]
       },
       "acceptanceCriteria": [
-        "Logo is centered horizontally at the top of the page",
-        "Logo uses elegant gold color (#D4AF37 or antique gold from theme) on dark background",
-        "Logo is prominently sized and visible on all viewport sizes"
+        "No navy blue or black backgrounds visible anywhere in the application",
+        "All backgrounds use ivory (#F8F5F0) or beige gradient (#F8F5F0 → #F5F0E6)",
+        "Primary text is deep charcoal gray (#1A1A1A) with excellent contrast",
+        "All buttons use antique gold background (#C9A96E) with dark text",
+        "Product cards are pure white (#FFFFFF) with 1px gold borders",
+        "Hover effects show warm gold glow (box-shadow with rgba(201,169,110,0.45))"
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Add a horizontal category navigation bar below the logo with five categories: Shirts, Kurta, Bottoms, Sarees, Shop All. Style buttons with cyan/teal colors and golden hover glow effects. Make the navigation horizontally scrollable on mobile devices.",
+      "id": "REQ-2",
+      "text": "Update typography throughout the application to use premium luxury fonts: Playfair Display ExtraBold for all headings and brand name 'DoRaa Sangam House' with antique gold color (#C9A96E) and letter-spacing of 2-4px, Great Vibes Regular script font for category names and special titles (like 'Zari Royalty') with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color at size 2.8-3.8rem, Lora Regular 400 for all body text and descriptions with deep charcoal color (#1A1A1A) and line-height 1.9-2.1, and Montserrat Bold or Raleway ExtraBold for buttons/CTAs in all caps with dark text on gold background",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
+          "msg-5"
         ],
         "quotes": [
-          "horizontal category navigation bar (responsive, scrollable on mobile): Categories: Shirts, Kurta, Bottoms, Sarees, Shop All (cyan/teal buttons, hover glow)"
+          "Headings / brand name: Playfair Display ExtraBold, color #C9A96E, letter-spacing 2–4px",
+          "Category names / special titles: Great Vibes Regular (script), color #E8C0C8 or #C9A96E, size 2.8–3.8rem",
+          "Body text / descriptions: Lora Regular 400, color #1A1A1A, line-height 1.9–2.1",
+          "Buttons / CTAs: Montserrat Bold or Raleway ExtraBold, all caps, dark text on gold bg"
         ]
       },
       "acceptanceCriteria": [
-        "Five category buttons are displayed in a horizontal row below the logo",
-        "Buttons use cyan/teal color (#14b8a6 or similar)",
-        "Buttons display golden glow effect on hover",
-        "On mobile viewports, the category bar scrolls horizontally",
-        "All categories are visible and clickable"
+        "All headings and 'DoRaa Sangam House' brand name use Playfair Display ExtraBold in antique gold",
+        "Category names use Great Vibes script font at 2.8-3.8rem size",
+        "All body text uses Lora Regular with line-height 1.9-2.1",
+        "All buttons use Montserrat Bold or Raleway ExtraBold in all caps",
+        "Letter-spacing on headings is 2-4px",
+        "Typography renders consistently on all devices"
       ]
     },
     {
-      "id": "REQ-19",
-      "text": "Add a user profile/dashboard icon (circle avatar or icon) in the top right corner of the navigation bar that opens the user dashboard when clicked",
+      "id": "REQ-3",
+      "text": "Implement Vastrado-style home page layout after login with: large DoRaa Sangam House logo (gold luxury version) centered at the top, horizontal category navigation bar below the logo displaying categories (Shirts, Kurta, Bottoms, Sarees, Shop All) that is scrollable on mobile, user profile/dashboard icon positioned on the right side, below navigation display a grid of saree/product cards showing on-model images with product name, price, discount badge, and 'Add to Cart' button, cards styled with curved corners, white background, and gold hover border with lift effect",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
+          "msg-5"
         ],
         "quotes": [
-          "Right side: user profile/dashboard icon (circle avatar or icon, click opens dashboard)"
+          "Center top: large DoRaa Sangam House logo (gold luxury version)",
+          "Below logo: horizontal category navigation bar (scrollable on mobile): Shirts, Kurta, Bottoms, Sarees, Shop All",
+          "Right side: user profile/dashboard icon",
+          "Below nav: grid of saree/product cards"
         ]
       },
       "acceptanceCriteria": [
-        "Profile icon is positioned in the top right corner of the navigation area",
-        "Icon is circular and styled consistently with the luxury theme",
-        "Clicking the icon opens the user dashboard",
-        "Icon has golden hover glow effect matching other interactive elements"
+        "Logo is centered at top in gold luxury styling",
+        "Horizontal category bar displays all specified categories",
+        "Category navigation scrolls smoothly on mobile",
+        "Profile/dashboard icon is visible on the right",
+        "Product grid displays below navigation",
+        "Product cards show image, name, price, discount badge, and Add to Cart button",
+        "Cards have curved corners, white background, and lift on hover",
+        "Gold border appears on card hover"
       ]
     },
     {
-      "id": "REQ-20",
-      "text": "Display a grid of product cards below the navigation showing saree products with on-model images, product name, price, discount percentage badge, and Add to Cart button. Cards should have 16px curved corners, subtle shadows, and on hover display lift animation with golden border glow.",
+      "id": "REQ-4",
+      "text": "Update dashboard (accessed via profile icon click) to include: tabs for Profile, Orders, and Addresses, add an 'Appearance' section with theme switcher buttons showing Light (default and only active option), with Dark and System options disabled or hidden since only light theme is required, user details section displaying name, email, phone with 'Save Changes' button",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
+          "msg-5"
         ],
         "quotes": [
-          "grid of saree/product cards (on-model images, name, price, discount % badge, 'Add to Cart' button)",
-          "Cards: curved corners (16px), subtle shadow, hover lift + gold border glow"
+          "Tabs: Profile, Orders, Addresses",
+          "Add 'Appearance' section with theme switcher buttons",
+          "Light (default & only active option now)",
+          "User details (name, email, phone, Save Changes)"
         ]
       },
       "acceptanceCriteria": [
-        "Product cards are displayed in a responsive grid layout below the category navigation",
-        "Each card shows product image, name, price, discount badge, and Add to Cart button",
-        "Cards have 16px border radius and subtle box shadow",
-        "On hover, cards animate with a lift effect and golden border glow",
-        "Product images show sarees on models",
-        "Grid is responsive and adjusts column count based on viewport width"
+        "Dashboard has Profile, Orders, and Addresses tabs",
+        "Appearance section is visible with theme switcher",
+        "Light theme option is active and selected by default",
+        "Dark and System options are disabled or hidden",
+        "User details form shows name, email, and phone fields",
+        "Save Changes button is present and functional"
       ]
     },
     {
-      "id": "REQ-21",
-      "text": "Add an optional hero banner section at the top of the product grid with full-width saree showcase image and overlay text reading 'New Arrivals - Flat 60% Off'",
+      "id": "REQ-5",
+      "text": "Ensure 100% consistent appearance across laptop, mobile, and tablet devices with no media-query overrides for colors, fonts, or backgrounds, using rem units and clamp() for responsive scaling, ensuring all premium hover animations (glow, lift, scale) are smooth and work across devices while respecting reduced motion preferences",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
+          "msg-5"
         ],
         "quotes": [
-          "Hero banner (optional): full-width saree showcase with overlay text 'New Arrivals - Flat 60% Off'"
+          "Theme must look identical on laptop, mobile, tablet (no media-query overrides for colors/fonts/background)",
+          "Use rem units, clamp() for responsive scaling",
+          "Hover glow/lift/animations smooth & premium"
         ]
       },
       "acceptanceCriteria": [
-        "Hero banner spans full width above the product grid",
-        "Banner displays a saree showcase image",
-        "Text overlay reads 'New Arrivals - Flat 60% Off'",
-        "Text is readable with proper contrast against the background",
-        "Banner is responsive on all device sizes"
+        "Colors, fonts, and backgrounds are identical on laptop, mobile, and tablet",
+        "No media queries override the light theme colors or typography",
+        "All spacing uses rem units",
+        "Font sizes use clamp() for fluid responsive scaling",
+        "Hover animations work smoothly with warm gold glow and lift effects",
+        "Reduced motion preferences are respected",
+        "No responsiveness issues or layout breaks on any device"
       ]
     },
     {
-      "id": "REQ-22",
-      "text": "Create a user dashboard page accessible via the profile icon with three tabs: Profile, Orders, and Addresses. Display user profile information including name, email, and phone number with a save button to update the data.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Clean page with tabs: Profile, Orders, Addresses",
-          "Preserve user details (name, email, phone, save button)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard opens when profile icon is clicked",
-        "Three tabs are visible and selectable: Profile, Orders, Addresses",
-        "Profile tab displays editable fields for name, email, and phone",
-        "Save button updates user profile data in the backend",
-        "Dashboard page uses clean, premium styling consistent with the luxury theme"
-      ]
-    },
-    {
-      "id": "REQ-23",
-      "text": "Add a Theme Switcher section in the user dashboard with three theme options: Dark (current #0B0E0C background with white text), Light (white/light gray #F8F9FA background with dark #1A1A1A text), and System (follows OS prefers-color-scheme). Save the user's theme choice in localStorage and apply it on page load.",
+      "id": "REQ-6",
+      "text": "Update CSS variables in frontend/index.css and Tailwind configuration in frontend/tailwind.config.js to reflect the new light theme color palette, ensuring all component styles reference these new variables consistently",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Add Theme Switcher section: 3 options (Dark, Light, System)",
-          "Dark: current dark theme (#0B0E0C bg, white text)",
-          "Light: white/light gray bg (#F8F9FA), dark text (#1A1A1A)",
-          "System: follow user's OS preference (prefers-color-scheme)",
-          "Use localStorage to save theme choice, apply on load"
+          "msg-5"
         ]
       },
       "acceptanceCriteria": [
-        "Theme switcher is visible in the user dashboard",
-        "Three selectable options are displayed: Dark, Light, System",
-        "Dark theme uses #0B0E0C background with white text",
-        "Light theme uses #F8F9FA background with #1A1A1A text",
-        "System option detects and follows OS prefers-color-scheme setting",
-        "Selected theme is saved to localStorage",
-        "Theme is applied immediately on selection",
-        "Theme persists across page reloads and sessions"
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "text": "Ensure the light theme maintains clean readability with proper contrast ratios for all text, buttons, and interactive elements while preserving the premium luxury aesthetic",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Keep dark luxury base, but make light theme clean & readable"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All text in light theme has sufficient contrast (WCAG AA minimum)",
-        "Buttons and interactive elements are clearly visible in light theme",
-        "Golden hover effects are visible against light backgrounds",
-        "Light theme maintains premium, luxury visual styling",
-        "No readability issues or visual glitches in light mode"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "text": "Apply golden hover glow effects consistently across all buttons, icons, and interactive elements in both dark and light themes",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Golden hover/glow on all buttons/icons"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All buttons display golden glow on hover",
-        "All icons display golden glow on hover",
-        "Hover effects work in both dark and light themes",
-        "Glow effect is smooth and consistent across all interactive elements"
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Ensure the entire interface is fully responsive: on mobile devices, categories scroll horizontally, logo remains centered, and product grid adjusts to single or two-column layout",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Responsive: mobile pe categories horizontal scroll, logo center"
-        ]
-      },
-      "acceptanceCriteria": [
-        "On mobile viewports (< 768px), category navigation scrolls horizontally",
-        "Logo remains centered on all screen sizes",
-        "Product grid displays 1-2 columns on mobile devices",
-        "All elements are usable and properly sized on mobile",
-        "No horizontal overflow or layout breakage on small screens"
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "text": "Require user authentication to access the dashboard and perform cart actions. Display a login prompt or redirect to login page when unauthenticated users attempt to access protected features.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "Login required for dashboard & certain actions (show login prompt if not logged in)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Unauthenticated users cannot access the dashboard",
-        "Clicking profile icon when not logged in shows login prompt or redirects to login",
-        "Cart actions require authentication",
-        "After successful login, users are redirected to their intended destination",
-        "Login prompt is clear and user-friendly"
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "text": "Preserve all existing functionality including Internet Identity authentication, OTP login flows, shopping cart operations, and category carousel features without introducing regressions or bugs",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ],
-        "quotes": [
-          "No other changes: preserve login/OTP, Internet Identity, cart, category carousel if present",
-          "No blank screen or bugs"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Internet Identity login flow works without issues",
-        "OTP authentication flow remains functional",
-        "Shopping cart add/update/remove operations work correctly",
-        "Existing category carousel (if present) continues to function",
-        "No blank screens or JavaScript errors occur",
-        "All existing features remain operational after the transformation"
-      ]
-    },
-    {
-      "id": "REQ-29",
-      "text": "Generate five generated product images showing sarees on models for use in the product grid, each with dimensions 800x1000 pixels and visually distinct styles",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-11"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Five product images are generated and placed in frontend/public/assets/generated",
-        "Each image shows a saree worn by a model",
-        "Images have 800x1000 pixel dimensions",
-        "Images represent visually distinct saree styles (Banarasi, silk, organza, etc.)",
-        "Images are used in product cards on the home page grid"
+        "CSS variables updated with ivory, antique gold, rose gold, and charcoal values",
+        "Tailwind config includes new color palette",
+        "All components use the updated CSS variables",
+        "Theme system no longer references dark/navy blue colors"
       ]
     }
   ],
   "constraints": [
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts or frontend/src/hooks/useInternetIdentity.tsx",
-    "Do not modify frontend/src/hooks/useActor.ts",
-    "Do not modify frontend/src/main.tsx",
-    "Do not edit any files in frontend/src/components/ui",
-    "Preserve the royal Banarasi-Kanpur luxury color scheme (deep plum #4A1942, antique gold #D4AF37, warm ivory #F8F4E3)",
-    "Maintain single-actor Motoko backend architecture in backend/main.mo"
+    "Do not modify backend/main.mo, backend/migration.mo, or any backend logic",
+    "Do not edit immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Preserve all existing functionality: login/OTP, cart, category carousel, checkout, orders",
+    "Maintain single-actor Motoko architecture",
+    "Keep React, Tailwind, Shadcn, and React Query as the frontend stack"
   ],
   "nonGoals": [
-    "Changing the backend data schema or storage structure",
-    "Adding real-time features like WebSockets or live chat",
-    "Integrating third-party payment processors beyond Razorpay",
-    "Implementing admin product management features (already exists)",
-    "Adding social media integration or sharing features",
-    "Creating a mobile app version"
+    "Adding new backend features or data models",
+    "Implementing new authentication methods beyond existing Internet Identity and OTP",
+    "Adding dark theme functionality (explicitly removed)",
+    "Changing the technology stack",
+    "Adding new product categories beyond those specified",
+    "Implementing real-time features or WebSockets"
   ],
   "imageRequirements": {
     "required": [
-      "Elegant saree on model with Banarasi zari work, rich red and gold colors (product-banarasi.dim_800x1000.png)",
-      "Luxurious silk saree on model with flowing drape, deep purple and silver (product-silk.dim_800x1000.png)",
-      "Lightweight organza saree on model with subtle patterns, pastel pink and gold (product-organza.dim_800x1000.png)",
-      "Traditional georgette saree on model with embroidery, teal and gold accents (product-georgette.dim_800x1000.png)",
-      "Kalamkari print saree on model with artistic motifs, cream and brown tones (product-kalamkari.dim_800x1000.png)"
+      "Gold luxury version of DoRaa Sangam House logo with antique gold coloring and premium Banarasi aesthetic suitable for center header placement (doraa-logo-gold.dim_400x120.png)"
     ],
     "edits": []
   }

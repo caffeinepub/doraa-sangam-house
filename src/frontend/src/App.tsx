@@ -3,7 +3,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { useActor } from './hooks/useActor';
 import { CommerceProvider } from './commerce/CommerceProvider';
 import { useSpaLocation } from './hooks/useSpaLocation';
-import { useTheme } from './hooks/useTheme';
 import OceanBackground from './components/OceanBackground';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -41,9 +40,6 @@ function App() {
   const [location, navigate] = useSpaLocation();
   const { isAuthenticated, logout, setFlashMessage } = useStorefrontAuth();
   const { clear: clearII } = useInternetIdentity();
-  
-  // Initialize theme on app load
-  useTheme();
 
   useEffect(() => {
     if (actor) {
@@ -80,7 +76,7 @@ function App() {
   if (location.pathname === '/size-chart') {
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <Header />
@@ -97,7 +93,7 @@ function App() {
   if (location.pathname === '/collections/trending') {
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <Header />
@@ -114,7 +110,7 @@ function App() {
   if (location.pathname === '/categories') {
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <Header />
@@ -133,7 +129,7 @@ function App() {
     const slug = collectionMatch[1];
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <Header />
@@ -155,7 +151,7 @@ function App() {
     const productId = productMatch[1];
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <Header />
@@ -174,7 +170,7 @@ function App() {
   // Hidden admin bot route (no links to this anywhere)
   if (location.pathname === '/admin-bot') {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -189,7 +185,7 @@ function App() {
   // Hidden admin login route (no links to this anywhere)
   if (location.pathname === '/admin-login') {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -204,7 +200,7 @@ function App() {
   // OTP-protected /admin route (exact match only)
   if (location.pathname === '/admin') {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -219,7 +215,7 @@ function App() {
   // OTP-protected /admin-dashboard route (exact match only)
   if (location.pathname === '/admin-dashboard') {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -234,7 +230,7 @@ function App() {
   // Internet Identity admin login route
   if (location.pathname === ADMIN_ROUTES.LOGIN) {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -249,7 +245,7 @@ function App() {
   // Internet Identity admin panel routes (starts with /admin/ but not exact /admin)
   if (location.pathname.startsWith('/admin/')) {
     return (
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
         <div className="relative z-10">
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="shimmer-skeleton w-32 h-8 rounded" /></div>}>
@@ -267,7 +263,7 @@ function App() {
   if (location.pathname === '/login') {
     return (
       <CommerceProvider>
-        <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+        <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
           <OceanBackground />
           <div className="relative z-10">
             <LoginPage navigate={navigate} />
@@ -283,7 +279,7 @@ function App() {
     return (
       <CommerceProvider>
         <ProtectedRoute navigate={navigate}>
-          <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+          <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
             <OceanBackground />
             <div className="relative z-10 dashboard-route-transition">
               <Header />
@@ -300,13 +296,8 @@ function App() {
   // Storefront (default)
   return (
     <CommerceProvider>
-      <div className="relative min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="relative min-h-screen" style={{ backgroundColor: '#F8F5F0' }}>
         <OceanBackground />
-        
-        {/* Cinematic vignette overlay */}
-        <div className="fixed inset-0 pointer-events-none z-[5]">
-          <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/60" />
-        </div>
 
         <div className="relative z-10">
           <Header />

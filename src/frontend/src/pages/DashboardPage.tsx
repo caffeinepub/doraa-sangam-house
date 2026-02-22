@@ -7,11 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { User, Package, MapPin, LogOut, ArrowRight, Trash2, Edit, Loader2, Calendar, CreditCard, MapPinIcon } from 'lucide-react';
 import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { showProfileSaveSuccessToast, showProfileSaveErrorToast } from '../utils/premiumToasts';
-import { showBasicErrorToast } from '../utils/errorToasts';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetOrdersByYearMonth } from '../hooks/useQueries';
 import type { OrderRecord } from '../backend';
@@ -118,7 +118,7 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
         name: fullName,
         email: email,
         phone: phone,
-        addresses: [], // Include empty addresses array to match UserProfile type
+        addresses: [],
       });
       showProfileSaveSuccessToast();
     } catch (error) {
@@ -187,15 +187,15 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-12 px-4" style={{ backgroundColor: '#F8F5F0' }}>
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold" style={{ color: 'var(--heading-color)' }}>
+            <h1 className="font-playfair font-extrabold" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#C9A96E', letterSpacing: '0.15em' }}>
               My Account
             </h1>
-            <p className="text-sm mt-2" style={{ color: 'var(--muted-text)' }}>
+            <p className="text-sm mt-2 font-lora" style={{ color: '#5C4B51', lineHeight: '2.0' }}>
               Manage your profile, orders, and preferences
             </p>
           </div>
@@ -203,8 +203,8 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
             <Button
               onClick={handleContinueShopping}
               variant="outline"
-              className="font-button font-bold uppercase"
-              style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+              className="font-montserrat font-bold uppercase"
+              style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
             >
               <ArrowRight className="w-4 h-4 mr-2" />
               Continue Shopping
@@ -212,8 +212,8 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
             <Button
               onClick={handleLogout}
               variant="outline"
-              className="font-button font-bold uppercase"
-              style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+              className="font-montserrat font-bold uppercase"
+              style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
@@ -226,37 +226,31 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
           <TabsList
             className="grid w-full grid-cols-3 mb-8 p-1 rounded-2xl"
             style={{
-              backgroundColor: 'var(--card-bg)',
-              borderColor: 'var(--gold-border)',
+              backgroundColor: '#FFFFFF',
+              borderColor: '#C9A96E',
               borderWidth: '2px',
             }}
           >
             <TabsTrigger
               value="profile"
-              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
-              style={{
-                color: 'var(--text-color)',
-              }}
+              className="rounded-xl font-montserrat font-bold uppercase data-[state=active]:shadow-warm-gold-glow transition-all duration-300"
+              style={{ color: '#1A1A1A' }}
             >
               <User className="w-4 h-4 mr-2" />
               Profile
             </TabsTrigger>
             <TabsTrigger
               value="orders"
-              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
-              style={{
-                color: 'var(--text-color)',
-              }}
+              className="rounded-xl font-montserrat font-bold uppercase data-[state=active]:shadow-warm-gold-glow transition-all duration-300"
+              style={{ color: '#1A1A1A' }}
             >
               <Package className="w-4 h-4 mr-2" />
               Orders
             </TabsTrigger>
             <TabsTrigger
               value="addresses"
-              className="rounded-xl font-button font-bold uppercase data-[state=active]:shadow-gold-glow transition-all duration-300"
-              style={{
-                color: 'var(--text-color)',
-              }}
+              className="rounded-xl font-montserrat font-bold uppercase data-[state=active]:shadow-warm-gold-glow transition-all duration-300"
+              style={{ color: '#1A1A1A' }}
             >
               <MapPin className="w-4 h-4 mr-2" />
               Addresses
@@ -270,98 +264,70 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
 
             {/* Profile Information */}
             <Card
-              className="border-2 backdrop-blur-sm"
+              className="border-2"
               style={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--gold-border)',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#C9A96E',
               }}
             >
               <CardHeader>
-                <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                <CardTitle className="font-playfair font-extrabold" style={{ color: '#C9A96E', letterSpacing: '0.1em' }}>
                   Profile Information
                 </CardTitle>
-                <CardDescription style={{ color: 'var(--muted-text)' }}>
+                <CardDescription className="font-lora" style={{ color: '#5C4B51', lineHeight: '2.0' }}>
                   Update your personal details
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {profileLoading ? (
-                  <div className="space-y-4">
-                    <div className="shimmer-skeleton h-10 rounded" />
-                    <div className="shimmer-skeleton h-10 rounded" />
-                    <div className="shimmer-skeleton h-10 rounded" />
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName" style={{ color: 'var(--text-color)' }}>
-                        Full Name
-                      </Label>
-                      <Input
-                        id="fullName"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Enter your full name"
-                        className="border-2"
-                        style={{
-                          backgroundColor: 'var(--input-bg)',
-                          borderColor: 'var(--input-border)',
-                          color: 'var(--text-color)',
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" style={{ color: 'var(--text-color)' }}>
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        className="border-2"
-                        style={{
-                          backgroundColor: 'var(--input-bg)',
-                          borderColor: 'var(--input-border)',
-                          color: 'var(--text-color)',
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" style={{ color: 'var(--text-color)' }}>
-                        Phone
-                      </Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="Enter your phone number"
-                        className="border-2"
-                        style={{
-                          backgroundColor: 'var(--input-bg)',
-                          borderColor: 'var(--input-border)',
-                          color: 'var(--text-color)',
-                        }}
-                      />
-                    </div>
-                    <Button
-                      onClick={handleSaveProfile}
-                      disabled={isSaving}
-                      className="w-full font-button font-bold uppercase button-luxury mt-4"
-                    >
-                      {isSaving ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Saving...
-                        </>
-                      ) : (
-                        'Save Profile'
-                      )}
-                    </Button>
-                  </>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="font-lora" style={{ color: '#1A1A1A' }}>Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="font-lora" style={{ color: '#1A1A1A' }}>Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="font-lora" style={{ color: '#1A1A1A' }}>Phone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Enter your phone number"
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
+                  />
+                </div>
+                <Button
+                  onClick={handleSaveProfile}
+                  disabled={isSaving}
+                  className="button-luxury font-montserrat font-bold uppercase w-full md:w-auto"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -369,36 +335,29 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
           {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
             <Card
-              className="border-2 backdrop-blur-sm"
+              className="border-2"
               style={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--gold-border)',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#C9A96E',
               }}
             >
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
-                    <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                    <CardTitle className="font-playfair font-extrabold" style={{ color: '#C9A96E', letterSpacing: '0.1em' }}>
                       Order History
                     </CardTitle>
-                    <CardDescription style={{ color: 'var(--muted-text)' }}>
+                    <CardDescription className="font-lora" style={{ color: '#5C4B51', lineHeight: '2.0' }}>
                       View and track your orders
                     </CardDescription>
                   </div>
                   <Select onValueChange={handleFilterChange} defaultValue="all">
-                    <SelectTrigger
-                      className="w-[200px] border-2"
-                      style={{
-                        backgroundColor: 'var(--input-bg)',
-                        borderColor: 'var(--input-border)',
-                        color: 'var(--text-color)',
-                      }}
-                    >
+                    <SelectTrigger className="w-[200px] font-lora" style={{ borderColor: '#C9A96E', color: '#1A1A1A' }}>
                       <SelectValue placeholder="Filter by month" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E' }}>
                       {filterOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <SelectItem key={option.value} value={option.value} className="font-lora" style={{ color: '#1A1A1A' }}>
                           {option.label}
                         </SelectItem>
                       ))}
@@ -410,62 +369,29 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
                 {ordersLoading ? (
                   <div className="space-y-4">
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="shimmer-skeleton h-24 rounded" />
+                      <div key={i} className="shimmer-skeleton h-24 rounded-lg" />
                     ))}
                   </div>
                 ) : orders.length === 0 ? (
                   <div className="text-center py-12">
-                    <Package className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--muted-text)' }} />
-                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
-                      No orders yet
-                    </p>
-                    <p className="text-sm mb-6" style={{ color: 'var(--muted-text)' }}>
-                      Start shopping to see your orders here
-                    </p>
-                    <Button onClick={handleContinueShopping} className="button-luxury">
-                      Start Shopping
-                    </Button>
+                    <Package className="w-16 h-16 mx-auto mb-4" style={{ color: '#C9A96E' }} />
+                    <p className="font-lora text-lg" style={{ color: '#5C4B51' }}>No orders found</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {orders.map((order) => (
                       <div
                         key={order.orderId}
-                        className="p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-gold-glow"
-                        style={{
-                          backgroundColor: 'var(--option-bg)',
-                          borderColor: 'var(--input-border)',
-                        }}
+                        className="p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 hover:shadow-warm-gold-glow"
+                        style={{ backgroundColor: '#F8F5F0', borderColor: '#C9A96E' }}
                         onClick={() => setSelectedOrder(order)}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <CreditCard className="w-4 h-4" style={{ color: 'var(--gold-accent)' }} />
-                              <span className="font-semibold" style={{ color: 'var(--text-color)' }}>
-                                {order.orderId}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--muted-text)' }}>
-                              <Calendar className="w-4 h-4" />
-                              <span>{new Date(Number(order.timestamp)).toLocaleDateString()}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--muted-text)' }}>
-                              <MapPinIcon className="w-4 h-4" />
-                              <span>
-                                {order.shippingAddress.city}, {order.shippingAddress.state}
-                              </span>
-                            </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-montserrat font-bold" style={{ color: '#1A1A1A' }}>Order #{order.orderId}</p>
+                            <p className="text-sm font-lora" style={{ color: '#5C4B51' }}>Status: {order.status}</p>
                           </div>
-                          <div
-                            className="px-3 py-1 rounded-full text-xs font-semibold"
-                            style={{
-                              backgroundColor: 'var(--gold-accent)',
-                              color: 'var(--card-bg)',
-                            }}
-                          >
-                            {order.status}
-                          </div>
+                          <ArrowRight className="w-5 h-5" style={{ color: '#C9A96E' }} />
                         </div>
                       </div>
                     ))}
@@ -478,308 +404,189 @@ export default function DashboardPage({ navigate }: DashboardPageProps) {
           {/* Addresses Tab */}
           <TabsContent value="addresses" className="space-y-6">
             <Card
-              className="border-2 backdrop-blur-sm"
+              className="border-2"
               style={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--gold-border)',
+                backgroundColor: '#FFFFFF',
+                borderColor: '#C9A96E',
               }}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-xl font-serif" style={{ color: 'var(--heading-color)' }}>
+                    <CardTitle className="font-playfair font-extrabold" style={{ color: '#C9A96E', letterSpacing: '0.1em' }}>
                       Saved Addresses
                     </CardTitle>
-                    <CardDescription style={{ color: 'var(--muted-text)' }}>
+                    <CardDescription className="font-lora" style={{ color: '#5C4B51', lineHeight: '2.0' }}>
                       Manage your delivery addresses
                     </CardDescription>
                   </div>
-                  <Button onClick={handleAddAddress} className="button-luxury">
+                  <Button
+                    onClick={handleAddAddress}
+                    className="button-luxury font-montserrat font-bold uppercase"
+                  >
                     Add Address
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                {addresses.length === 0 ? (
-                  <div className="text-center py-12">
-                    <MapPin className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--muted-text)' }} />
-                    <p className="text-lg font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
-                      No addresses saved
-                    </p>
-                    <p className="text-sm mb-6" style={{ color: 'var(--muted-text)' }}>
-                      Add an address for faster checkout
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {addresses.map((address) => (
-                      <div
-                        key={address.id}
-                        className="p-4 rounded-xl border-2 relative"
-                        style={{
-                          backgroundColor: 'var(--option-bg)',
-                          borderColor: address.isDefault ? 'var(--gold-accent)' : 'var(--input-border)',
-                        }}
-                      >
-                        {address.isDefault && (
-                          <div
-                            className="absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold"
-                            style={{
-                              backgroundColor: 'var(--gold-accent)',
-                              color: 'var(--card-bg)',
-                            }}
-                          >
-                            Default
-                          </div>
-                        )}
-                        <div className="space-y-2 mb-4">
-                          <p className="font-semibold" style={{ color: 'var(--text-color)' }}>
-                            {address.name}
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                            {address.line1}
-                          </p>
-                          {address.line2 && (
-                            <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                              {address.line2}
-                            </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {addresses.map((address) => (
+                    <div
+                      key={address.id}
+                      className="p-4 rounded-lg border-2"
+                      style={{ backgroundColor: '#F8F5F0', borderColor: address.isDefault ? '#C9A96E' : '#F5F0E6' }}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-montserrat font-bold" style={{ color: '#1A1A1A' }}>{address.name}</p>
+                          {address.isDefault && (
+                            <Badge className="mt-1" style={{ backgroundColor: '#C9A96E', color: '#1A1A1A' }}>
+                              Default
+                            </Badge>
                           )}
-                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                            {address.city}, {address.state} {address.pincode}
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                            {address.phone}
-                          </p>
                         </div>
                         <div className="flex gap-2">
                           <Button
-                            size="sm"
-                            variant="outline"
+                            size="icon"
+                            variant="ghost"
                             onClick={() => {
                               setEditingAddress(address);
                               setIsAddingAddress(false);
                             }}
-                            style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
+                            style={{ color: '#C9A96E' }}
                           >
-                            <Edit className="w-3 h-3 mr-1" />
-                            Edit
+                            <Edit className="w-4 h-4" />
                           </Button>
-                          {!address.isDefault && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleSetDefaultAddress(address.id)}
-                                style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
-                              >
-                                Set Default
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteAddress(address.id)}
-                                style={{ borderColor: 'var(--gold-border)', color: 'var(--gold-accent)' }}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </>
-                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleDeleteAddress(address.id)}
+                            style={{ color: '#C9A96E' }}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <p className="text-sm font-lora" style={{ color: '#5C4B51', lineHeight: '1.9' }}>
+                        {address.line1}
+                        {address.line2 && `, ${address.line2}`}
+                        <br />
+                        {address.city}, {address.state} {address.pincode}
+                        <br />
+                        {address.phone}
+                      </p>
+                      {!address.isDefault && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleSetDefaultAddress(address.id)}
+                          className="mt-3 font-montserrat font-bold uppercase"
+                          style={{ borderColor: '#C9A96E', color: '#C9A96E' }}
+                        >
+                          Set as Default
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
 
-      {/* Order Details Dialog */}
-      <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-        <DialogContent
-          className="max-w-2xl"
-          style={{
-            backgroundColor: 'var(--card-bg)',
-            borderColor: 'var(--gold-border)',
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle style={{ color: 'var(--heading-color)' }}>Order Details</DialogTitle>
-            <DialogDescription style={{ color: 'var(--muted-text)' }}>
-              {selectedOrder?.orderId}
-            </DialogDescription>
-          </DialogHeader>
-          {selectedOrder && (
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
-                  Shipping Address
-                </h4>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  {selectedOrder.shippingAddress.name}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  {selectedOrder.shippingAddress.street}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state}{' '}
-                  {selectedOrder.shippingAddress.postalCode}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  {selectedOrder.shippingAddress.phone}
-                </p>
-              </div>
-              <Separator />
-              <div>
-                <h4 className="font-semibold mb-2" style={{ color: 'var(--text-color)' }}>
-                  Payment Information
-                </h4>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  Payment ID: {selectedOrder.paymentId}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--muted-text)' }}>
-                  Status: {selectedOrder.status}
-                </p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
       {/* Address Edit Dialog */}
-      <Dialog open={!!editingAddress} onOpenChange={() => setEditingAddress(null)}>
-        <DialogContent
-          className="max-w-2xl"
-          style={{
-            backgroundColor: 'var(--card-bg)',
-            borderColor: 'var(--gold-border)',
-          }}
-        >
+      <Dialog open={!!editingAddress} onOpenChange={(open) => !open && setEditingAddress(null)}>
+        <DialogContent style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E' }}>
           <DialogHeader>
-            <DialogTitle style={{ color: 'var(--heading-color)' }}>
+            <DialogTitle className="font-playfair font-extrabold" style={{ color: '#C9A96E' }}>
               {isAddingAddress ? 'Add New Address' : 'Edit Address'}
             </DialogTitle>
+            <DialogDescription className="font-lora" style={{ color: '#5C4B51' }}>
+              {isAddingAddress ? 'Enter the details for your new address' : 'Update your address details'}
+            </DialogDescription>
           </DialogHeader>
           {editingAddress && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="addressName" style={{ color: 'var(--text-color)' }}>
-                  Address Name
-                </Label>
+                <Label htmlFor="addressName" className="font-lora" style={{ color: '#1A1A1A' }}>Address Label</Label>
                 <Input
                   id="addressName"
                   value={editingAddress.name}
                   onChange={(e) => setEditingAddress({ ...editingAddress, name: e.target.value })}
                   placeholder="e.g., Home, Office"
-                  style={{
-                    backgroundColor: 'var(--input-bg)',
-                    borderColor: 'var(--input-border)',
-                    color: 'var(--text-color)',
-                  }}
+                  className="font-lora"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="addressLine1" style={{ color: 'var(--text-color)' }}>
-                  Address Line 1
-                </Label>
+                <Label htmlFor="line1" className="font-lora" style={{ color: '#1A1A1A' }}>Address Line 1</Label>
                 <Input
-                  id="addressLine1"
+                  id="line1"
                   value={editingAddress.line1}
                   onChange={(e) => setEditingAddress({ ...editingAddress, line1: e.target.value })}
-                  placeholder="Street address"
-                  style={{
-                    backgroundColor: 'var(--input-bg)',
-                    borderColor: 'var(--input-border)',
-                    color: 'var(--text-color)',
-                  }}
+                  className="font-lora"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="addressLine2" style={{ color: 'var(--text-color)' }}>
-                  Address Line 2
-                </Label>
+                <Label htmlFor="line2" className="font-lora" style={{ color: '#1A1A1A' }}>Address Line 2</Label>
                 <Input
-                  id="addressLine2"
+                  id="line2"
                   value={editingAddress.line2}
                   onChange={(e) => setEditingAddress({ ...editingAddress, line2: e.target.value })}
-                  placeholder="Apartment, suite, etc. (optional)"
-                  style={{
-                    backgroundColor: 'var(--input-bg)',
-                    borderColor: 'var(--input-border)',
-                    color: 'var(--text-color)',
-                  }}
+                  className="font-lora"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city" style={{ color: 'var(--text-color)' }}>
-                    City
-                  </Label>
+                  <Label htmlFor="city" className="font-lora" style={{ color: '#1A1A1A' }}>City</Label>
                   <Input
                     id="city"
                     value={editingAddress.city}
                     onChange={(e) => setEditingAddress({ ...editingAddress, city: e.target.value })}
-                    placeholder="City"
-                    style={{
-                      backgroundColor: 'var(--input-bg)',
-                      borderColor: 'var(--input-border)',
-                      color: 'var(--text-color)',
-                    }}
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="state" style={{ color: 'var(--text-color)' }}>
-                    State
-                  </Label>
+                  <Label htmlFor="state" className="font-lora" style={{ color: '#1A1A1A' }}>State</Label>
                   <Input
                     id="state"
                     value={editingAddress.state}
                     onChange={(e) => setEditingAddress({ ...editingAddress, state: e.target.value })}
-                    placeholder="State"
-                    style={{
-                      backgroundColor: 'var(--input-bg)',
-                      borderColor: 'var(--input-border)',
-                      color: 'var(--text-color)',
-                    }}
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="pincode" style={{ color: 'var(--text-color)' }}>
-                    Pincode
-                  </Label>
+                  <Label htmlFor="pincode" className="font-lora" style={{ color: '#1A1A1A' }}>Pincode</Label>
                   <Input
                     id="pincode"
                     value={editingAddress.pincode}
                     onChange={(e) => setEditingAddress({ ...editingAddress, pincode: e.target.value })}
-                    placeholder="Pincode"
-                    style={{
-                      backgroundColor: 'var(--input-bg)',
-                      borderColor: 'var(--input-border)',
-                      color: 'var(--text-color)',
-                    }}
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="addressPhone" style={{ color: 'var(--text-color)' }}>
-                    Phone
-                  </Label>
+                  <Label htmlFor="addressPhone" className="font-lora" style={{ color: '#1A1A1A' }}>Phone</Label>
                   <Input
                     id="addressPhone"
                     value={editingAddress.phone}
                     onChange={(e) => setEditingAddress({ ...editingAddress, phone: e.target.value })}
-                    placeholder="Phone number"
-                    style={{
-                      backgroundColor: 'var(--input-bg)',
-                      borderColor: 'var(--input-border)',
-                      color: 'var(--text-color)',
-                    }}
+                    className="font-lora"
+                    style={{ backgroundColor: '#FFFFFF', borderColor: '#C9A96E', color: '#1A1A1A' }}
                   />
                 </div>
               </div>
-              <Button onClick={handleSaveAddress} className="w-full button-luxury">
+              <Button
+                onClick={handleSaveAddress}
+                className="button-luxury font-montserrat font-bold uppercase w-full"
+              >
                 Save Address
               </Button>
             </div>
