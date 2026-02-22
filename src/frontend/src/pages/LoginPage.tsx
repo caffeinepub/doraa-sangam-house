@@ -17,9 +17,12 @@ import { validatePhoneNumber, type PhoneValidationResult } from '../utils/phoneV
 import type { CountryData } from '../utils/phoneCountries';
 import { useWebOtp } from '../hooks/useWebOtp';
 import { useOtpCountdown } from '../hooks/useOtpCountdown';
+import { useOtpResendTimer } from '../hooks/useOtpResendTimer';
+import { useOtpResendAttempts } from '../hooks/useOtpResendAttempts';
 import WebOtpPermissionModal from '../components/auth/WebOtpPermissionModal';
 import OtpLockoutModal from '../components/auth/OtpLockoutModal';
 import { getUrlParameter } from '../utils/urlParams';
+import { toast } from 'sonner';
 
 interface LoginPageProps {
   navigate: (path: string) => void;
@@ -77,6 +80,10 @@ export default function LoginPage({ navigate }: LoginPageProps) {
   const [flashMessage, setFlashMessage] = useState<{ message: string; type: string } | null>(null);
   const [lockoutTime, setLockoutTime] = useState<number | null>(null);
 
+  // Resend OTP timer and attempts tracking
+  const { secondsRemaining, isActive: isTimerActive, formattedTime, startTimer, resetTimer } = useOtpResendTimer();
+  const { attemptCount, isLimitReached, remainingTime, incrementAttempt, resetAttempts, canResend } = useOtpResendAttempts();
+
   // Get current flow state based on active tab
   const phoneNumber = activeTab === 'signin' ? signInPhone : signUpPhone;
   const setPhoneNumber = activeTab === 'signin' ? setSignInPhone : setSignUpPhone;
@@ -93,7 +100,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
   const { code: webOtpCode, status: webOtpStatus, cancel: cancelWebOtp } = useWebOtp(step === 'otp');
 
   // OTP countdown timer
-  const { formattedTime, isExpired } = useOtpCountdown(otpExpiryTimestamp);
+  const { formattedTime: otpFormattedTime, isExpired } = useOtpCountdown(otpExpiryTimestamp);
 
   useEffect(() => {
     // Check for flash message
@@ -221,6 +228,10 @@ export default function LoginPage({ navigate }: LoginPageProps) {
       // Set expiry to 2 minutes from now
       setOtpExpiryTimestamp(Date.now() + 2 * 60 * 1000);
       setStep('otp');
+      
+      // Start resend timer
+      startTimer();
+      
       console.log(`[TEST MODE] OTP sent: ${otp}`);
     } catch (err) {
       console.error('Error sending OTP:', err);
@@ -282,6 +293,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
 
       createOTPSession(phoneValidation.e164);
       resetOTPAttempts();
+      resetAttempts(); // Reset resend attempts on successful verification
 
       // Navigate to return path or home
       const returnPath = getReturnPath();
@@ -301,7 +313,15 @@ export default function LoginPage({ navigate }: LoginPageProps) {
   };
 
   const handleResendOTP = async () => {
-    if (!isExpired) return;
+    // Check if resend is allowed
+    if (isTimerActive || !canResend) {
+      return;
+    }
+
+    // Check if limit is reached
+    if (isLimitReached) {
+      return;
+    }
     
     setIsSendingOtp(true);
     setError('');
@@ -317,6 +337,22 @@ export default function LoginPage({ navigate }: LoginPageProps) {
 
       // Reset expiry
       setOtpExpiryTimestamp(Date.now() + 2 * 60 * 1000);
+      
+      // Reset timer and increment attempt
+      resetTimer();
+      incrementAttempt();
+      
+      // Show success toast
+      toast.success('New OTP sent!', {
+        duration: 4000,
+        className: 'premium-toast premium-toast-fade',
+        style: {
+          background: 'rgba(0, 0, 0, 0.85)',
+          border: '2px solid oklch(0.72 0.12 70)',
+          color: 'oklch(0.96 0.005 60)',
+        },
+      });
+      
       console.log(`[TEST MODE] OTP resent: ${otp}`);
     } catch (err) {
       console.error('Error resending OTP:', err);
@@ -369,6 +405,13 @@ export default function LoginPage({ navigate }: LoginPageProps) {
   const handleManualOtpEntry = () => {
     // Just close the modal and let user enter OTP manually
     setShowPermissionModal(false);
+  };
+
+  // Format remaining lockout time
+  const formatLockoutTime = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -490,9 +533,46 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     <div className="flex items-center justify-center gap-2 text-sm text-pearl-off-white/60">
                       <Clock className="h-4 w-4" />
                       <span>
-                        {isExpired ? 'OTP expired' : `Expires in ${formattedTime}`}
+                        {isExpired ? 'OTP expired' : `Expires in ${otpFormattedTime}`}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Resend OTP Button */}
+                  <div className="flex flex-col items-center gap-2">
+                    {isLimitReached ? (
+                      <p className="text-sm text-pearl-off-white/80 text-center">
+                        Too many attempts. Try again after 10 minutes
+                        <br />
+                        <span className="text-xs text-gold">
+                          ({formatLockoutTime(remainingTime)} remaining)
+                        </span>
+                      </p>
+                    ) : (
+                      <button
+                        onClick={handleResendOTP}
+                        disabled={isTimerActive || isSendingOtp || !canResend}
+                        className={`text-sm transition-all duration-300 ${
+                          isTimerActive || isSendingOtp
+                            ? 'text-pearl-off-white/40 cursor-not-allowed'
+                            : 'text-pearl-blue hover:text-gold hover:underline hover:shadow-[0_0_8px_oklch(0.72_0.12_70)] cursor-pointer animate-pulse'
+                        }`}
+                      >
+                        {isSendingOtp ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            Sending...
+                          </span>
+                        ) : (
+                          <span className="text-pearl-off-white/80">
+                            {formattedTime}
+                            {!isTimerActive && (
+                              <span className="ml-1 text-gold font-medium">✨</span>
+                            )}
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {error && (
@@ -502,13 +582,9 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     </Alert>
                   )}
 
-                  <div className="text-center text-sm text-pearl-off-white/60">
-                    Test OTP: {generatedOTP}
-                  </div>
-
                   <Button
                     onClick={() => handleVerifyOTP()}
-                    disabled={isVerifyingOtp || signInOtp.length !== 6 || isExpired}
+                    disabled={isVerifyingOtp || signInOtp.length !== 6}
                     className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isVerifyingOtp ? (
@@ -521,23 +597,13 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     )}
                   </Button>
 
-                  <div className="flex justify-between items-center">
-                    <Button
-                      onClick={handleBackToPhone}
-                      variant="ghost"
-                      className="text-pearl-blue hover:text-pearl-blue/80"
-                    >
-                      Change Number
-                    </Button>
-                    <Button
-                      onClick={handleResendOTP}
-                      variant="ghost"
-                      disabled={!isExpired || isSendingOtp}
-                      className="text-pearl-blue hover:text-pearl-blue/80 disabled:opacity-50"
-                    >
-                      {isSendingOtp ? 'Sending...' : 'Resend OTP'}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={handleBackToPhone}
+                    variant="ghost"
+                    className="w-full text-pearl-off-white/60 hover:text-pearl-off-white hover:bg-pearl-blue/10"
+                  >
+                    Back to Phone Number
+                  </Button>
                 </>
               )}
             </TabsContent>
@@ -671,9 +737,46 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     <div className="flex items-center justify-center gap-2 text-sm text-pearl-off-white/60">
                       <Clock className="h-4 w-4" />
                       <span>
-                        {isExpired ? 'OTP expired' : `Expires in ${formattedTime}`}
+                        {isExpired ? 'OTP expired' : `Expires in ${otpFormattedTime}`}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Resend OTP Button */}
+                  <div className="flex flex-col items-center gap-2">
+                    {isLimitReached ? (
+                      <p className="text-sm text-pearl-off-white/80 text-center">
+                        Too many attempts. Try again after 10 minutes
+                        <br />
+                        <span className="text-xs text-gold">
+                          ({formatLockoutTime(remainingTime)} remaining)
+                        </span>
+                      </p>
+                    ) : (
+                      <button
+                        onClick={handleResendOTP}
+                        disabled={isTimerActive || isSendingOtp || !canResend}
+                        className={`text-sm transition-all duration-300 ${
+                          isTimerActive || isSendingOtp
+                            ? 'text-pearl-off-white/40 cursor-not-allowed'
+                            : 'text-pearl-blue hover:text-gold hover:underline hover:shadow-[0_0_8px_oklch(0.72_0.12_70)] cursor-pointer animate-pulse'
+                        }`}
+                      >
+                        {isSendingOtp ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            Sending...
+                          </span>
+                        ) : (
+                          <span className="text-pearl-off-white/80">
+                            {formattedTime}
+                            {!isTimerActive && (
+                              <span className="ml-1 text-gold font-medium">✨</span>
+                            )}
+                          </span>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {error && (
@@ -683,13 +786,9 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     </Alert>
                   )}
 
-                  <div className="text-center text-sm text-pearl-off-white/60">
-                    Test OTP: {generatedOTP}
-                  </div>
-
                   <Button
                     onClick={() => handleVerifyOTP()}
-                    disabled={isVerifyingOtp || signUpOtp.length !== 6 || isExpired}
+                    disabled={isVerifyingOtp || signUpOtp.length !== 6}
                     className="w-full bg-pearl-blue hover:bg-pearl-blue/90 text-black font-medium min-h-[44px]"
                   >
                     {isVerifyingOtp ? (
@@ -702,23 +801,13 @@ export default function LoginPage({ navigate }: LoginPageProps) {
                     )}
                   </Button>
 
-                  <div className="flex justify-between items-center">
-                    <Button
-                      onClick={handleBackToPhone}
-                      variant="ghost"
-                      className="text-pearl-blue hover:text-pearl-blue/80"
-                    >
-                      Change Number
-                    </Button>
-                    <Button
-                      onClick={handleResendOTP}
-                      variant="ghost"
-                      disabled={!isExpired || isSendingOtp}
-                      className="text-pearl-blue hover:text-pearl-blue/80 disabled:opacity-50"
-                    >
-                      {isSendingOtp ? 'Sending...' : 'Resend OTP'}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={handleBackToPhone}
+                    variant="ghost"
+                    className="w-full text-pearl-off-white/60 hover:text-pearl-off-white hover:bg-pearl-blue/10"
+                  >
+                    Back to Phone Number
+                  </Button>
                 </>
               )}
             </TabsContent>
@@ -732,6 +821,7 @@ export default function LoginPage({ navigate }: LoginPageProps) {
         onOpenChange={setShowPermissionModal}
         onManualEntry={handleManualOtpEntry}
       />
+
       <OtpLockoutModal
         open={showLockoutModalState}
         onOpenChange={setShowLockoutModalState}

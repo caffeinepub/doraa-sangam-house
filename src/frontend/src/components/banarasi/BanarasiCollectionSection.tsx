@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BanarasiCategory } from '../../data/banarasiCategories';
-import ProductCard from '../ProductCard';
+import { DUMMY_PRODUCTS, DummyProduct } from '../../data/dummyProducts';
 import {
   Carousel,
   CarouselContent,
@@ -15,7 +15,7 @@ import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion';
 
 interface BanarasiCollectionSectionProps {
   category: BanarasiCategory;
-  products: any[];
+  products: DummyProduct[];
   index: number;
   onQuickView: (productId: string) => void;
   onViewDetail: (productId: string) => void;
@@ -145,11 +145,22 @@ export function BanarasiCollectionSection({
           <CarouselContent className="-ml-4">
             {products.map((product) => (
               <CarouselItem key={product.id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                <ProductCard
-                  productId={product.id}
-                  onQuickView={onQuickView}
-                  onViewDetail={onViewDetail}
-                />
+                <div className="group">
+                  <div className="rounded-[28px] overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black border border-primary/20 hover:border-primary/40 transition-all duration-400 hover:shadow-glow-pearl hover:-translate-y-2 hover:scale-105">
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-serif font-semibold mb-2">{product.name}</h3>
+                      <p className="text-2xl font-bold text-accent">₹{product.price.toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>

@@ -13,9 +13,9 @@ import OtpEntry "otp-entry";
 import Principal "mo:core/Principal";
 import Random "mo:core/Random";
 import MixinAuthorization "authorization/MixinAuthorization";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);

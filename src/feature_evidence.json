@@ -2,13 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-storefront-could-not-fetch-products-from-the-backend-failure-mode-by-correctly-distinguishing-between-a-empty-catalog-and-b-failed-fetch-show-an-error-toast-only-on-real-fetch-failures-and-show-a-premium-empty-state-when-the-catalog-is-empty",
-      "featureTitle": "Fix the storefront \"Could not fetch products from the backend\" failure mode by correctly distinguishing between (a) empty catalog and (b) failed fetch; show an error toast only on real fetch failures, and show a premium empty state when the catalog is empty.",
+      "featureId": "feature-after-clicking-send-otp-button-display-a-resend-otp-button-link-below-the-6-digit-otp-input-fields-with-pearl-blue-text-color-7fb3d5-initially-disable-the-button-for-60-seconds-with-a-countdown-timer-showing-resend-in-60s-resend-in-59s-etc-counting-down-to-resend-otp-when-the-timer-ends",
+      "featureTitle": "After clicking 'Send OTP' button, display a 'Resend OTP' button/link below the 6-digit OTP input fields with pearl blue text color (#7FB3D5). Initially disable the button for 60 seconds with a countdown timer showing 'Resend in 60s', 'Resend in 59s', etc., counting down to 'Resend OTP' when the timer ends.",
       "files": [
-        "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-        "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
-        "frontend/src/pages/ProductsPage.tsx",
-        "frontend/src/pages/StyleCollectionsPage.tsx"
+        "frontend/src/hooks/useOtpResendTimer.ts",
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,15 +18,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-39"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-usegetallproducts-react-query-so-it-surfaces-fetch-failures-to-the-ui-instead-of-silently-returning-an-empty-array-enabling-pages-to-render-a-dedicated-error-state-vs-an-empty-catalog-state",
-      "featureTitle": "Update `useGetAllProducts` (React Query) so it surfaces fetch failures to the UI (instead of silently returning an empty array), enabling pages to render a dedicated error state vs an empty-catalog state.",
+      "featureId": "feature-when-the-60-second-timer-expires-and-the-user-clicks-the-enabled-resend-otp-button-send-a-new-otp-to-the-same-mobile-number-and-reset-the-countdown-timer-to-60-seconds-again",
+      "featureTitle": "When the 60-second timer expires and the user clicks the enabled 'Resend OTP' button, send a new OTP to the same mobile number and reset the countdown timer to 60 seconds again.",
       "files": [
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -40,18 +38,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-40"
+        "REQ-2"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-the-premium-empty-state-ui-for-empty-product-catalog-on-collections-category-pages-show-no-products-yet-add-in-admin-panel-in-gold-text-and-if-the-viewer-is-logged-in-as-an-admin-show-a-pearl-blue-cta-button-that-navigates-to-the-admin-products-page",
-      "featureTitle": "Implement the premium empty-state UI for empty product catalog on collections/category pages: show \"No products yet — add in admin panel\" in gold text, and if the viewer is logged in as an admin, show a pearl-blue CTA button that navigates to the admin products page.",
+      "featureId": "feature-style-the-resend-otp-button-with-pearl-blue-text-7fb3d5-gold-underline-glow-effect-on-hover-and-subtle-pulse-animation-when-enabled-display-timer-text-in-small-pearl-off-white-color-f5f5f0-with-gold-accent-on-the-countdown-number-maintain-the-dark-luxury-theme-with-black-background-and-pearl-blue-gold-accents-ensure-responsive-design-for-mobile-devices",
+      "featureTitle": "Style the 'Resend OTP' button with pearl blue text (#7FB3D5), gold underline/glow effect on hover, and subtle pulse animation when enabled. Display timer text in small pearl off-white color (#F5F5F0) with gold accent on the countdown number. Maintain the dark luxury theme with black background and pearl blue/gold accents. Ensure responsive design for mobile devices.",
       "files": [
-        "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-        "frontend/src/pages/ProductsPage.tsx",
-        "frontend/src/pages/StyleCollectionsPage.tsx",
-        "frontend/src/utils/isAdminClient.ts"
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -63,18 +58,16 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-41"
+        "REQ-3"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-apply-retain-premium-dark-luxury-styling-and-golden-hover-glow-interactions-for-phase-3-ui-changes-empty-state-cta-retry-error-state-actions-admin-list-actions-while-keeping-the-app-responsive-and-preventing-blank-screens-crashes",
-      "featureTitle": "Apply/retain premium dark-luxury styling and golden hover/glow interactions for Phase 3 UI changes (empty state CTA, retry/error state actions, admin list actions), while keeping the app responsive and preventing blank screens/crashes.",
+      "featureId": "feature-implement-a-maximum-of-3-resend-attempts-within-a-10-minute-window-using-localstorage-to-track-timer-state-and-attempt-count-if-the-user-exceeds-3-resends-display-the-message-too-many-attempts-try-again-after-10-minutes-and-disable-the-resend-button-until-the-10-minute-window-expires",
+      "featureTitle": "Implement a maximum of 3 resend attempts within a 10-minute window using localStorage to track timer state and attempt count. If the user exceeds 3 resends, display the message 'Too many attempts. Try again after 10 minutes' and disable the resend button until the 10-minute window expires.",
       "files": [
-        "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-        "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
-        "frontend/src/pages/ProductsPage.tsx",
-        "frontend/src/pages/StyleCollectionsPage.tsx"
+        "frontend/src/hooks/useOtpResendAttempts.ts",
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -86,16 +79,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-43"
+        "REQ-4"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-phase-3-verification-step-in-the-project-documentation-release-notes-flow-after-deployment-provide-the-draft-live-url-and-confirm-a-checklist-proving-persistence-and-error-empty-states-behave-correctly",
-      "featureTitle": "Add a Phase 3 verification step in the project documentation/release notes flow: after deployment, provide the draft/live URL and confirm a checklist proving persistence and error/empty states behave correctly.",
+      "featureId": "feature-on-successful-otp-resend-display-a-toast-notification-with-the-message-new-otp-sent-using-gold-border-and-pearl-off-white-text-f5f5f0-consistent-with-the-premium-dark-luxury-theme",
+      "featureTitle": "On successful OTP resend, display a toast notification with the message 'New OTP sent!' using gold border and pearl off-white text (#F5F5F0), consistent with the premium dark luxury theme.",
       "files": [
-        "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
-        "frontend/RELEASE_NOTES.md"
+        "frontend/src/pages/LoginPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -107,7 +99,27 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-44"
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-do-not-modify-any-existing-functionality-for-send-otp-otp-verification-internet-identity-integration-or-other-parts-of-the-login-flow-only-add-the-resend-otp-feature-with-timer-and-attempt-limit",
+      "featureTitle": "Do not modify any existing functionality for Send OTP, OTP verification, Internet Identity integration, or other parts of the login flow. Only add the Resend OTP feature with timer and attempt limit.",
+      "files": [
+        "frontend/src/pages/LoginPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
       ],
       "confidence": "high"
     }

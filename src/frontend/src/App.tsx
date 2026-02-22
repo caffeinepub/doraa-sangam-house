@@ -24,6 +24,8 @@ import { useInactivityLogout } from './hooks/useInactivityLogout';
 import ProductDetailView from './pages/ProductDetailView';
 import StyleCollectionsPage from './pages/StyleCollectionsPage';
 import SizeChartPage from './pages/SizeChartPage';
+import TrendingCollectionsPage from './pages/TrendingCollectionsPage';
+import CategoriesMainPage from './pages/CategoriesMainPage';
 
 // Lazy load admin components for code splitting
 const AdminGate = lazy(() => import('./admin/components/AdminGate'));
@@ -81,6 +83,44 @@ function App() {
             <div className="relative z-10">
               <Header />
               <SizeChartPage />
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </div>
+        </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
+  // Handle trending collections route (protected)
+  if (location.pathname === '/collections/trending') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <CommerceProvider>
+          <div className="relative min-h-screen bg-black">
+            <OceanBackground />
+            <div className="relative z-10">
+              <Header />
+              <TrendingCollectionsPage />
+              <Footer />
+            </div>
+            <Toaster position="top-right" />
+          </div>
+        </CommerceProvider>
+      </ThemeProvider>
+    );
+  }
+
+  // Handle categories main page route (protected)
+  if (location.pathname === '/categories') {
+    return (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <CommerceProvider>
+          <div className="relative min-h-screen bg-black">
+            <OceanBackground />
+            <div className="relative z-10">
+              <Header />
+              <CategoriesMainPage />
               <Footer />
             </div>
             <Toaster position="top-right" />
@@ -260,7 +300,7 @@ function App() {
   }
 
   // Storefront dashboard (protected)
-  if (location.pathname === '/dashboard') {
+  if (location.pathname === '/dashboard' || location.pathname === '/profile') {
     return (
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <CommerceProvider>

@@ -1,165 +1,128 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Phase 3 (Frontend): Fix storefront product fetch error/empty states + admin products list correctness + verification checklist",
+  "title": "Add Resend OTP Feature with Timer and Attempt Limit to Login Page",
   "requirements": [
     {
-      "id": "REQ-39",
-      "summary": "Distinguish empty catalog vs failed fetch on storefront and remove the old user-visible fetch error message.",
+      "id": "REQ-1",
+      "summary": "Display 'Resend OTP' button with 60-second countdown timer below OTP input fields after 'Send OTP' is clicked",
       "acceptanceCriteria": [
-        "When product fetch fails (e.g., canister/network error), show a toast with exact text: \"Failed to load products. Try refreshing.\"",
-        "When the fetch succeeds but returns zero products, do not show the fetch-failed toast; instead show an empty state with the exact headline text: \"No products yet — add in admin panel\".",
-        "Storefront pages that depend on products (at minimum collections/category listing experiences that use `useGetAllProducts`) do not render blank screens or crash in either empty or error scenarios.",
-        "The old error presentation \"Could not fetch products from the backend\" is not shown to users in the normal UI flow."
+        "After 'Send OTP' is clicked, 6-digit OTP input fields are displayed",
+        "'Resend OTP' button appears below OTP input fields",
+        "Button displays pearl blue text (#7FB3D5)",
+        "Button is disabled for 60 seconds with countdown timer visible",
+        "Timer text shows 'Resend in Xs' format, counting down from 60 to 0",
+        "When timer reaches 0, button text changes to 'Resend OTP' and button becomes enabled"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/ProductsPage.tsx",
-          "operation": "modify",
-          "description": "Update product listing rendering to handle React Query error vs empty-catalog states explicitly (error card + retry action vs premium empty state), and ensure no blank screen/crash. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
-          "operation": "modify",
-          "description": "Update collections/category listing rendering to handle React Query error vs empty-catalog states explicitly (error card + retry action vs premium empty state), and ensure no blank screen/crash. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-          "operation": "modify",
-          "description": "Extend/adjust the empty-state component to support the Phase 3 copy and styling (gold headline text) and optional admin CTA slot. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
+          "path": "frontend/src/hooks/useOtpResendTimer.ts",
           "operation": "create",
-          "description": "Create a premium dark-luxury error state component for product fetch failures, with a retry action and styling consistent with existing theme utilities (gold hover/glow). Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-40",
-      "summary": "Update useGetAllProducts to surface fetch failures via React Query error state and show a single premium toast per failure event.",
-      "acceptanceCriteria": [
-        "On fetch failure, `useGetAllProducts` results in React Query error state (`isError`/`error`) rather than only returning an empty list.",
-        "On fetch failure, the toast with exact text \"Failed to load products. Try refreshing.\" is shown once per failure event (no toast spam loops).",
-        "On success with zero products, `useGetAllProducts` is not in error state and returns an empty array."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Refactor `useGetAllProducts` to remove the current catch-and-return-empty behavior, allowing errors to propagate into React Query error state; implement a non-spammy toast side effect with exact copy \"Failed to load products. Try refreshing.\" and remove the old \"Could not fetch products from the backend\" messaging. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-41",
-      "summary": "Implement premium empty-state UI for empty product catalog on collections/category pages, including an admin-only CTA to the admin products route.",
-      "acceptanceCriteria": [
-        "Empty catalog state displays the exact text: \"No products yet — add in admin panel\".",
-        "The empty state matches the existing dark luxury theme, using gold-accent typography for the headline and premium card styling consistent with the app.",
-        "If and only if the user is recognized as an admin using the app’s existing admin detection approach (consistent with current admin gating logic), a visible pearl-blue button is rendered.",
-        "The admin CTA button navigates via SPA navigation to the admin products page route (existing admin route), without a full page reload.",
-        "If the user is not an admin, the admin CTA is not shown."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-          "operation": "modify",
-          "description": "Add props/variants to render the exact Phase 3 headline text in gold-accent styling and optionally render an admin CTA button with pearl-blue styling. Verify the component's usage instructions before implementing."
+          "description": "Create a custom React hook to manage the 60-second resend countdown timer. The hook should track timer state, countdown seconds, return formatted timer text ('Resend in Xs'), and provide a reset function to restart the timer. Use useEffect to decrement the countdown every second and clear the interval when the timer expires."
         },
         {
-          "path": "frontend/src/utils/isAdminClient.ts",
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Add 'Resend OTP' button below the OTP input fields in both sign-in and sign-up tabs. Wire the useOtpResendTimer hook to control the button's disabled state and display countdown text. Position the button with pearl blue text (#7FB3D5) and show 'Resend in Xs' when disabled, 'Resend OTP' when enabled. Ensure the button appears only after 'Send OTP' is clicked and OTP input fields are visible."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Send new OTP and reset countdown timer when 'Resend OTP' button is clicked after timer expires",
+      "acceptanceCriteria": [
+        "When button is enabled and clicked, a new OTP is sent to the same mobile number",
+        "Timer resets to 60 seconds and counts down again",
+        "Button becomes disabled again during the new countdown period"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Implement onClick handler for the 'Resend OTP' button that calls the existing sendOtp backend capability with the same phone number, resets the useOtpResendTimer countdown to 60 seconds, and disables the button again during the new countdown. Handle loading states and error cases gracefully."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Style 'Resend OTP' button with pearl blue text, gold hover effects, pulse animation, and timer text styling",
+      "acceptanceCriteria": [
+        "Button text is pearl blue (#7FB3D5)",
+        "Gold underline/glow effect appears on hover when button is enabled",
+        "Subtle pulse animation plays when button is enabled",
+        "Timer text uses pearl off-white (#F5F5F0)",
+        "Countdown number has gold accent color",
+        "Design maintains dark luxury theme with black background",
+        "UI is responsive and mobile-friendly"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "modify",
+          "description": "Apply premium dark luxury styling to the 'Resend OTP' button using Tailwind classes. Use pearl blue text (#7FB3D5), add gold underline/glow hover effects (group-hover:shadow-gold), implement subtle pulse animation when enabled (animate-pulse). Style timer text in pearl off-white (#F5F5F0) with gold accent on the countdown number. Ensure responsive design for mobile devices and maintain consistency with existing dark luxury theme."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Add custom Tailwind animation utility class for subtle pulse effect if not already present. Ensure gold glow shadow utilities (shadow-gold) are available for hover effects on the resend button."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement 3-attempt limit within 10-minute window using localStorage with lockout message when exceeded",
+      "acceptanceCriteria": [
+        "Maximum of 3 resend attempts allowed within 10 minutes",
+        "Attempt count and window start time are stored in localStorage",
+        "After 3 attempts, message 'Too many attempts. Try again after 10 minutes' is displayed",
+        "Resend button is disabled when attempt limit is reached",
+        "After 10-minute window expires, attempt count resets and resend becomes available again"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useOtpResendAttempts.ts",
           "operation": "create",
-          "description": "Add a small client-side helper that mirrors the existing admin detection approach (based on the current Internet Identity principal and the admin principal constant) to decide whether to show the admin-only CTA. Verify the component's usage instructions before implementing."
+          "description": "Create a custom React hook to track OTP resend attempts using localStorage. Store attempt count, window start timestamp, and check if the 10-minute window has expired. Provide functions to increment attempts, check if limit is reached (3 attempts), calculate remaining lockout time, and reset attempts after the window expires. Return attempt state, lockout status, and remaining time."
         },
         {
-          "path": "frontend/src/pages/ProductsPage.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Wire the empty-state variant into the main storefront collections section; when admin is detected, show CTA that SPA-navigates to the existing admin products route. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
-          "operation": "modify",
-          "description": "Wire the empty-state variant into collections/category pages; when admin is detected, show CTA that SPA-navigates to the existing admin products route. Verify the component's usage instructions before implementing."
+          "description": "Integrate useOtpResendAttempts hook into the login page. Before allowing a resend, check if attempt limit is reached. If exceeded, display the message 'Too many attempts. Try again after 10 minutes' below the resend button and keep the button disabled. Increment attempt count on each successful resend. Show remaining lockout time if applicable. Reset attempts when the 10-minute window expires."
         }
       ]
     },
     {
-      "id": "REQ-42",
-      "summary": "Ensure admin products list reflects persisted backend state and supports edit/delete actions with immediate UI updates.",
+      "id": "REQ-5",
+      "summary": "Display toast notification 'New OTP sent!' on successful OTP resend with premium styling",
       "acceptanceCriteria": [
-        "Admin products list loads products from the backend (`adminListProducts`) and reflects the canister’s persisted state.",
-        "Delete action calls the backend delete API and the product disappears from the list without requiring a manual reload.",
-        "After deleting a product, refreshing the page does not bring it back (it is removed from canister persistence).",
-        "Edit action updates the persisted product and the updated values are visible after refresh in both admin list and storefront listings (when applicable)."
+        "Toast notification appears after successful OTP resend",
+        "Toast message reads 'New OTP sent!'",
+        "Toast has gold border",
+        "Toast text is pearl off-white (#F5F5F0)",
+        "Toast styling matches premium dark luxury theme"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/admin/state/AdminProductsProvider.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Harden admin product list refresh/invalidation behavior so the list stays in sync after create/update/delete and errors are handled without forcing full-page reloads. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/admin/pages/AdminProductsPage.tsx",
-          "operation": "modify",
-          "description": "Update admin list retry/error UI to avoid full reload where possible (prefer provider refresh) and ensure delete/edit actions keep premium styling and remain responsive. Verify the component's usage instructions before implementing."
+          "description": "After successful OTP resend, display a toast notification using the existing toast utility from utils/premiumToasts.ts (or Sonner library directly). Show message 'New OTP sent!' with gold border, pearl off-white text (#F5F5F0), and 4-second duration. Ensure toast styling is consistent with the premium dark luxury theme."
         }
       ]
     },
     {
-      "id": "REQ-43",
-      "summary": "Retain premium dark-luxury styling and golden hover/glow interactions across Phase 3 UI changes while staying responsive and crash-free.",
+      "id": "REQ-6",
+      "summary": "Ensure no modifications to existing Send OTP, OTP verification, or Internet Identity functionality",
       "acceptanceCriteria": [
-        "New/modified buttons added for Phase 3 have a gold hover/glow treatment consistent with existing styling utilities/classes.",
-        "All Phase 3-touched pages remain usable on mobile and desktop widths (no layout breakage or overflow causing horizontal scroll bugs).",
-        "No blank screen occurs when navigating to collections/category pages with empty catalog or when backend fetch fails.",
-        "No routing/authentication flow changes are introduced beyond linking to existing admin routes."
+        "Existing 'Send OTP' functionality remains unchanged",
+        "OTP verification logic remains unchanged",
+        "Internet Identity integration remains unchanged",
+        "No other login flow components are modified"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
+          "path": "frontend/src/pages/LoginPage.tsx",
           "operation": "modify",
-          "description": "Apply/extend existing premium utility classes (gold hover/glow) for the empty-state CTA/button and ensure responsive layout. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/storefront/PremiumCatalogErrorState.tsx",
-          "operation": "create",
-          "description": "Implement the error-state component with dark-luxury card styling, gold hover/glow on retry, and responsive spacing. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/ProductsPage.tsx",
-          "operation": "modify",
-          "description": "Ensure the new empty/error state integration preserves the dark-luxury theme and remains responsive (no overflow/blank screens). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/StyleCollectionsPage.tsx",
-          "operation": "modify",
-          "description": "Ensure the new empty/error state integration preserves the dark-luxury theme and remains responsive (no overflow/blank screens). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/admin/pages/AdminProductsPage.tsx",
-          "operation": "modify",
-          "description": "Ensure Phase 3-touched admin list actions (retry/delete/edit) keep premium hover/glow interactions and mobile-friendly layout. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-44",
-      "summary": "Add Phase 3 post-deploy verification checklist to project documentation/release notes flow.",
-      "acceptanceCriteria": [
-        "A post-deploy checklist is provided confirming: (1) products fetch from backend without the prior \"Could not fetch\" user-visible error, (2) persistence across reload, (3) admin list shows edit/delete, (4) UI remains stable/responsive.",
-        "The draft/live URL is provided after deployment."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/PHASE3_VERIFICATION_CHECKLIST.md",
-          "operation": "create",
-          "description": "Create a Phase 3 verification checklist template including fields for draft/live URL and checks for: fetch success without the old message, correct error toast text, premium empty state, admin list CRUD behavior, and responsive UI stability."
-        },
-        {
-          "path": "frontend/RELEASE_NOTES.md",
-          "operation": "modify",
-          "description": "Add a Phase 3 entry referencing the new verification checklist and documenting the storefront error/empty state behavior and admin products list expectations."
+          "description": "Verify that all changes to LoginPage.tsx are additive only, adding the 'Resend OTP' button and related logic without modifying existing 'Send OTP' button functionality, OTP verification logic, or Internet Identity integration. Ensure the new feature is isolated to the resend flow."
         }
       ]
     }

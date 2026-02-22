@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { BANARASI_CATEGORIES } from '../../data/banarasiCategories';
-import ProductCard from '../ProductCard';
+import { DUMMY_PRODUCTS } from '../../data/dummyProducts';
 import QuickViewSheet from '../QuickViewSheet';
 import { useDynamicMetadata } from '../../hooks/useDynamicMetadata';
-import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion';
-import { useGetProductsByCategory } from '../../hooks/useQueries';
 import { useSpaLocation } from '../../hooks/useSpaLocation';
 
 interface BanarasiCategoryCarouselOverlayProps {
@@ -22,11 +18,12 @@ export function BanarasiCategoryCarouselOverlay({
   onOpenChange,
 }: BanarasiCategoryCarouselOverlayProps) {
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
   const [location, navigate] = useSpaLocation();
 
   const category = BANARASI_CATEGORIES.find((c) => c.id === categoryId);
-  const { data: products = [], isLoading } = useGetProductsByCategory(categoryId);
+
+  // Get dummy products for this category
+  const products = DUMMY_PRODUCTS.filter((p) => p.category === categoryId);
 
   useDynamicMetadata({
     title: category?.name,
@@ -49,31 +46,29 @@ export function BanarasiCategoryCarouselOverlay({
           </DialogHeader>
 
           <div className="mt-8">
-            {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, idx) => (
-                  <div key={idx} className="rounded-[24px] overflow-hidden bg-card/50 backdrop-blur-sm">
-                    <div className="aspect-[3/4] shimmer-skeleton" />
-                    <div className="p-4 space-y-2">
-                      <div className="h-4 shimmer-skeleton rounded" />
-                      <div className="h-4 shimmer-skeleton rounded w-2/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : products.length === 0 ? (
+            {products.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No products available in this category yet.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    productId={product.id}
-                    onQuickView={setQuickViewProductId}
-                    onViewDetail={handleViewDetail}
-                  />
+                  <div key={product.id} className="group">
+                    <div className="rounded-[28px] overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black border border-primary/20 hover:border-primary/40 transition-all duration-400 hover:shadow-glow-pearl hover:-translate-y-2 hover:scale-105">
+                      <div className="aspect-[3/4] overflow-hidden">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-110"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-serif font-semibold mb-2">{product.name}</h3>
+                        <p className="text-2xl font-bold text-accent">₹{product.price.toLocaleString('en-IN')}</p>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
