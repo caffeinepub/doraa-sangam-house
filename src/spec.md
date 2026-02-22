@@ -1,15 +1,19 @@
 # Specification
 
 ## Summary
-**Goal:** Transform the entire application from dark theme to a premium light theme with Banarasi saree aesthetics, featuring ivory/pearl backgrounds, antique gold accents, luxury typography, and a Vastrado-style home page layout.
+**Goal:** Replace the dark navy blue theme with a stunning light aesthetic featuring warm ivory, antique gold, and blush rose gold colors throughout the entire application.
 
 **Planned changes:**
-- Replace all dark theme colors (navy blue, black backgrounds) with soft warm ivory (#F8F5F0) backgrounds, antique gold (#C9A96E) accents, blush rose gold (#E8C0C8) secondary accents, and deep charcoal (#1A1A1A) text
-- Update typography to use Playfair Display ExtraBold for headings, Great Vibes script for category names, Lora Regular for body text, and Montserrat Bold/Raleway ExtraBold for buttons
-- Implement Vastrado-style home page with centered gold logo, horizontal category navigation (Shirts, Kurta, Bottoms, Sarees, Shop All), profile icon on right, and product card grid below
-- Add dashboard with Profile/Orders/Addresses tabs and Appearance section showing Light theme as default and only active option
-- Update CSS variables and Tailwind configuration to reflect new light theme palette
-- Ensure 100% consistent appearance across laptop, mobile, and tablet with responsive scaling using rem units and clamp()
-- Apply premium hover effects (warm gold glow, lift, scale) consistently across all interactive elements
+- Replace all dark navy blue backgrounds with soft warm ivory/pearl cream (#F8F5F0)
+- Apply gradient backgrounds to sections using linear-gradient(135deg, #F8F5F0 0%, #F5F0E6 100%)
+- Update primary accent color to antique gold (#C9A96E) for buttons, borders, and highlights
+- Apply secondary accent color of muted blush rose gold (#E8C0C8) to category titles and decorative elements
+- Change primary text to deep charcoal (#1A1A1A) and secondary text to warm taupe gray (#5C4B51)
+- Style buttons with antique gold background, dark text, and hover effects with deeper gold, lift, and glow
+- Style cards with pure white background (#FFFFFF), 1px gold border, and soft shadow
+- Update typography: Playfair Display ExtraBold for headings (#C9A96E), Great Vibes Regular for category titles (#E8C0C8), Lora Regular for body (#1A1A1A), and Montserrat Bold for buttons
+- Remove all media query overrides for colors, fonts, and backgrounds to ensure consistent light theme across all viewports
+- Audit and eliminate all dark navy blue colors from the codebase
+- Preserve all existing functionality including login/OTP flow, Internet Identity, profile dashboard, cart, addresses, orders, and product catalog
 
-**User-visible outcome:** Users will experience a premium light-themed luxury saree shopping interface with ivory backgrounds, antique gold accents, elegant typography, Vastrado-style navigation, and smooth responsive design across all devices.
+**User-visible outcome:** Users will experience a beautiful light-themed application with warm, elegant colors featuring ivory backgrounds, antique gold accents, and sophisticated typography. The entire site displays consistently across desktop, laptop, and mobile devices with no dark blue elements remaining.

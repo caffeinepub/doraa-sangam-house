@@ -1,114 +1,116 @@
 import { useEffect, useRef } from 'react';
-import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion';
 
-interface PearlShimmerParticlesProps {
-  isActive: boolean;
-  slideIndex: number;
-}
-
-export default function PearlShimmerParticles({
-  isActive,
-  slideIndex,
-}: PearlShimmerParticlesProps) {
+export default function PearlShimmerParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const animationRef = useRef<number | null>(null);
+  const prefersReducedMotion = useRef(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    prefersReducedMotion.current = mediaQuery.matches;
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.current = e.matches;
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || prefersReducedMotion.current) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Create particles
-    const particleCount = prefersReducedMotion ? 30 : 80;
-    const particles: Array<{
+    interface Particle {
       x: number;
       y: number;
+      vx: number;
+      vy: number;
       size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-      hue: number;
-    }> = [];
+      alpha: number;
+    }
+
+    const particles: Particle[] = [];
+    const particleCount = 50;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 1,
-        speedX: (Math.random() - 0.5) * (prefersReducedMotion ? 0.2 : 0.5),
-        speedY: (Math.random() - 0.5) * (prefersReducedMotion ? 0.2 : 0.5),
-        opacity: Math.random() * 0.5 + 0.3,
-        hue: 210 + Math.random() * 20, // Pearl blue range
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2.5 + 1,
+        alpha: Math.random() * 0.4 + 0.1,
       });
     }
 
-    let animationId: number;
+    let time = 0;
+
     const animate = () => {
+      time += 0.01;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((particle) => {
-        particle.x += particle.speedX;
-        particle.y += particle.speedY;
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
 
-        // Wrap around edges
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        // Shimmer effect
-        particle.opacity = 0.3 + Math.sin(Date.now() * 0.001 + particle.x) * 0.3;
+        p.alpha = 0.15 + Math.sin(time + p.x * 0.01) * 0.25;
 
-        // Draw particle
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `oklch(0.68 0.10 ${particle.hue} / ${particle.opacity})`;
-        ctx.fill();
-
-        // Add glow
-        const gradient = ctx.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          particle.size * 3
-        );
-        gradient.addColorStop(0, `oklch(0.68 0.10 ${particle.hue} / ${particle.opacity * 0.5})`);
-        gradient.addColorStop(1, 'transparent');
+        ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
+        gradient.addColorStop(0, `rgba(201, 169, 110, ${p.alpha * 0.6})`);
+        gradient.addColorStop(1, 'rgba(201, 169, 110, 0)');
         ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.restore();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232, 192, 200, ${p.alpha})`;
         ctx.fill();
       });
 
-      if (isActive || !prefersReducedMotion) {
-        animationId = requestAnimationFrame(animate);
-      }
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    if (isActive) {
-      animate();
-    }
+    animate();
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       window.removeEventListener('resize', resizeCanvas);
-      if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [isActive, slideIndex, prefersReducedMotion]);
+  }, []);
+
+  if (prefersReducedMotion.current) {
+    return null;
+  }
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ opacity: isActive ? 1 : 0 }}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 1 }}
     />
   );
 }

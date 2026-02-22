@@ -1,101 +1,90 @@
 import { useEffect, useRef } from 'react';
-import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion';
 
-interface GoldWaveLayerProps {
-  isActive: boolean;
-  slideIndex: number;
-}
-
-export default function GoldWaveLayer({
-  isActive,
-  slideIndex,
-}: GoldWaveLayerProps) {
+export default function GoldWaveLayer() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const animationRef = useRef<number | null>(null);
+  const prefersReducedMotion = useRef(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    prefersReducedMotion.current = mediaQuery.matches;
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.current = e.matches;
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || prefersReducedMotion.current) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    let animationId: number;
     let time = 0;
 
-    const drawWave = (
-      yOffset: number,
-      amplitude: number,
-      frequency: number,
-      phase: number,
-      opacity: number
-    ) => {
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height);
-
-      for (let x = 0; x < canvas.width; x++) {
-        const y =
-          yOffset +
-          Math.sin((x * frequency + phase) * 0.01) * amplitude +
-          Math.sin((x * frequency * 0.5 + phase * 1.3) * 0.01) * (amplitude * 0.5);
-        ctx.lineTo(x, y);
-      }
-
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.closePath();
-
-      const gradient = ctx.createLinearGradient(0, yOffset - amplitude, 0, canvas.height);
-      gradient.addColorStop(0, `oklch(0.72 0.12 70 / ${opacity * 0.15})`);
-      gradient.addColorStop(0.5, `oklch(0.72 0.12 70 / ${opacity * 0.08})`);
-      gradient.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = gradient;
-      ctx.fill();
-    };
-
     const animate = () => {
+      time += 0.015;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (!prefersReducedMotion) {
-        time += 0.5;
+      const waveCount = 3;
+      for (let i = 0; i < waveCount; i++) {
+        ctx.save();
+        ctx.beginPath();
 
-        // Multiple flowing gold waves
-        drawWave(canvas.height * 0.7, 40, 1, time, 1);
-        drawWave(canvas.height * 0.75, 30, 1.2, time * 1.1, 0.8);
-        drawWave(canvas.height * 0.8, 25, 0.8, time * 0.9, 0.6);
-      } else {
-        // Static waves for reduced motion
-        drawWave(canvas.height * 0.7, 40, 1, 0, 0.8);
-        drawWave(canvas.height * 0.8, 25, 0.8, 0, 0.5);
+        const yOffset = canvas.height * 0.5 + i * 80;
+        const amplitude = 40 + i * 15;
+        const frequency = 0.008 - i * 0.001;
+
+        ctx.moveTo(0, yOffset);
+
+        for (let x = 0; x <= canvas.width; x += 5) {
+          const y = yOffset + Math.sin(x * frequency + time + i * 0.5) * amplitude;
+          ctx.lineTo(x, y);
+        }
+
+        ctx.strokeStyle = `rgba(201, 169, 110, ${0.15 - i * 0.03})`;
+        ctx.lineWidth = 2 + i;
+        ctx.stroke();
+        ctx.restore();
       }
 
-      if (isActive || !prefersReducedMotion) {
-        animationId = requestAnimationFrame(animate);
-      }
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    if (isActive) {
-      animate();
-    }
+    animate();
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       window.removeEventListener('resize', resizeCanvas);
-      if (animationId) cancelAnimationFrame(animationId);
     };
-  }, [isActive, slideIndex, prefersReducedMotion]);
+  }, []);
+
+  if (prefersReducedMotion.current) {
+    return null;
+  }
 
   return (
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ opacity: isActive ? 1 : 0 }}
+      style={{ zIndex: 2 }}
     />
   );
 }

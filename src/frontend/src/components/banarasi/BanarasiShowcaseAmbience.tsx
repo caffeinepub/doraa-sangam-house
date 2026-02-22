@@ -1,110 +1,116 @@
 import { useEffect, useRef } from 'react';
-import usePrefersReducedMotion from '../../hooks/usePrefersReducedMotion';
 
-export function BanarasiShowcaseAmbience() {
+export default function BanarasiShowcaseAmbience() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const animationRef = useRef<number | null>(null);
+  const prefersReducedMotion = useRef(false);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    prefersReducedMotion.current = mediaQuery.matches;
 
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.current = e.matches;
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || prefersReducedMotion.current) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Set canvas size
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
     };
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Pearl shimmer particles
     interface Particle {
       x: number;
       y: number;
+      vx: number;
+      vy: number;
       size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-      fadeDirection: number;
+      alpha: number;
     }
 
     const particles: Particle[] = [];
-    const particleCount = 50;
+    const particleCount = 40;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 1,
-        speedX: (Math.random() - 0.5) * 0.5,
-        speedY: (Math.random() - 0.5) * 0.5,
-        opacity: Math.random() * 0.5 + 0.2,
-        fadeDirection: Math.random() > 0.5 ? 1 : -1,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2 + 1,
+        alpha: Math.random() * 0.3 + 0.1,
       });
     }
 
-    let animationId: number;
+    let time = 0;
 
     const animate = () => {
+      time += 0.01;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.forEach((particle) => {
-        // Update position
-        particle.x += particle.speedX;
-        particle.y += particle.speedY;
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
 
-        // Wrap around edges
-        if (particle.x < 0) particle.x = canvas.width;
-        if (particle.x > canvas.width) particle.x = 0;
-        if (particle.y < 0) particle.y = canvas.height;
-        if (particle.y > canvas.height) particle.y = 0;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
-        // Update opacity
-        particle.opacity += particle.fadeDirection * 0.005;
-        if (particle.opacity <= 0.2 || particle.opacity >= 0.7) {
-          particle.fadeDirection *= -1;
-        }
+        p.alpha = 0.1 + Math.sin(time + p.x * 0.01) * 0.2;
 
-        // Draw particle with pearl blue glow
+        ctx.save();
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(127, 179, 213, ${particle.opacity})`;
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
+        gradient.addColorStop(0, `rgba(201, 169, 110, ${p.alpha})`);
+        gradient.addColorStop(1, 'rgba(201, 169, 110, 0)');
+        ctx.fillStyle = gradient;
         ctx.fill();
+        ctx.restore();
 
-        // Add glow
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = 'rgba(127, 179, 213, 0.6)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(201, 169, 110, ${p.alpha * 1.5})`;
         ctx.fill();
-        ctx.shadowBlur = 0;
       });
 
-      animationId = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
 
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationId);
     };
-  }, [prefersReducedMotion]);
+  }, []);
 
-  if (prefersReducedMotion) {
-    return (
-      <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-    );
+  if (prefersReducedMotion.current) {
+    return null;
   }
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ mixBlendMode: 'screen' }}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
     />
   );
 }

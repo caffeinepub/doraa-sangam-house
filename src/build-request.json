@@ -1,166 +1,282 @@
 {
   "kind": "build_request",
-  "title": "Complete Light Theme Transformation with Premium Banarasi Aesthetics",
+  "title": "Replace dark navy blue theme with stunning light aesthetic theme",
   "projectName": "DoRaa Sangam House",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Replace all dark theme colors (navy blue, black backgrounds) throughout the entire application with a premium light theme palette: soft warm ivory/pearl cream (#F8F5F0) for primary backgrounds, very light beige gradient (#F8F5F0 → #F5F0E6) for secondary backgrounds/sections, antique gold/warm gold (#C9A96E or #D4B37D) for primary accents representing zari/gold shine, muted blush rose gold (#E8C0C8) for secondary accents, deep charcoal gray (#1A1A1A) for primary text ensuring perfect readability, warm taupe gray (#5C4B51) for secondary/muted text, antique gold background (#C9A96E) with dark text (#1A1A1A) for buttons/CTAs with hover effects (deeper gold + scale + glow), pure white (#FFFFFF) cards/product tiles with subtle 1px gold border (#C9A96E) and soft shadow, and warm gold box-shadow (0 0 18px rgba(201,169,110,0.45)) for hover/active glow effects",
+      "text": "Replace all dark navy blue colors with soft warm ivory/pearl cream background (#F8F5F0) throughout the entire application",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "Completely remove all dark themes (no navy blue, no black backgrounds)",
-          "Background primary: soft warm ivory / pearl cream #F8F5F0",
-          "Primary accent (zari / gold shine): antique gold / warm gold #C9A96E or #D4B37D"
+          "Background: soft warm ivory/pearl cream #F8F5F0"
         ]
       },
       "acceptanceCriteria": [
-        "No navy blue or black backgrounds visible anywhere in the application",
-        "All backgrounds use ivory (#F8F5F0) or beige gradient (#F8F5F0 → #F5F0E6)",
-        "Primary text is deep charcoal gray (#1A1A1A) with excellent contrast",
-        "All buttons use antique gold background (#C9A96E) with dark text",
-        "Product cards are pure white (#FFFFFF) with 1px gold borders",
-        "Hover effects show warm gold glow (box-shadow with rgba(201,169,110,0.45))"
+        "All pages display #F8F5F0 as the primary background color",
+        "No dark navy blue backgrounds remain anywhere in the application",
+        "Background color is consistent across desktop, mobile, and tablet viewports"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update typography throughout the application to use premium luxury fonts: Playfair Display ExtraBold for all headings and brand name 'DoRaa Sangam House' with antique gold color (#C9A96E) and letter-spacing of 2-4px, Great Vibes Regular script font for category names and special titles (like 'Zari Royalty') with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color at size 2.8-3.8rem, Lora Regular 400 for all body text and descriptions with deep charcoal color (#1A1A1A) and line-height 1.9-2.1, and Montserrat Bold or Raleway ExtraBold for buttons/CTAs in all caps with dark text on gold background",
+      "text": "Apply gradient backgrounds to section elements using linear-gradient(135deg, #F8F5F0 0%, #F5F0E6 100%)",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "Headings / brand name: Playfair Display ExtraBold, color #C9A96E, letter-spacing 2–4px",
-          "Category names / special titles: Great Vibes Regular (script), color #E8C0C8 or #C9A96E, size 2.8–3.8rem",
-          "Body text / descriptions: Lora Regular 400, color #1A1A1A, line-height 1.9–2.1",
-          "Buttons / CTAs: Montserrat Bold or Raleway ExtraBold, all caps, dark text on gold bg"
+          "Gradient (sections): linear-gradient(135deg, #F8F5F0 0%, #F5F0E6 100%)"
         ]
       },
       "acceptanceCriteria": [
-        "All headings and 'DoRaa Sangam House' brand name use Playfair Display ExtraBold in antique gold",
-        "Category names use Great Vibes script font at 2.8-3.8rem size",
-        "All body text uses Lora Regular with line-height 1.9-2.1",
-        "All buttons use Montserrat Bold or Raleway ExtraBold in all caps",
-        "Letter-spacing on headings is 2-4px",
-        "Typography renders consistently on all devices"
+        "Hero sections, category sections, and feature sections display the specified gradient",
+        "Gradient maintains consistent appearance across all screen sizes"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Implement Vastrado-style home page layout after login with: large DoRaa Sangam House logo (gold luxury version) centered at the top, horizontal category navigation bar below the logo displaying categories (Shirts, Kurta, Bottoms, Sarees, Shop All) that is scrollable on mobile, user profile/dashboard icon positioned on the right side, below navigation display a grid of saree/product cards showing on-model images with product name, price, discount badge, and 'Add to Cart' button, cards styled with curved corners, white background, and gold hover border with lift effect",
+      "text": "Update primary accent color to antique gold (#C9A96E) for buttons, borders, highlights, and interactive elements",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "Center top: large DoRaa Sangam House logo (gold luxury version)",
-          "Below logo: horizontal category navigation bar (scrollable on mobile): Shirts, Kurta, Bottoms, Sarees, Shop All",
-          "Right side: user profile/dashboard icon",
-          "Below nav: grid of saree/product cards"
+          "Primary accent: antique gold #C9A96E"
         ]
       },
       "acceptanceCriteria": [
-        "Logo is centered at top in gold luxury styling",
-        "Horizontal category bar displays all specified categories",
-        "Category navigation scrolls smoothly on mobile",
-        "Profile/dashboard icon is visible on the right",
-        "Product grid displays below navigation",
-        "Product cards show image, name, price, discount badge, and Add to Cart button",
-        "Cards have curved corners, white background, and lift on hover",
-        "Gold border appears on card hover"
+        "All buttons use #C9A96E as background color",
+        "Interactive elements and borders use antique gold for visual emphasis",
+        "Hover states deepen the gold color and add subtle lift + glow effects"
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Update dashboard (accessed via profile icon click) to include: tabs for Profile, Orders, and Addresses, add an 'Appearance' section with theme switcher buttons showing Light (default and only active option), with Dark and System options disabled or hidden since only light theme is required, user details section displaying name, email, phone with 'Save Changes' button",
+      "text": "Apply secondary accent color of muted blush rose gold (#E8C0C8) to category titles and decorative elements",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "Tabs: Profile, Orders, Addresses",
-          "Add 'Appearance' section with theme switcher buttons",
-          "Light (default & only active option now)",
-          "User details (name, email, phone, Save Changes)"
+          "Secondary accent: muted blush rose gold #E8C0C8"
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard has Profile, Orders, and Addresses tabs",
-        "Appearance section is visible with theme switcher",
-        "Light theme option is active and selected by default",
-        "Dark and System options are disabled or hidden",
-        "User details form shows name, email, and phone fields",
-        "Save Changes button is present and functional"
+        "Category and special titles display #E8C0C8 color",
+        "Secondary decorative elements use the blush rose gold accent appropriately"
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Ensure 100% consistent appearance across laptop, mobile, and tablet devices with no media-query overrides for colors, fonts, or backgrounds, using rem units and clamp() for responsive scaling, ensuring all premium hover animations (glow, lift, scale) are smooth and work across devices while respecting reduced motion preferences",
+      "text": "Update primary text color to deep charcoal (#1A1A1A) and secondary text to warm taupe gray (#5C4B51)",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
         ],
         "quotes": [
-          "Theme must look identical on laptop, mobile, tablet (no media-query overrides for colors/fonts/background)",
-          "Use rem units, clamp() for responsive scaling",
-          "Hover glow/lift/animations smooth & premium"
+          "Text primary: deep charcoal #1A1A1A",
+          "Text secondary: warm taupe gray #5C4B51"
         ]
       },
       "acceptanceCriteria": [
-        "Colors, fonts, and backgrounds are identical on laptop, mobile, and tablet",
-        "No media queries override the light theme colors or typography",
-        "All spacing uses rem units",
-        "Font sizes use clamp() for fluid responsive scaling",
-        "Hover animations work smoothly with warm gold glow and lift effects",
-        "Reduced motion preferences are respected",
-        "No responsiveness issues or layout breaks on any device"
+        "All primary text (body, descriptions, labels) displays in #1A1A1A",
+        "Secondary text (captions, meta info) displays in #5C4B51",
+        "Text contrast meets WCAG accessibility standards on light backgrounds"
       ]
     },
     {
       "id": "REQ-6",
-      "text": "Update CSS variables in frontend/index.css and Tailwind configuration in frontend/tailwind.config.js to reflect the new light theme color palette, ensuring all component styles reference these new variables consistently",
+      "text": "Style buttons with antique gold background (#C9A96E), dark text, and hover effects with deeper gold, lift animation, and glow",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5"
+          "msg-latest"
+        ],
+        "quotes": [
+          "Buttons: antique gold bg #C9A96E, dark text, hover deeper gold + lift + glow"
         ]
       },
       "acceptanceCriteria": [
-        "CSS variables updated with ivory, antique gold, rose gold, and charcoal values",
-        "Tailwind config includes new color palette",
-        "All components use the updated CSS variables",
-        "Theme system no longer references dark/navy blue colors"
+        "All CTA buttons display #C9A96E background with dark text",
+        "Hover state darkens gold color and adds subtle transform lift",
+        "Hover state includes a soft glow effect around button edges"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Style product cards and content cards with pure white background (#FFFFFF), 1px gold border (#C9A96E), and soft shadow",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Cards: white #FFFFFF with gold border 1px + soft shadow"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Product cards display white background with exactly 1px gold border",
+        "Cards include subtle box-shadow for depth",
+        "Card styling is consistent across product grid, quick view, and detail pages"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Update heading font to Playfair Display ExtraBold with antique gold color (#C9A96E)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Headings: Playfair Display ExtraBold, #C9A96E"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All h1, h2, h3 elements use Playfair Display ExtraBold",
+        "Heading text displays in #C9A96E color",
+        "Font loads correctly from Google Fonts with proper fallbacks"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Apply Great Vibes Regular font to category titles and special decorative titles with color #E8C0C8",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Category/special titles: Great Vibes Regular, #E8C0C8"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Category navigation titles use Great Vibes Regular script font",
+        "Special decorative titles display in #E8C0C8 blush rose gold",
+        "Font provides elegant script aesthetic without sacrificing readability"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Set body text font to Lora Regular with deep charcoal color (#1A1A1A)",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Body: Lora Regular, #1A1A1A"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All paragraph text, descriptions, and body content use Lora Regular",
+        "Body text displays in #1A1A1A color for optimal readability",
+        "Font renders consistently across all browsers"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Apply Montserrat Bold font to all button text and call-to-action elements",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Buttons: Montserrat Bold"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Button text uses Montserrat Bold font family",
+        "CTA elements display clear, bold typography",
+        "Button text remains legible on antique gold backgrounds"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Remove all media query overrides for colors, fonts, and backgrounds to force identical light theme appearance across desktop, laptop, and mobile viewports",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Force consistency: laptop/mobile pe same look (no media-query overrides for colors/fonts/bg)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Color palette remains identical on all screen sizes",
+        "Font families and weights are consistent across all viewports",
+        "Background colors and gradients do not change based on media queries",
+        "Only layout and spacing adjustments are allowed in responsive breakpoints"
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Audit and eliminate all instances of dark navy blue colors from the entire codebase, replacing with the light aesthetic palette",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "No dark/navy blue anywhere"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Search codebase confirms zero hex codes matching dark blue patterns (#001f3f, #003366, #000080, etc.)",
+        "Visual inspection shows no dark blue elements on any page",
+        "Theme switcher (if present) only shows light theme option"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Preserve all existing functionality including login/OTP flow, Internet Identity, profile dashboard, cart icon, addresses, orders, and product catalog while applying light theme",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Keep existing layout/login/dashboard/cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Login and OTP verification continue to work without errors",
+        "Internet Identity authentication remains functional",
+        "Profile dashboard displays user details, addresses, and orders correctly",
+        "Cart icon shows accurate item count and cart panel functions properly",
+        "Product catalog loads and displays all products with new theme applied"
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend/main.mo, backend/migration.mo, or any backend logic",
-    "Do not edit immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Preserve all existing functionality: login/OTP, cart, category carousel, checkout, orders",
-    "Maintain single-actor Motoko architecture",
-    "Keep React, Tailwind, Shadcn, and React Query as the frontend stack"
+    "Do not modify backend Motoko code or data models",
+    "Do not change routing, authentication logic, or business logic",
+    "Do not alter layout structure, component hierarchy, or page organization",
+    "Do not edit immutable frontend paths: useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, or components/ui directory",
+    "Maintain existing accessibility features and WCAG compliance",
+    "Preserve all hover effects, animations, and interactive behaviors"
   ],
   "nonGoals": [
-    "Adding new backend features or data models",
-    "Implementing new authentication methods beyond existing Internet Identity and OTP",
-    "Adding dark theme functionality (explicitly removed)",
-    "Changing the technology stack",
-    "Adding new product categories beyond those specified",
-    "Implementing real-time features or WebSockets"
+    "Adding new features or functionality beyond theme update",
+    "Restructuring component architecture or file organization",
+    "Changing product data, categories, or backend schema",
+    "Implementing dark mode toggle or theme switching",
+    "Adding new pages, routes, or navigation elements",
+    "Modifying authentication flows or user management logic"
   ],
   "imageRequirements": {
-    "required": [
-      "Gold luxury version of DoRaa Sangam House logo with antique gold coloring and premium Banarasi aesthetic suitable for center header placement (doraa-logo-gold.dim_400x120.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

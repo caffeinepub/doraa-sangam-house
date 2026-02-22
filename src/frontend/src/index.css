@@ -6,12 +6,11 @@
 
 @layer base {
   :root {
-    /* Premium Light Theme - Banarasi/Kanpur Heritage */
+    /* Premium Light Theme - DoRaa Sangam House */
     --background: oklch(97% 0.01 60);
     --foreground: oklch(20% 0 0);
     --card: oklch(100% 0 0);
     --card-foreground: oklch(20% 0 0);
-    --popover: oklch(100% 0 0);
     --popover: oklch(100% 0 0);
     --popover-foreground: oklch(20% 0 0);
     --primary: oklch(60% 0.08 50);
@@ -29,7 +28,7 @@
     --ring: oklch(60% 0.08 50);
     --radius: 0.5rem;
     
-    /* Custom color variables */
+    /* Custom color variables - Light Theme */
     --card-bg: rgba(255, 255, 255, 1);
     --option-bg: rgba(248, 245, 240, 0.8);
     --selected-bg: rgba(201, 169, 110, 0.15);
@@ -131,7 +130,7 @@
 
   /* Button luxury styling - Light theme */
   .button-luxury {
-    background: linear-gradient(135deg, #C9A96E 0%, #B08B4F 100%);
+    background: #C9A96E;
     color: #1A1A1A;
     font-weight: 800;
     text-transform: uppercase;
@@ -141,9 +140,9 @@
   }
 
   .button-luxury:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 24px rgba(201, 169, 110, 0.65);
-    background: linear-gradient(135deg, #D4B37D 0%, #C9A96E 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(201, 169, 110, 0.4);
+    background: #B8955D;
   }
 
   /* Gold glow effects */

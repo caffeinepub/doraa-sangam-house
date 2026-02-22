@@ -14,8 +14,6 @@ import Principal "mo:core/Principal";
 import Random "mo:core/Random";
 import MixinAuthorization "authorization/MixinAuthorization";
 
-
-
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);

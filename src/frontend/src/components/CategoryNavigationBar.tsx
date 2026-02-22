@@ -1,77 +1,59 @@
-import { useRef } from 'react';
 import { useSpaLocation } from '../hooks/useSpaLocation';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useStorefrontAuth } from '../hooks/useStorefrontAuth';
+import { useAuthRedirect } from '../hooks/useAuthRedirect';
 
 const categories = [
   { id: 'shirts', label: 'Shirts', slug: 'shirts' },
   { id: 'kurta', label: 'Kurta', slug: 'kurta' },
   { id: 'bottoms', label: 'Bottoms', slug: 'bottoms' },
   { id: 'sarees', label: 'Sarees', slug: 'sarees' },
-  { id: 'shop-all', label: 'Shop All', slug: 'all' },
+  { id: 'shop-all', label: 'Shop All', slug: 'shop-all' },
 ];
 
 export default function CategoryNavigationBar() {
-  const [, navigate] = useSpaLocation();
-  const { identity } = useInternetIdentity();
-  const { setFlashMessage, setReturnPath } = useStorefrontAuth();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [location, navigate] = useSpaLocation();
+  const { requireAuth } = useAuthRedirect();
 
   const handleCategoryClick = (slug: string) => {
-    if (!identity) {
-      setFlashMessage('Please login to browse categories', 'info');
-      setReturnPath(`/collections/${slug}`);
-      navigate('/login?tab=signin');
-      return;
-    }
+    if (!requireAuth(navigate, location.pathname)) return;
 
-    if (slug === 'all') {
-      navigate('/collections/trending');
+    if (slug === 'shop-all') {
+      navigate('/products');
     } else {
-      navigate(`/collections/${slug}`);
+      navigate(`/style/${slug}`);
     }
   };
 
   return (
-    <div className="w-full py-6">
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 md:justify-center"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => handleCategoryClick(category.slug)}
-            className="flex-shrink-0 snap-start px-8 py-3 rounded-full font-vibes text-script-sm tracking-wider transition-all duration-300 hover:scale-105 whitespace-nowrap"
-            style={{
-              color: '#E8C0C8',
-              backgroundColor: 'transparent',
-              border: '2px solid #C9A96E',
-              boxShadow: '0 0 0 rgba(201, 169, 110, 0)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 18px rgba(201, 169, 110, 0.45)';
-              e.currentTarget.style.backgroundColor = 'rgba(201, 169, 110, 0.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 0 0 rgba(201, 169, 110, 0)';
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            {category.label}
-          </button>
-        ))}
+    <div className="w-full py-8 overflow-x-auto">
+      <div className="container px-6 md:px-8">
+        <div className="flex gap-6 justify-center items-center flex-nowrap md:flex-wrap">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => handleCategoryClick(category.slug)}
+              className="flex-shrink-0 px-8 py-4 rounded-full transition-all duration-300 hover:scale-105"
+              style={{
+                backgroundColor: 'transparent',
+                border: '2px solid #C9A96E',
+                color: '#E8C0C8',
+                fontFamily: "'Great Vibes', cursive",
+                fontSize: 'clamp(2.8rem, 4vw, 3.2rem)',
+                fontWeight: 400,
+                boxShadow: '0 0 0 rgba(201, 169, 110, 0)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 18px rgba(201, 169, 110, 0.45)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 rgba(201, 169, 110, 0)';
+              }}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }

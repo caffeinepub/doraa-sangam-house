@@ -1,177 +1,223 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T12:04:54.631Z",
+  "generatedAt": "2026-02-22T12:53:59.834Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 6,
+    "total": 14,
+    "implemented": 13,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Replace all dark theme colors (navy blue, black backgrounds) throughout the entire application with a premium light theme palette: soft warm ivory/pearl cream (#F8F5F0) for primary backgrounds, very light beige gradient (#F8F5F0 → #F5F0E6) for secondary backgrounds/sections, antique gold/warm gold (#C9A96E or #D4B37D) for primary accents representing zari/gold shine, muted blush rose gold (#E8C0C8) for secondary accents, deep charcoal gray (#1A1A1A) for primary text ensuring perfect readability, warm taupe gray (#5C4B51) for secondary/muted text, antique gold background (#C9A96E) with dark text (#1A1A1A) for buttons/CTAs with hover effects (deeper gold + scale + glow), pure white (#FFFFFF) cards/product tiles with subtle 1px gold border (#C9A96E) and soft shadow, and warm gold box-shadow (0 0 18px rgba(201,169,110,0.45)) for hover/active glow effects",
+        "summary": "Replace all dark navy blue colors with soft warm ivory/pearl cream background (#F8F5F0) throughout the entire application",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/CinematicHeroSlider.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/cart/CartPanel.tsx",
-          "frontend/src/components/checkout/CheckoutPanel.tsx",
-          "frontend/src/components/QuickViewSheet.tsx",
-          "frontend/src/pages/ProductDetailView.tsx",
-          "frontend/src/pages/ProductsPage.tsx",
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
-          "frontend/src/components/banarasi/BanarasiQuickDetailsOverlay.tsx",
-          "frontend/src/components/dashboard/TrendingCategoriesSection.tsx",
-          "frontend/src/admin/pages/AdminDashboard.tsx",
-          "frontend/src/admin/components/AdminLayout.tsx",
-          "frontend/src/admin/pages/AdminProductsPage.tsx",
-          "frontend/src/components/OceanBackground.tsx",
-          "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
-          "frontend/src/components/storefront/PremiumCatalogEmptyState.tsx",
-          "frontend/src/components/storefront/PremiumCatalogErrorState.tsx"
+          "frontend/tailwind.config.js"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
+          "frontend/src/index.css"
         ]
       },
       {
-        "id": "REQ-2",
-        "summary": "Update typography throughout the application to use premium luxury fonts: Playfair Display ExtraBold for all headings and brand name 'DoRaa Sangam House' with antique gold color (#C9A96E) and letter-spacing of 2-4px, Great Vibes Regular script font for category names and special titles (like 'Zari Royalty') with blush rose gold (#E8C0C8) or antique gold (#C9A96E) color at size 2.8-3.8rem, Lora Regular 400 for all body text and descriptions with deep charcoal color (#1A1A1A) and line-height 1.9-2.1, and Montserrat Bold or Raleway ExtraBold for buttons/CTAs in all caps with dark text on gold background",
+        "id": "REQ-10",
+        "summary": "Set body text font to Lora Regular with deep charcoal color (#1A1A1A)",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/index.html",
           "frontend/src/index.css",
           "frontend/tailwind.config.js",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/src/components/banarasi/BanarasiCollectionSection.tsx",
-          "frontend/src/pages/LoginPage.tsx",
-          "frontend/src/pages/ProductDetailView.tsx",
-          "frontend/src/components/QuickViewSheet.tsx",
-          "frontend/src/admin/components/AdminLayout.tsx"
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/index.html",
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-11",
+        "summary": "Apply Montserrat Bold font to all button text and call-to-action elements",
+        "status": "implemented",
+        "plannedFiles": [
           "frontend/src/index.css",
           "frontend/tailwind.config.js",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/ProductCard.tsx",
+          "frontend/index.html"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-12",
+        "summary": "Remove all media query overrides for colors, fonts, and backgrounds to force identical light theme appearance across desktop, laptop, and mobile viewports",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-13",
+        "summary": "Audit and eliminate all instances of dark navy blue colors from the entire codebase, replacing with the light aesthetic palette",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/ThemeSwitcher.tsx",
+          "frontend/src/components/OceanBackground.tsx",
+          "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+          "frontend/src/components/hero/PearlShimmerParticles.tsx",
+          "frontend/src/components/hero/GoldWaveLayer.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/components/OceanBackground.tsx",
+          "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+          "frontend/src/components/hero/PearlShimmerParticles.tsx",
+          "frontend/src/components/hero/GoldWaveLayer.tsx"
+        ]
+      },
+      {
+        "id": "REQ-14",
+        "summary": "Preserve all existing functionality including login/OTP flow, Internet Identity, profile dashboard, cart icon, addresses, orders, and product catalog while applying light theme",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/pages/LoginPage.tsx",
           "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/components/Header.tsx",
+          "frontend/src/components/cart/CartPanel.tsx",
+          "frontend/src/pages/ProductsPage.tsx",
+          "frontend/src/components/checkout/CheckoutPanel.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Apply gradient backgrounds to section elements using linear-gradient(135deg, #F8F5F0 0%, #F5F0E6 100%)",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/pages/HomeSection.tsx",
+          "frontend/src/components/CinematicHeroSlider.tsx",
+          "frontend/src/pages/ProductSection.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/components/CinematicHeroSlider.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Implement Vastrado-style home page layout after login with: large DoRaa Sangam House logo (gold luxury version) centered at the top, horizontal category navigation bar below the logo displaying categories (Shirts, Kurta, Bottoms, Sarees, Shop All) that is scrollable on mobile, user profile/dashboard icon positioned on the right side, below navigation display a grid of saree/product cards showing on-model images with product name, price, discount badge, and 'Add to Cart' button, cards styled with curved corners, white background, and gold hover border with lift effect",
+        "summary": "Update primary accent color to antique gold (#C9A96E) for buttons, borders, highlights, and interactive elements",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/ProductCard.tsx"
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/ProductCard.tsx"
+          "frontend/src/index.css"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Update dashboard (accessed via profile icon click) to include: tabs for Profile, Orders, and Addresses, add an 'Appearance' section with theme switcher buttons showing Light (default and only active option), with Dark and System options disabled or hidden since only light theme is required, user details section displaying name, email, phone with 'Save Changes' button",
+        "summary": "Apply secondary accent color of muted blush rose gold (#E8C0C8) to category titles and decorative elements",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/ThemeSwitcher.tsx"
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/components/dashboard/TrendingCategoriesSection.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/ThemeSwitcher.tsx"
+          "frontend/src/index.css",
+          "frontend/src/components/CategoryNavigationBar.tsx"
         ]
       },
       {
         "id": "REQ-5",
-        "summary": "Ensure 100% consistent appearance across laptop, mobile, and tablet devices with no media-query overrides for colors, fonts, or backgrounds, using rem units and clamp() for responsive scaling, ensuring all premium hover animations (glow, lift, scale) are smooth and work across devices while respecting reduced motion preferences",
+        "summary": "Update primary text color to deep charcoal (#1A1A1A) and secondary text to warm taupe gray (#5C4B51)",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/Footer.tsx",
-          "frontend/src/hooks/usePrefersReducedMotion.ts"
+          "frontend/tailwind.config.js"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/CategoryNavigationBar.tsx",
-          "frontend/src/pages/HomeSection.tsx",
-          "frontend/src/pages/DashboardPage.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/index.css"
         ]
       },
       {
         "id": "REQ-6",
-        "summary": "Update CSS variables in frontend/index.css and Tailwind configuration in frontend/tailwind.config.js to reflect the new light theme color palette, ensuring all component styles reference these new variables consistently",
+        "summary": "Style buttons with antique gold background (#C9A96E), dark text, and hover effects with deeper gold, lift animation, and glow",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Style product cards and content cards with pure white background (#FFFFFF), 1px gold border (#C9A96E), and soft shadow",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductCard.tsx",
+          "frontend/src/components/QuickViewSheet.tsx",
+          "frontend/src/pages/ProductDetailView.tsx",
+          "frontend/src/index.css"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Update heading font to Playfair Display ExtraBold with antique gold color (#C9A96E)",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/index.css",
-          "frontend/tailwind.config.js"
+          "frontend/tailwind.config.js",
+          "frontend/index.html"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Apply Great Vibes Regular font to category titles and special decorative titles with color #E8C0C8",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/components/CategoryNavigationBar.tsx",
+          "frontend/src/components/dashboard/TrendingCategoriesSection.tsx",
+          "frontend/index.html"
         ],
         "matchedFiles": [
           "frontend/src/index.css",
-          "frontend/tailwind.config.js"
+          "frontend/src/components/CategoryNavigationBar.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/public/assets/generated/doraa-logo-gold.dim_400x120.png",
-    "frontend/src/App.tsx",
     "frontend/src/components/CategoryNavigationBar.tsx",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/Header.tsx",
-    "frontend/src/components/ProductCard.tsx",
-    "frontend/src/components/ThemeSwitcher.tsx",
+    "frontend/src/components/CinematicHeroSlide.tsx",
+    "frontend/src/components/CinematicHeroSlider.tsx",
+    "frontend/src/components/OceanBackground.tsx",
+    "frontend/src/components/banarasi/BanarasiShowcaseAmbience.tsx",
+    "frontend/src/components/hero/GoldWaveLayer.tsx",
+    "frontend/src/components/hero/PearlShimmerParticles.tsx",
     "frontend/src/index.css",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/HomeSection.tsx",
-    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

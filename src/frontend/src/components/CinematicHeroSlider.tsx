@@ -67,7 +67,7 @@ export default function CinematicHeroSlider() {
       id="home"
       className="relative min-h-screen w-full overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #2E1A47 0%, #3C1F5B 50%, #1A0F2E 100%)',
+        background: 'linear-gradient(135deg, #F8F5F0 0%, #F5F0E6 100%)',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
